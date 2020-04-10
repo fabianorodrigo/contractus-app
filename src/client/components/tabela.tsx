@@ -1,16 +1,20 @@
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core';
-import React from 'react';
-import useStyles from '../services/styles';
+import React, {ReactNode} from 'react';
 
-export interface TabelaColuna {
+export interface TabelaColunaDado {
     atributo: string;
     titulo: string;
     alinhamento?: 'right' | 'left' | 'center';
     funcaoFormatacao?: Function;
 }
 
-export const Tabela: React.FC<{colunas: TabelaColuna[]; dados: Array<any>}> = ({colunas, dados}) => {
-    const classes = useStyles();
+export const Tabela: React.FC<{colunas: TabelaColunaDado[]; dados: Array<any>; colunasAcao?: ReactNode[]}> = ({
+    colunas,
+    dados,
+    colunasAcao,
+}) => {
+    if (colunasAcao && colunasAcao.length != dados.length)
+        throw new Error(`Deve existir uma colunaAcao para cada linha`);
     return (
         <TableContainer component={Paper}>
             <Table size="small">
@@ -23,6 +27,11 @@ export const Tabela: React.FC<{colunas: TabelaColuna[]; dados: Array<any>}> = ({
                                 </TableCell>
                             );
                         })}
+                        {colunasAcao && (
+                            <TableCell component="th" scope="row">
+                                Ações
+                            </TableCell>
+                        )}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -35,6 +44,7 @@ export const Tabela: React.FC<{colunas: TabelaColuna[]; dados: Array<any>}> = ({
                                     </TableCell>
                                 );
                             })}
+                            {colunasAcao && <TableCell scope="row">{colunasAcao[i]}</TableCell>}
                         </TableRow>
                     ))}
                 </TableBody>

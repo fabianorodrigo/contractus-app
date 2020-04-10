@@ -38,13 +38,16 @@ export const AppContextProvider: React.FC<{children: ReactNode}> = ({children}) 
  * @param acao
  */
 const reducer = (state: AppContextStoreType, acao: {tipo: ActionType; entidade: ActionEntity; dados: any}) => {
+    const retorno = {...state};
     switch (acao.tipo) {
         case ActionType.INCLUIR:
-            state[acao.entidade][acao.dados.id] = acao.dados;
-            return state;
+            //Se você retornar o mesmo valor do Hook Reducer que o valor do state atual, React irá pular a ação sem
+            //renderizar os filhos ou disparar os efeitos. (React usa o algoritmo de comparação Object.is.)
+            retorno[acao.entidade][acao.dados.id] = acao.dados;
+            return retorno;
         case ActionType.REMOVER:
-            delete state[acao.entidade][acao.dados.id];
-            return state;
+            delete retorno[acao.entidade][acao.dados.id];
+            return retorno;
         default:
             return state;
     }

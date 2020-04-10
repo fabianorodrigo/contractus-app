@@ -6,7 +6,15 @@ export function getFornecedores(): Promise<Fornecedor[]> {
 }
 
 export function getContratos(): Promise<Contrato[]> {
-    return get('/contrato');
+    return get(`/contrato?filter={ "order": ["dtInicioVigencia DESC"
+  ],
+  "include": [
+    { "relation": "metricas","scope": {"order": ["sigla"]}},
+    { "relation": "tiposOrdemServico","scope": {"order": ["descricao"]}},
+    { "relation": "papeis","scope": {"order": ["nome"]}}
+
+  ]
+}`);
 }
 
 export function getOrdensServico(idContrato: number): Promise<OrdemServico[]> {

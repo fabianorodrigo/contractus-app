@@ -14,7 +14,7 @@
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo",
-    "copyAssetsDev": "cp node_modules/react/umd/react.production.min.js public/js/react.js && cp node_modules/react-dom/umd/react-dom.production.min.js public/js/react-dom.js",
+    "copyAssetsDev": "cp node_modules/react/umd/react.development.js public/js/react.js && cp node_modules/react-dom/umd/react-dom.development.js public/js/react-dom.js",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
     "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
