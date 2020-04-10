@@ -1,0 +1,52 @@
+version: '3.3'
+services:
+  postgresdb:
+    image: postgres
+    networks:
+      - contractusnet
+    ports:
+      - '15432:5432'
+    volumes:
+      - postgresql:/var/lib/postgresql
+      # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
+      - postgresql_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=contractusapp
+      - POSTGRES_PASSWORD=contractusapp
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    depends_on:
+      - postgresdb
+    volumes:
+      - pgadmin:/root/.pgadmin
+    networks:
+      - contractusnet
+  contractus-app:
+    image: contractus-app:latest
+    ports:
+      - '3000:3000'
+    networks:
+      - contractusnet
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://postgresdb:5432/contractus
+    #command: sysctl -w vm.max_map_count=262144
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - contractus_conf:/opt/contractus/conf
+volumes:
+  postgresql:
+  postgresql_data:
+networks:
+  contractusnet:
+    driver: bridge

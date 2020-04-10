@@ -1,0 +1,10 @@
+{
+  "name": "contractusDataSource",
+  "connector": "postgresql",
+  "url": "postgres://postgres:contractusapp@localhost/contractusapp",
+  "host": "",
+  "port": 0,
+  "user": "",
+  "password": "",
+  "database": ""
+}

@@ -1,0 +1,93 @@
+{
+  "name": "contractus-app",
+  "version": "1.0.0",
+  "description": "Gestão de contratos administrativos de Tecnologia da Informação seguindo a legislação vigente",
+  "keywords": [
+    "loopback-application",
+    "loopback"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "build": "lb-tsc",
+    "build:watch": "lb-tsc --watch",
+    "clean": "lb-clean dist *.tsbuildinfo",
+    "copyAssetsDev": "cp node_modules/react/umd/react.production.min.js public/js/react.js && cp node_modules/react-dom/umd/react-dom.production.min.js public/js/react-dom.js",
+    "lint": "npm run prettier:check && npm run eslint",
+    "lint:fix": "npm run eslint:fix && npm run prettier:fix",
+    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
+    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:fix": "npm run prettier:cli -- --write",
+    "eslint": "lb-eslint --report-unused-disable-directives .",
+    "eslint:fix": "npm run eslint -- --fix",
+    "pretest": "npm run clean && npm run build",
+    "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
+    "posttest": "npm run lint",
+    "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
+    "docker:build": "docker build -t contractus-app .",
+    "docker:run": "docker run -p 3000:3000 -d contractus-app",
+    "migrate": "node ./dist/migrate",
+    "prestart": "npm run webpack && npm run build",
+    "start": "node -r source-map-support/register .",
+    "prepublishOnly": "npm run test",
+    "webpack": "webpack &&  npm run copyAssetsDev"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "",
+  "license": "",
+  "files": [
+    "README.md",
+    "index.js",
+    "index.d.ts",
+    "dist",
+    "src",
+    "!*/__tests__"
+  ],
+  "dependencies": {
+    "@loopback/boot": "^2.0.1",
+    "@loopback/context": "^3.1.0",
+    "@loopback/core": "^2.1.0",
+    "@loopback/openapi-v3": "^3.1.0",
+    "@loopback/repository": "^2.0.1",
+    "@loopback/rest": "^3.0.1",
+    "@loopback/rest-explorer": "^2.0.1",
+    "@loopback/service-proxy": "^2.0.1",
+    "@material-ui/core": "^4.9.8",
+    "@material-ui/icons": "^4.9.1",
+    "axios": "^0.19.2",
+    "loopback-connector-postgresql": "^3.9.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tslib": "^1.10.0",
+    "typeface-roboto": "0.0.75"
+  },
+  "devDependencies": {
+    "@loopback/build": "^4.0.1",
+    "@loopback/eslint-config": "^6.0.1",
+    "@loopback/testlab": "^2.0.1",
+    "@types/node": "^10.17.17",
+    "@types/react": "^16.9.29",
+    "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-eslint-plugin": "^2.2.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-mocha": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "source-map-loader": "^0.2.4",
+    "source-map-support": "^0.5.16",
+    "ts-loader": "^6.2.2",
+    "typescript": "~3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  }
+}
