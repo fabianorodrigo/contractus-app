@@ -1,6 +1,6 @@
 # contractus-app
 
-[![LoopBack](<https://github.com/strongloop/loopback-next/raw/master/docs/site/imgs/branding/Powered-by-LoopBack-Badge-(blue)-@2x.png>)](http://loopback.io/)
+Sistema de gestão de contratos administrativos de Tecnologia da Informação
 
 PRIMEIRAS VEZ: docker run -d -p 5432:5432 --name contractusapp-postgres -e POSTGRES_PASSWORD=contractusapp postgres
 DEPOIS: docker start contractusapp-postgres
