@@ -3,10 +3,14 @@ import {fade, makeStyles} from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
-export default makeStyles(theme => ({
+export default makeStyles((theme) => ({
     root: {
         display: 'flex',
         backgroundColor: '#fafafa',
+    },
+    form: {
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     content: {
         flexGrow: 1,
@@ -69,6 +73,9 @@ export default makeStyles(theme => ({
     },
     table: {
         display: 'block',
+    },
+    tableInForm: {
+        padding: theme.spacing(0),
     },
     menuButton: {
         marginRight: 36,
@@ -137,6 +144,11 @@ export default makeStyles(theme => ({
                 width: 400,
             },
         },
+    },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        width: '25ch',
     },
     blueAvatar: {
         margin: 10,

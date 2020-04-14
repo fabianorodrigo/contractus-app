@@ -6,9 +6,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {makeStyles} from '@material-ui/core/styles';
 import React from 'react';
 import {TypeString_Void} from '../models/TypeFunctions';
-import {BusinessIcon, GavelIcon, ListAltIcon, RowingIcon} from './icons';
+import {BusinessIcon, GavelIcon, ListAltIcon, RowingIcon} from './lib/icons';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         maxWidth: 360,
@@ -48,34 +48,34 @@ export const Menu: React.FC<IReactComponentMenu> = ({onClickMenu}) => {
     }; //FIXME: Substituir por ContextAPI
     const classes = useStyles();
     return (
-        <div>
-            <Divider />
-            <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
-                <ListItem button onClick={onClickMenu.bind(null, 'ordens')}>
-                    <ListItemIcon>
-                        <ListAltIcon />
+        <div key="divMenu">
+            <Divider key="dividerMenu" />
+            <List key="menuList" component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
+                <ListItem key="menuListItemOSs" button onClick={onClickMenu.bind(null, 'ordens')}>
+                    <ListItemIcon key="menuListIconOSs">
+                        <ListAltIcon key="menuListIconOSs" />
                     </ListItemIcon>
-                    <ListItemText primary="Ordens de Serviço" />
+                    <ListItemText key="menuListTextOSs" primary="Ordens de Serviço" />
                 </ListItem>
 
-                <ListItem button onClick={onClickMenu.bind(null, 'contratos')}>
-                    <ListItemIcon>
-                        <GavelIcon />
+                <ListItem key="menuListItemContratos" button onClick={onClickMenu.bind(null, 'contratos')}>
+                    <ListItemIcon key="menuListIconContratos">
+                        <GavelIcon key="menuListIconContratos" />
                     </ListItemIcon>
-                    <ListItemText primary="Contratos" />
+                    <ListItemText key="menuListTextContratos" primary="Contratos" />
                 </ListItem>
 
-                <ListItem button onClick={onClickMenu.bind(null, 'fornecedores')}>
-                    <ListItemIcon>
-                        <BusinessIcon />
+                <ListItem key="menuListItemFornecedores" button onClick={onClickMenu.bind(null, 'fornecedores')}>
+                    <ListItemIcon key="menuListIconFornecedores">
+                        <BusinessIcon key="menuListIconFornecedores" />
                     </ListItemIcon>
-                    <ListItemText primary="Fornecedores" />
+                    <ListItemText key="menuListTextFornecedores" primary="Fornecedores" />
                 </ListItem>
-                <ListItem button component="a" href="/explorer">
-                    <ListItemIcon>
-                        <RowingIcon />
+                <ListItem key="menuListItemExplorer" button component="a" href="/explorer">
+                    <ListItemIcon key="menuListIconExplorer">
+                        <RowingIcon key="menuIconExplorer" />
                     </ListItemIcon>
-                    <ListItemText primary="Explorer" />
+                    <ListItemText key="menuListTextExplorer" primary="Explorer" />
                 </ListItem>
             </List>
         </div>

@@ -9,7 +9,7 @@ export const ListaCartoesOrdensServico: React.FC<{idContratoSelecionado: number}
     //Buscando dados
     const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const ordens: OrdensServicoMap = state.ordensServico;
-    const ordensContrato = Object.values(ordens).filter(o => o.idContrato == idContratoSelecionado);
+    const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
 
     const classes = useStyles();
     const avatarClasses = [classes.blueAvatar, classes.pinkAvatar, classes.greenAvatar];
@@ -18,12 +18,12 @@ export const ListaCartoesOrdensServico: React.FC<{idContratoSelecionado: number}
         <Grid container className={classes.list}>
             <Grid item>
                 <Grid container direction="row" justify="flex-start" spacing={3}>
-                    {ordensContrato.map(os => {
+                    {ordensContrato.map((os) => {
                         indexAvatarClass += 1;
                         if (indexAvatarClass >= avatarClasses.length) {
                             indexAvatarClass = 0;
                         }
-                        return <CartaoOrdemServico ordemServico={os} />;
+                        return <CartaoOrdemServico key={`cartaoOS${os.id}`} ordemServico={os} />;
                     })}
                 </Grid>
             </Grid>

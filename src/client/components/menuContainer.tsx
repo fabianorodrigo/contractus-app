@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 import {TypeBoolean_Void, TypeString_Void} from '../models/TypeFunctions';
 import useStyles from '../services/styles';
-import {ChevronLeftIcon} from './icons';
+import {ChevronLeftIcon} from './lib/icons';
 import {Menu} from './menu';
 
 interface IReactComponentMenuContainer {

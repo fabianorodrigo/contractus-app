@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React from 'react';
 import {TypeBoolean_Void} from '../models/TypeFunctions';
 import useStyles from '../services/styles';
-import {MenuIcon, SearchIcon} from './icons';
+import {MenuIcon, SearchIcon} from './lib/icons';
 
 export const NavBar: React.FC<{
     menuExpandido: boolean;

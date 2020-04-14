@@ -11,4 +11,5 @@ export * from './ordem-servico.model';
 export * from './papel-contrato.model';
 export * from './papel.model';
 export * from './sancao-indicador-niveis-servico-contrato.model';
+export * from './teste.model';
 export * from './tipo-ordem-servico-contrato.model';

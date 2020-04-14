@@ -39,6 +39,7 @@ export const AppContextProvider: React.FC<{children: ReactNode}> = ({children}) 
  */
 const reducer = (state: AppContextStoreType, acao: {tipo: ActionType; entidade: ActionEntity; dados: any}) => {
     const retorno = {...state};
+    //console.log(acao.entidade, acao.dados);
     switch (acao.tipo) {
         case ActionType.INCLUIR:
             //Se você retornar o mesmo valor do Hook Reducer que o valor do state atual, React irá pular a ação sem

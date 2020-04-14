@@ -2,6 +2,8 @@ import AddIcon from '@material-ui/icons/Add';
 import BuildIcon from '@material-ui/icons/Build';
 import BusinessIcon from '@material-ui/icons/Business';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/EditTwoTone';
 import GavelIcon from '@material-ui/icons/Gavel';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
@@ -10,6 +12,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import RowingIcon from '@material-ui/icons/Rowing';
 import SearchIcon from '@material-ui/icons/Search';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartTwoTone';
+
 export {
     MenuIcon,
     SearchIcon,
@@ -23,4 +26,6 @@ export {
     RowingIcon,
     ImportantDevicesIcon,
     BuildIcon,
+    CloseIcon,
+    DeleteIcon,
 };

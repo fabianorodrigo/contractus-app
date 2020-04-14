@@ -12,15 +12,16 @@ export const ToolbarInterna: React.FC<{
     const classes = useStyles();
     return (
         <React.Fragment>
-            <Grid container spacing={1}>
-                <Grid item>{children}</Grid>
+            <Grid container spacing={1} justify="space-between">
                 <Grid item>
+                    {children}
                     <Radio
                         checked={visaoSelecionada === 'grid'}
                         onChange={onChangeVisao}
                         value="grid"
                         name="rb_visao"
                         inputProps={{'aria-label': 'grid'}}
+                        key="rbTabelaToolbarInterna"
                     />
                     <Typography color="primary" variant="caption">
                         Tabela
@@ -31,14 +32,15 @@ export const ToolbarInterna: React.FC<{
                         value="cards"
                         name="rb_visao"
                         inputProps={{'aria-label': 'cards'}}
+                        key="rbCardsToolbarInterna"
                     />
                     <Typography color="primary" variant="caption">
                         Cartões
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <ButtonGroup variant="contained" color="primary">
-                        <Button>{labelNovo || 'Novo'} ...</Button>
+                    <ButtonGroup variant="contained" color="primary" key="buttonGroupToolbarInterna">
+                        <Button key="btNewToolbarInterna">{labelNovo || 'Novo'} ...</Button>
                     </ButtonGroup>
                 </Grid>
             </Grid>

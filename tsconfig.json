@@ -14,7 +14,9 @@
     "strictNullChecks": true,
     "strictFunctionTypes":true,
     "strictBindCallApply": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    //debug
+    "sourceMap":true
   },
   "include": ["src"]
 }

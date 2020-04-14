@@ -19,9 +19,16 @@ export async function get(url: string): Promise<any> {
     }
 }
 
-export async function post(url: string, data: object) {
+export async function post(url: string, data: object, id: number | null) {
     try {
-        const response = await apiClient.post(url, data);
+        let response;
+        if (id) {
+            response = await apiClient.put(url.concat(String(id)), data);
+            // O PUT do Loopback não retorna dados, então, se foi bem sucedido vamos retornar o mesmo valor enviado para manter um padrão na resposta
+            if (response.status == 204) return data;
+        } else {
+            response = await apiClient.post(url, data);
+        }
         return response.data;
     } catch (e) {
         if (e && e.response) {

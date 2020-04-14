@@ -4,8 +4,8 @@ import {AppContext, AppContextStoreType} from '../../App-Context';
 import {ContratosMap, OrdensServicoMap} from '../../models/TypeContext';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
 import {encurtaNome, formataDataStringLocal} from '../../services/formatacao';
-import {SearchIcon} from '../icons';
-import {Tabela, TabelaColunaDado} from '../tabela';
+import {SearchIcon} from '../lib/icons';
+import {Tabela, TabelaColunaDado} from '../lib/tabela';
 
 export const TabelaOrdensServico: React.FC<{
     idContratoSelecionado: number;

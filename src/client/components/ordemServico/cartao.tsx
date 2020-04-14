@@ -3,7 +3,7 @@ import React from 'react';
 import {OrdemServico} from '../../../models';
 import {encurtaNome} from '../../services/formatacao';
 import useStyles from '../../services/styles';
-import {BuildIcon, ImportantDevicesIcon, SearchIcon} from '../icons';
+import {BuildIcon, ImportantDevicesIcon, SearchIcon} from '../lib/icons';
 
 const icones = [null, <SearchIcon />, <ImportantDevicesIcon />, <BuildIcon />];
 

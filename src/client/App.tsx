@@ -11,7 +11,7 @@ import useStyles from './services/styles';
 export const App: React.FC<{}> = ({}) => {
     const classes = useStyles();
     const [menuAberto, setMenuAberto] = React.useState(true);
-    const [menu, setMenu] = React.useState('home');
+    const [menu, setMenu] = React.useState('ordens');
     function onClickMenu(newMenu: string) {
         setMenu(newMenu);
     }
@@ -20,13 +20,13 @@ export const App: React.FC<{}> = ({}) => {
     const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     //Executa uma vez
     React.useEffect(() => {
-        getFornecedores().then(fornecedores => {
-            fornecedores.forEach(f => {
+        getFornecedores().then((fornecedores) => {
+            fornecedores.forEach((f) => {
                 dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.FORNECEDOR, dados: f}); //FIXME
             });
         });
-        getContratos().then(contratos => {
-            contratos.forEach(c => {
+        getContratos().then((contratos) => {
+            contratos.forEach((c) => {
                 dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.CONTRATO, dados: c}); //FIXME
             });
         });

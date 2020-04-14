@@ -20,15 +20,15 @@ export const Tabela: React.FC<{colunas: TabelaColunaDado[]; dados: Array<any>; c
             <Table size="small">
                 <TableHead>
                     <TableRow>
-                        {colunas.map(c => {
+                        {colunas.map((c) => {
                             return (
-                                <TableCell component="th" scope="row">
+                                <TableCell component="th" scope="row" key={`th${c.titulo}`}>
                                     {c.titulo}
                                 </TableCell>
                             );
                         })}
                         {colunasAcao && (
-                            <TableCell component="th" scope="row">
+                            <TableCell component="th" scope="row" key={`thAcoes`}>
                                 Ações
                             </TableCell>
                         )}
@@ -37,14 +37,18 @@ export const Tabela: React.FC<{colunas: TabelaColunaDado[]; dados: Array<any>; c
                 <TableBody>
                     {dados.map((r, i) => (
                         <TableRow key={`linha${i}`}>
-                            {colunas.map(c => {
+                            {colunas.map((c, j) => {
                                 return (
-                                    <TableCell scope="row" align={c.alinhamento || 'left'}>
+                                    <TableCell scope="row" align={c.alinhamento || 'left'} key={`td_${i}_${j}`}>
                                         {c.funcaoFormatacao ? c.funcaoFormatacao(r[c.atributo]) : r[c.atributo]}
                                     </TableCell>
                                 );
                             })}
-                            {colunasAcao && <TableCell scope="row">{colunasAcao[i]}</TableCell>}
+                            {colunasAcao && (
+                                <TableCell scope="row" key={`tdAcao_${i}`}>
+                                    {colunasAcao[i]}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

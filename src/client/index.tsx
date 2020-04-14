@@ -31,6 +31,7 @@ const appTheme = createMuiTheme({
                 paddingTop: theme.spacing(0),
                 paddingLeft: theme.spacing(1),
                 marginTop: theme.spacing(0),
+                whiteSpace: 'nowrap',
             },
         },
     },

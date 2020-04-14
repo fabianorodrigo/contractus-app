@@ -1,24 +1,27 @@
-import {createStyles, makeStyles, TextField} from '@material-ui/core';
+import {makeStyles, TextField} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {OrdemServico} from '../../../models';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
-import {getOrdensServico} from '../../services/backend';
+import {getOrdemServico, getOrdensServico} from '../../services/backend';
 import {ToolbarInterna} from '../toolbarInterna';
 import {FormOrdemServico} from './form';
 import {ListaCartoesOrdensServico} from './listaCartoes';
 import {TabelaOrdensServico} from './tabela';
 
-const privateUseStyles = makeStyles(() =>
-    createStyles({
-        filtroContratoFormControl: {
-            minWidth: 120,
+const privateUseStyles = makeStyles({
+    underline: {
+        '&&&:before': {
+            borderBottom: 'none',
         },
-    }),
-);
+        '&&:after': {
+            borderBottom: 'none',
+        },
+    },
+});
 
 export const OrdensServico: React.FC<{}> = ({}) => {
-    const privateClasses = privateUseStyles();
+    const classeFiltroContratoFormControl = privateUseStyles();
     //Buscando contratos
     const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const fornecedores: FornecedoresMap = state.fornecedores;
@@ -31,8 +34,8 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //Busca avalia a busca sempre que selecionar um contrato
     React.useEffect(() => {
         if (idContratoSelecionado != -1) {
-            getOrdensServico(idContratoSelecionado).then(ordens => {
-                ordens.forEach(o => {
+            getOrdensServico(idContratoSelecionado).then((ordens) => {
+                ordens.forEach((o) => {
                     dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: o});
                 });
             });
@@ -45,49 +48,60 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     };
     //### Controle da ordem de serviço visualizada/em edição
     let [ordemServicoEditada, setOrdemServicoEditada]: any = React.useState();
-    const abrirDialog = (ordemServico: OrdemServico) => {
-        setOrdemServicoEditada(ordemServico);
+    const abrirDialog = async (ordemServico: OrdemServico) => {
+        //Busca todos os dados incluindo as relations da ordem de serviço
+        const ordemCompleta = await getOrdemServico(ordemServico.id as number);
+        dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: ordemCompleta});
+        setOrdemServicoEditada(ordemCompleta);
     };
-    const fecharDialog = (ordemServico: OrdemServico) => {
+    const fecharDialog = () => {
         setOrdemServicoEditada(null);
     };
 
     return (
-        <React.Fragment>
+        <React.Fragment key="fragmentOSindex">
             <ToolbarInterna
+                key="toolBarOrdemServico"
                 onChangeVisao={onChangeVisao}
                 visaoSelecionada={visaoSelecionada}
                 labelNovo="Nova Ordem de Serviço"
             >
                 <TextField
-                    className={privateClasses.filtroContratoFormControl}
+                    InputProps={{classes: classeFiltroContratoFormControl}}
                     id="idContratoSelecionado"
+                    key="tfIdContratoSelecionado"
                     select
                     label="Contrato"
                     value={idContratoSelecionado}
                     onChange={onChangeContrato}
+                    style={{minWidth: '20%'}}
                     SelectProps={{
                         native: true,
                     }}
-                    variant="outlined"
                 >
                     <option key="idContratoSelecionado-option-null" value={-1}>
                         Selecione
                     </option>
-                    {Object.values(contratos).map(contrato => (
+                    {Object.values(contratos).map((contrato) => (
                         <option key={`idContratoSelecionado-option-${contrato.id}`} value={contrato.id}>
                             {contrato.numeroContrato}/{contrato.anoContrato} -{' '}
-                            {fornecedores[contrato.idFornecedor].apelido}
+                            {fornecedores[contrato.idFornecedor]?.apelido}
                         </option>
                     ))}
                 </TextField>
             </ToolbarInterna>
-            {visaoSelecionada == 'cards' && <ListaCartoesOrdensServico idContratoSelecionado={idContratoSelecionado} />}
+            {visaoSelecionada == 'cards' && (
+                <ListaCartoesOrdensServico key="listaOSs" idContratoSelecionado={idContratoSelecionado} />
+            )}
             {visaoSelecionada == 'grid' && (
-                <TabelaOrdensServico idContratoSelecionado={idContratoSelecionado} funcaoVisualizar={abrirDialog} />
+                <TabelaOrdensServico
+                    key="tabelaOSs"
+                    idContratoSelecionado={idContratoSelecionado}
+                    funcaoVisualizar={abrirDialog}
+                />
             )}
             {ordemServicoEditada && (
-                <FormOrdemServico ordemServico={ordemServicoEditada} funcaoFecharForm={fecharDialog} />
+                <FormOrdemServico key="formOSs" ordemServico={ordemServicoEditada} funcaoFecharForm={fecharDialog} />
             )}
         </React.Fragment>
     );
