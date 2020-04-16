@@ -11,7 +11,19 @@ export const CampoTexto: React.FC<{
     onChange?: Function;
     funcaoFormatacao?: Function;
     type?: string;
-}> = ({atributo, label, objetoValor, fullWidth, somenteLeitura, obrigatorio, onChange, funcaoFormatacao, type}) => {
+    helperText?: string;
+}> = ({
+    atributo,
+    label,
+    objetoValor,
+    fullWidth,
+    somenteLeitura,
+    obrigatorio,
+    onChange,
+    funcaoFormatacao,
+    type,
+    helperText,
+}) => {
     return (
         <CampoBase
             atributo={atributo}
@@ -23,6 +35,7 @@ export const CampoTexto: React.FC<{
             objetoValor={objetoValor}
             funcaoFormatacao={funcaoFormatacao}
             type={type}
+            helperText={helperText}
         />
     );
 };

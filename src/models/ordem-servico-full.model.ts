@@ -1,11 +1,7 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
-import {EntregavelOrdemServico} from './entregavel-ordem-servico.model';
-import {EtapaOrdemServico} from './etapa-ordem-servico.model';
-import {IndicadorOrdemServico} from './indicador-ordem-servico.model';
-import {ItemOrdemServico} from './item-ordem-servico.model';
+import {Model, model, property} from '@loopback/repository';
 
 @model()
-export class OrdemServico extends Entity {
+export class OrdemServicoFull extends Model {
     @property({
         type: 'number',
         id: true,
@@ -21,13 +17,13 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'number',
-        required: true,
     })
-    numero: number;
+    numero?: number;
 
     @property({
         type: 'boolean',
         required: true,
+        default: false,
     })
     emergencial: boolean;
 
@@ -39,9 +35,8 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'date',
-        required: true,
     })
-    dtEmissao: string;
+    dtEmissao?: string;
 
     @property({
         type: 'string',
@@ -55,7 +50,6 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'string',
-        required: false,
     })
     cpfRequisitante?: string;
 
@@ -67,7 +61,6 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'string',
-        required: false,
     })
     cpfFiscalTecnico?: string;
 
@@ -79,44 +72,52 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'number',
-        nullable: true,
-        default: null,
     })
     numeroDocumentoSEIOrdemServico?: number;
 
     @property({
         type: 'number',
-        nullable: true,
-        default: null,
     })
     numeroDocumentoSEITermoRecebimentoDefinitivo?: number;
 
     @property({
         type: 'date',
-        nullable: true,
-        default: null,
     })
     dtCancelamento?: string;
 
-    @hasMany(() => ItemOrdemServico, {keyTo: 'idOrdemServico'})
-    itens: ItemOrdemServico[];
+    @property({
+        type: 'array',
+        itemType: 'object',
+        required: true,
+    })
+    itens: object[];
 
-    @hasMany(() => EtapaOrdemServico, {keyTo: 'idOrdemServico'})
-    etapas: EtapaOrdemServico[];
+    @property({
+        type: 'array',
+        itemType: 'object',
+    })
+    etapas?: object[];
 
-    @hasMany(() => EntregavelOrdemServico, {keyTo: 'idOrdemServico'})
-    entregaveis: EntregavelOrdemServico[];
+    @property({
+        type: 'array',
+        itemType: 'object',
+        required: false,
+    })
+    entregaveis: object[];
 
-    @hasMany(() => IndicadorOrdemServico, {keyTo: 'idOrdemServico'})
-    indicadores: IndicadorOrdemServico[];
+    @property({
+        type: 'array',
+        itemType: 'object',
+    })
+    indicadores?: object[];
 
-    constructor(data?: Partial<OrdemServico>) {
+    constructor(data?: Partial<OrdemServicoFull>) {
         super(data);
     }
 }
 
-export interface OrdemServicoRelations {
+export interface OrdemServicoFullRelations {
     // describe navigational properties here
 }
 
-export type OrdemServicoWithRelations = OrdemServico & OrdemServicoRelations;
+export type OrdemServicoFullWithRelations = OrdemServicoFull & OrdemServicoFullRelations;

@@ -1,8 +1,8 @@
-import {Model, model, property} from '@loopback/repository';
+import {Entity, model, property} from '@loopback/repository';
 import {ItemOrdemServico} from './item-ordem-servico.model';
 
 @model()
-export class Teste extends Model {
+export class Teste extends Entity {
     @property({
         type: 'number',
         required: true,

@@ -31,6 +31,8 @@ export async function post(url: string, data: object, id: number | null) {
         }
         return response.data;
     } catch (e) {
+        console.log(e);
+        console.log(e.response);
         if (e && e.response) {
             return e.response.data;
         }

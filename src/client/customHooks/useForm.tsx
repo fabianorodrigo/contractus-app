@@ -22,27 +22,29 @@ export const useFormHook = (callback: Function, initValue: object) => {
     };
     //trata inclusão de itens em propriedades arrays
     const addItemArray = (nomepropriedadeArray: string, item: object) => {
-        /*const arrayUpToDate = JSON.parse(JSON.stringify(inputs[nomepropriedadeArray]));
-        arrayUpToDate.push(JSON.parse(JSON.stringify(item)));
-        //console.log(item, arrayUpToDate);
-        console.log(item, arrayUpToDate);*/
         setInputs((inputs) => ({
             ...inputs,
             [nomepropriedadeArray]: inputs[nomepropriedadeArray].concat(JSON.parse(JSON.stringify(item))),
         }));
-        console.log('inputs', inputs);
     };
     //trata inclusão de itens em propriedades arrays
-    const removeItemArray = (nomepropriedadeArray: string, indice: number) => {
-        inputs[nomepropriedadeArray].splice(indice, 1);
-        //TODO: setInputs((inputs) => ({...inputs, [nomepropriedadeArray]: }));
+    const markToRemoveItemArray = (nomepropriedadeArray: string, indice: number) => {
+        if (inputs[nomepropriedadeArray][indice].id) {
+            inputs[nomepropriedadeArray][indice].toDelete = true;
+        } else {
+            inputs[nomepropriedadeArray].splice(indice, 1);
+        }
+        setInputs((inputs) => ({
+            ...inputs,
+            [nomepropriedadeArray]: inputs[nomepropriedadeArray],
+        }));
     };
 
     return {
         onSubmit,
         onInputChange,
         addItemArray,
-        removeItemArray,
+        markToRemoveItemArray,
         inputs,
     };
 };

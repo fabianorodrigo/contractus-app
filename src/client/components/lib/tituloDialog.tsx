@@ -5,7 +5,11 @@ import {TypeOnClickIconButton} from '../../models/TypeFunctions';
 import useStyles from '../../services/styles';
 import {CloseIcon} from './icons';
 
-const privateUseStyles = makeStyles(theme => ({
+const privateUseStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        width: '100%',
+    },
     closeButton: {
         position: 'absolute',
         right: theme.spacing(1),
@@ -22,7 +26,7 @@ export const TituloDialog: React.FC<{
     const privateClasses = privateUseStyles();
 
     return (
-        <MuiDialogTitle disableTypography className={classes.root}>
+        <MuiDialogTitle disableTypography className={privateClasses.root}>
             <Typography variant="h6">{titulo}</Typography>
             {funcaoFechar ? (
                 <IconButton

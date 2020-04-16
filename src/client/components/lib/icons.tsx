@@ -2,6 +2,7 @@ import AddIcon from '@material-ui/icons/Add';
 import BuildIcon from '@material-ui/icons/Build';
 import BusinessIcon from '@material-ui/icons/Business';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/EditTwoTone';
@@ -28,4 +29,5 @@ export {
     BuildIcon,
     CloseIcon,
     DeleteIcon,
+    ClearIcon,
 };

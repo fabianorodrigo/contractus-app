@@ -16,7 +16,7 @@ import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
-import {TabelaItensOrdensServico} from './tabelaItens';
+import {TabelaItensOrdensServico} from './item';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {children?: React.ReactElement},
@@ -50,7 +50,10 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
             funcaoFecharForm();
         });
     };
-    const {inputs, onInputChange, addItemArray, removeItemArray, onSubmit} = useFormHook(onSubmitOS, ordemServico);
+    const {inputs, onInputChange, addItemArray, markToRemoveItemArray, onSubmit} = useFormHook(
+        onSubmitOS,
+        ordemServico,
+    );
     const [aberto, setAberto] = React.useState(true);
 
     const onClickClose = () => {
@@ -61,7 +64,7 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
         addItemArray('itens', item);
     };
     const onRemoveItem = (indice: number) => {
-        removeItemArray('itens', indice);
+        markToRemoveItemArray('itens', indice);
     };
     return (
         <div>
@@ -231,6 +234,9 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
                     <DialogActions>
                         <Button type="submit" color="primary">
                             Salvar
+                        </Button>
+                        <Button color="primary" onClick={onClickClose}>
+                            Cancelar
                         </Button>
                     </DialogActions>
                 </form>
