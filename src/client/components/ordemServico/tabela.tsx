@@ -15,15 +15,19 @@ export const TabelaOrdensServico: React.FC<{
     const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const contratos: ContratosMap = state.contratos;
     const ordens: OrdensServicoMap = state.ordensServico;
-    const ordensContrato = Object.values(ordens).filter(o => o.idContrato == idContratoSelecionado);
+    const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
 
     function getTipoOrdemServico(idTipoOrdemServicoContrato: number) {
-        return contratos[idContratoSelecionado].tiposOrdemServico.filter(tos => tos.id == idTipoOrdemServicoContrato)[0]
-            .descricao;
+        return contratos[idContratoSelecionado].tiposOrdemServico.filter(
+            (tos) => tos.id == idTipoOrdemServicoContrato,
+        )[0].descricao;
+    }
+    function formataNumeroOS(numero: number) {
+        return String(numero).padStart(3, '0');
     }
 
     const colunas: TabelaColunaDado[] = [];
-    colunas.push({atributo: 'numero', titulo: '#'});
+    colunas.push({atributo: 'numero', titulo: '#', funcaoFormatacao: formataNumeroOS});
     colunas.push({atributo: 'idTipoOrdemServicoContrato', titulo: 'Tipo', funcaoFormatacao: getTipoOrdemServico});
     colunas.push({
         atributo: 'dtEmissao',
@@ -38,7 +42,7 @@ export const TabelaOrdensServico: React.FC<{
         <Tabela
             colunas={colunas}
             dados={ordensContrato}
-            colunasAcao={ordensContrato.map(oc => {
+            colunasAcao={ordensContrato.map((oc) => {
                 return (
                     <IconButton aria-label="Visualizar" color="secondary" size="small">
                         <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />

@@ -17,13 +17,11 @@ export const HeaderItensOrdensServico: React.FC<{
                             aria-label="Adicionar Item"
                             color="primary"
                             size="small"
+                            onClick={() => {
+                                funcaoMostraForm();
+                            }}
                         >
-                            <AddIcon
-                                fontSize="small"
-                                onClick={() => {
-                                    funcaoMostraForm();
-                                }}
-                            />
+                            <AddIcon fontSize="small" />
                         </IconButton>
                     )}
                 </TableCell>
@@ -38,16 +36,16 @@ export const HeaderItensOrdensServico: React.FC<{
             </TableRow>
             <TableRow>
                 <TableCell valign="bottom" component="th" scope="row" key={`thDescricao`}>
-                    Descrição*
+                    Descrição
                 </TableCell>
                 <TableCell valign="bottom" component="th" scope="row" key={`thUnidade`}>
-                    Unidade*
+                    Unidade
                 </TableCell>
                 <TableCell component="th" scope="row" align="right" key={`thQtdPlan`} rowSpan={2}>
-                    Quantidade*
+                    Quantidade
                 </TableCell>
                 <TableCell component="th" scope="row" align="right" key={`thValorPlan`} rowSpan={2}>
-                    Vl.Unitário*
+                    Vl.Unitário
                 </TableCell>
                 <TableCell component="th" scope="row" align="right" key={`thQtdReal`} rowSpan={2}>
                     Quantidade

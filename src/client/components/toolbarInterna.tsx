@@ -8,7 +8,8 @@ export const ToolbarInterna: React.FC<{
     visaoSelecionada: 'grid' | 'cards';
     children: ReactNode;
     labelNovo?: string;
-}> = ({onChangeVisao, visaoSelecionada, children, labelNovo}) => {
+    funcaoNovoOnClick: Function;
+}> = ({onChangeVisao, visaoSelecionada, children, labelNovo, funcaoNovoOnClick}) => {
     const classes = useStyles();
     return (
         <React.Fragment>
@@ -40,7 +41,14 @@ export const ToolbarInterna: React.FC<{
                 </Grid>
                 <Grid item>
                     <ButtonGroup variant="contained" color="primary" key="buttonGroupToolbarInterna">
-                        <Button key="btNewToolbarInterna">{labelNovo || 'Novo'} ...</Button>
+                        <Button
+                            key="btNewToolbarInterna"
+                            onClick={() => {
+                                funcaoNovoOnClick();
+                            }}
+                        >
+                            {labelNovo || 'Novo'} ...
+                        </Button>
                     </ButtonGroup>
                 </Grid>
             </Grid>

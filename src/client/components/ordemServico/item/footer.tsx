@@ -1,5 +1,6 @@
 import {TableCell, TableFooter, TableRow} from '@material-ui/core';
 import React from 'react';
+import {formataNumeroStringLocal} from '../../../services/formatacao';
 export const FooterItensOrdensServico: React.FC<{
     totalPlanejado: number;
     totalRealizado: number;
@@ -15,11 +16,15 @@ export const FooterItensOrdensServico: React.FC<{
                 <TableCell align="right" colSpan={2}>
                     Planejado:
                 </TableCell>
-                <TableCell scope="row">{totalPlanejado}</TableCell>
+                <TableCell scope="row" align="right">
+                    {formataNumeroStringLocal(totalPlanejado, true)}
+                </TableCell>
                 <TableCell scope="row" align="right">
                     Realizado:
                 </TableCell>
-                <TableCell scope="row">{totalRealizado}</TableCell>
+                <TableCell scope="row" align="right">
+                    {formataNumeroStringLocal(totalRealizado, true)}
+                </TableCell>
                 <TableCell scope="row"></TableCell>
             </TableRow>
         </TableFooter>

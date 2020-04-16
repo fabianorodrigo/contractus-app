@@ -15,6 +15,8 @@ export const CampoBase: React.FC<{
     type?: string;
     margin?: number;
     helperText?: string;
+    error?: boolean;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
     const {
         atributo,
@@ -30,6 +32,8 @@ export const CampoBase: React.FC<{
         type,
         margin,
         helperText,
+        error,
+        inputRef,
     } = props;
     let valor = funcaoFormatacao ? funcaoFormatacao(objetoValor[atributo]) : objetoValor[atributo];
     return (
@@ -53,6 +57,8 @@ export const CampoBase: React.FC<{
             value={valor}
             type={type ? type : undefined}
             helperText={helperText}
+            error={error}
+            inputRef={inputRef}
         >
             {props.children}
         </TextField>

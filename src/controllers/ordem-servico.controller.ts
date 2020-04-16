@@ -160,7 +160,6 @@ export class OrdemServicoController {
         await this.ordemServicoRepository.replaceById(id, ordemServico);
         for await (let i of osc.itens) {
             const item: ItemOrdemServico = i as ItemOrdemServico;
-            console.log(item);
             if (item.hasOwnProperty('toDelete')) {
                 await this.itemOrdemServicoRepository.deleteById(item.id);
             } else if (item.id) {

@@ -49,8 +49,13 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //### Controle da ordem de serviço visualizada/em edição
     let [ordemServicoEditada, setOrdemServicoEditada]: any = React.useState();
     const abrirDialog = async (ordemServico: OrdemServico) => {
+        let ordemCompleta = {};
         //Busca todos os dados incluindo as relations da ordem de serviço
-        const ordemCompleta = await getOrdemServico(ordemServico.id as number);
+        if (ordemServico && ordemServico.id) {
+            ordemCompleta = await getOrdemServico(ordemServico.id as number);
+        } else {
+            //ordemCompleta = new OrdemServicoFull({});
+        }
         dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: ordemCompleta});
         setOrdemServicoEditada(ordemCompleta);
     };
@@ -65,6 +70,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 onChangeVisao={onChangeVisao}
                 visaoSelecionada={visaoSelecionada}
                 labelNovo="Nova Ordem de Serviço"
+                funcaoNovoOnClick={abrirDialog}
             >
                 <TextField
                     InputProps={{classes: classeFiltroContratoFormControl}}

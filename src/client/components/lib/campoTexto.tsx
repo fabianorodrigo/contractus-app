@@ -12,6 +12,8 @@ export const CampoTexto: React.FC<{
     funcaoFormatacao?: Function;
     type?: string;
     helperText?: string;
+    error?: boolean;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }> = ({
     atributo,
     label,
@@ -23,6 +25,8 @@ export const CampoTexto: React.FC<{
     funcaoFormatacao,
     type,
     helperText,
+    error,
+    inputRef,
 }) => {
     return (
         <CampoBase
@@ -36,6 +40,8 @@ export const CampoTexto: React.FC<{
             funcaoFormatacao={funcaoFormatacao}
             type={type}
             helperText={helperText}
+            error={error}
+            inputRef={inputRef}
         />
     );
 };

@@ -6,8 +6,24 @@ export function formataDataStringLocal(dataStringISO: string): string {
     return new Date(dataStringISO).toLocaleDateString();
 }
 
-export function formataNumeroStringLocal(numero: number) {
-    return numero.toLocaleString();
+export function formataNumeroStringLocal(numero: number | string, financeiro: boolean, casosDecimais: number = 2) {
+    let v = numero;
+    if (typeof v == 'string') {
+        v = parseFloat(v);
+    }
+    if (financeiro) {
+        return v.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    } else {
+        return v.toLocaleString('pt-BR', {
+            minimumFractionDigits: casosDecimais,
+            maximumFractionDigits: casosDecimais,
+        });
+    }
 }
 
 /**

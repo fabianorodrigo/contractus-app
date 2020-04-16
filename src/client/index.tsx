@@ -53,6 +53,10 @@ const appTheme = createMuiTheme({
             footer: {
                 backgroundColor: '#EDEDED', //-color-secondary-03 em dsgov.estaleiro.gov.br
             },
+            sizeSmall: {
+                paddingLeft: theme.spacing(1),
+                paddingRight: theme.spacing(1),
+            },
         },
         MuiDialogTitle: {
             root: {

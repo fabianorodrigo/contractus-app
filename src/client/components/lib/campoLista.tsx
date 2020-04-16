@@ -20,6 +20,7 @@ export const CampoLista: React.FC<{
     defaultValue?: any;
     margin?: number;
     helperText?: string;
+    error?: boolean;
 }> = (props) => {
     const {
         atributo,
@@ -33,25 +34,27 @@ export const CampoLista: React.FC<{
         defaultValue,
         margin,
         helperText,
+        error,
     } = props;
     return (
         <FormControl fullWidth={fullWidth} style={{margin: margin != undefined ? margin : 8}}>
             {label && (
-                <InputLabel shrink htmlFor={atributo}>
+                <InputLabel shrink htmlFor={atributo} error={error}>
                     {label}
                 </InputLabel>
             )}
             <Select
+                native
                 id={atributo}
                 name={atributo}
                 label={label}
-                defaultValue={defaultValue !== null ? defaultValue : objetoValor[atributo]}
                 inputProps={{
                     readOnly: somenteLeitura,
                 }}
                 required={obrigatorio}
                 onChange={somenteLeitura ? null : onChange}
                 value={objetoValor[atributo]}
+                error={error}
             >
                 {opcoes.map((opcao) => (
                     <option key={`${atributo}-option-${opcao.valor}`} value={opcao.valor}>

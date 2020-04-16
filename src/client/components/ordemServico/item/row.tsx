@@ -1,6 +1,7 @@
 import {IconButton, makeStyles, TableCell, TableRow} from '@material-ui/core';
 import React from 'react';
 import {ItemOrdemServico} from '../../../../models';
+import {formataNumeroStringLocal} from '../../../services/formatacao';
 import {DeleteIcon} from '../../lib/icons';
 
 const privateUseStyles = makeStyles((theme) => ({
@@ -30,16 +31,18 @@ export const RowItemOrdemServico: React.FC<{
                 {item.siglaMetrica}
             </TableCell>
             <TableCell align="right" scope="row" key={`tdQtdPlan${i}`}>
-                {item.quantidadeEstimada}
+                {formataNumeroStringLocal(item.quantidadeEstimada, false)}
             </TableCell>
             <TableCell align="right" scope="row" key={`tdVlrUnitPlan${i}`}>
-                {item.valorUnitarioEstimado}
+                {formataNumeroStringLocal(item.valorUnitarioEstimado, true)}
             </TableCell>
             <TableCell align="right" scope="row" key={`tdQtdReal${i}`}>
-                {item.quantidadeReal}
+                {item.quantidadeReal ? formataNumeroStringLocal(item.quantidadeReal, false) : item.quantidadeReal}
             </TableCell>
             <TableCell align="right" scope="row" key={`tdVlrUnitReal${i}`}>
-                {item.valorUnitarioReal}
+                {item.valorUnitarioReal
+                    ? formataNumeroStringLocal(item.valorUnitarioReal, true)
+                    : item.valorUnitarioReal}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`}>
                 <IconButton

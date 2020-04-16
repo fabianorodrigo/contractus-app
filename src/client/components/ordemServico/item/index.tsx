@@ -13,6 +13,7 @@ export const TabelaItensOrdensServico: React.FC<{
     funcaoAdiciona: Function;
     funcaoRemove: Function;
 }> = (props) => {
+    const inputRef = React.useRef<HTMLInputElement>();
     const {ordemServico, funcaoAdiciona, funcaoRemove} = props;
     const classes = useStyles();
     const fechaFormItem = () => {
@@ -33,7 +34,10 @@ export const TabelaItensOrdensServico: React.FC<{
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderItensOrdensServico
                         mostraFormItem={mostraFormItem}
-                        funcaoMostraForm={setMostraFormItem.bind(null, true)}
+                        funcaoMostraForm={() => {
+                            setMostraFormItem(true);
+                            //FIXME: if (inputRef) (inputRef as any).focus();
+                        }}
                     />
                     <TableBody>
                         {ordemServico.itens &&

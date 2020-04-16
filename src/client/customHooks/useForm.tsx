@@ -18,13 +18,22 @@ export const useFormHook = (callback: Function, initValue: object) => {
     //trata das mudanças de valores
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.persist();
-        setInputs((inputs) => ({...inputs, [event.target.name]: event.target.value}));
+        let valor = event.target.value;
+        setInputs((inputs) => ({...inputs, [event.target.name]: valor}));
     };
     //trata inclusão de itens em propriedades arrays
     const addItemArray = (nomepropriedadeArray: string, item: object) => {
+        let valorFinal: Array<any>;
+        const cloneItem = JSON.parse(JSON.stringify(item));
+        if (inputs[nomepropriedadeArray] == null) {
+            valorFinal = [cloneItem];
+        } else {
+            valorFinal = inputs[nomepropriedadeArray].concat(cloneItem);
+        }
+
         setInputs((inputs) => ({
             ...inputs,
-            [nomepropriedadeArray]: inputs[nomepropriedadeArray].concat(JSON.parse(JSON.stringify(item))),
+            [nomepropriedadeArray]: valorFinal,
         }));
     };
     //trata inclusão de itens em propriedades arrays

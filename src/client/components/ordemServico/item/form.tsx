@@ -13,8 +13,9 @@ export const FormItemOrdensServico: React.FC<{
     statusOrdemServico: number;
     onSubmitItem: Function;
     fechaFormItem: Function;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
-    const {ordemServico, statusOrdemServico, onSubmitItem, fechaFormItem} = props;
+    const {ordemServico, statusOrdemServico, onSubmitItem, fechaFormItem, inputRef} = props;
     //Buscando dados
     const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const contratos: ContratosMap = state.contratos;
@@ -28,37 +29,27 @@ export const FormItemOrdensServico: React.FC<{
     });
 
     const valida = (item: ItemOrdemServico) => {
-        let valido = true;
-        if (item.descricao.trim() == '') {
-            errosInput.descricao = 'Uma descrição do serviço deve ser informada';
-            valido = false;
-        }
-        if (item.siglaMetrica.trim() == '') {
-            errosInput.siglaMetrica = 'A unidade do serviço deve ser informada';
-            valido = false;
-        }
-        if (item.quantidadeEstimada <= 0) {
-            errosInput.quantidadeEstimada = 'O quantitavo do serviço deve ser informado';
-            valido = false;
-        }
-        if (item.valorUnitarioEstimado <= 0) {
-            errosInput.valorUnitarioEstimado = 'O valor unitário do serviço deve ser informado';
-            valido = false;
-        }
-        if (valido) {
-            limpaForm();
+        errosInput.descricao = item.descricao.trim() == '' ? 'Uma descrição do serviço deve ser informada' : '';
+        errosInput.siglaMetrica = item.siglaMetrica.trim() == '' ? 'A unidade do serviço deve ser informada' : '';
+        errosInput.quantidadeEstimada =
+            item.quantidadeEstimada <= 0 ? 'O quantitavo do serviço deve ser informado' : '';
+        errosInput.valorUnitarioEstimado =
+            item.valorUnitarioEstimado <= 0 ? 'O valor unitário do serviço deve ser informado' : '';
+
+        if (Object.values(errosInput).every((v) => v == '')) {
             onSubmitItem(item);
+            limpaForm();
+        } else {
+            setErrosInput({...errosInput});
         }
-        console.log(errosInput);
-        setErrosInput(errosInput);
     };
 
     const {inputs, onInputChange, onSubmit} = useFormHook(valida, {
         idOrdemServico: ordemServico.id,
         descricao: '',
-        siglaMetrica: '',
+        siglaMetrica: contratos[ordemServico.idContrato].metricas[0].sigla,
         quantidadeEstimada: '',
-        valorUnitarioEstimado: '',
+        valorUnitarioEstimado: contratos[ordemServico.idContrato].metricas[0].valorUnitario,
     });
     const limpaForm = () => {
         inputs.descricao = '';
@@ -78,7 +69,8 @@ export const FormItemOrdensServico: React.FC<{
                     somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    helperText={errosInput.descricao}
+                    error={errosInput.descricao != ''}
+                    inputRef={inputRef}
                 />
             </Grid>
             <Grid item xs={1}>
@@ -90,7 +82,7 @@ export const FormItemOrdensServico: React.FC<{
                     obrigatorio={true}
                     onChange={onInputChange}
                     defaultValue={contratos[ordemServico.idContrato].metricas[0].sigla}
-                    helperText={errosInput.siglaMetrica}
+                    error={errosInput.siglaMetrica != ''}
                     opcoes={Object.values(contratos[ordemServico.idContrato].metricas).map((metrica) => {
                         return {
                             valor: metrica.sigla,
@@ -109,7 +101,7 @@ export const FormItemOrdensServico: React.FC<{
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
-                    helperText={errosInput.quantidadeEstimada}
+                    error={errosInput.quantidadeEstimada != ''}
                 />
             </Grid>
             <Grid item xs={2}>
@@ -122,7 +114,7 @@ export const FormItemOrdensServico: React.FC<{
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
-                    helperText={errosInput.valorUnitarioEstimado}
+                    error={errosInput.valorUnitarioEstimado != ''}
                 />
             </Grid>
             <Grid item xs={1}>
@@ -135,7 +127,7 @@ export const FormItemOrdensServico: React.FC<{
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
-                    helperText={errosInput.quantidadeReal}
+                    error={errosInput.quantidadeReal != ''}
                 />
             </Grid>
             <Grid item xs={2}>
@@ -148,21 +140,22 @@ export const FormItemOrdensServico: React.FC<{
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
-                    helperText={errosInput.valorUnitarioReal}
+                    error={errosInput.valorUnitarioReal != ''}
                 />
             </Grid>
             <Grid item xs={1}>
-                <IconButton key={`buttonAddItem`} color="primary" size="small">
-                    <AddIcon aria-label="Adicionar" fontSize="small" onClick={onSubmit} />
-                    <ClearIcon
-                        aria-label="Cancelar"
-                        fontSize="small"
-                        color="error"
-                        onClick={() => {
-                            limpaForm();
-                            fechaFormItem();
-                        }}
-                    />
+                <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
+                    <AddIcon aria-label="Adicionar" color="primary" fontSize="small" />
+                </IconButton>
+                <IconButton
+                    key={`buttonClearItem`}
+                    size="small"
+                    onClick={() => {
+                        limpaForm();
+                        fechaFormItem();
+                    }}
+                >
+                    <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
                 </IconButton>
             </Grid>
         </Grid>

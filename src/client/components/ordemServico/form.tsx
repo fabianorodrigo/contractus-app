@@ -140,14 +140,20 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={inputs.idTipoOrdemServicoContrato}
-                                    opcoes={[SelectItemNulo].concat(
-                                        Object.values(contratos[inputs.idContrato].tiposOrdemServico).map((tipoOS) => {
-                                            return {
-                                                valor: tipoOS.id,
-                                                label: tipoOS.descricao,
-                                            };
-                                        }),
-                                    )}
+                                    opcoes={
+                                        inputs.idContrato
+                                            ? [SelectItemNulo].concat(
+                                                  Object.values(contratos[inputs.idContrato].tiposOrdemServico).map(
+                                                      (tipoOS) => {
+                                                          return {
+                                                              valor: tipoOS.id,
+                                                              label: tipoOS.descricao,
+                                                          };
+                                                      },
+                                                  ),
+                                              )
+                                            : [SelectItemNulo]
+                                    }
                                 />
                             </Grid>
                             <Grid item xs={4}>
