@@ -1,4 +1,5 @@
 import Container from '@material-ui/core/Container';
+import {SnackbarProvider} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from './App-Context';
 import {ListaContratos} from './components/contrato/lista';
@@ -41,13 +42,15 @@ export const App: React.FC<{}> = ({}) => {
                 funcaoExpandeMenu={setMenuAberto}
                 onClickMenu={onClickMenu}
             />
-            <main className={classes.content}>
-                <div className={classes.appBarSpacer} />
-                <Container className={classes.container}>
-                    {menu == 'ordens' && <OrdensServico />}
-                    {menu == 'contratos' && <ListaContratos />}
-                </Container>
-            </main>
+            <SnackbarProvider maxSnack={3}>
+                <main className={classes.content}>
+                    <div className={classes.appBarSpacer} />
+                    <Container className={classes.container}>
+                        {menu == 'ordens' && <OrdensServico />}
+                        {menu == 'contratos' && <ListaContratos />}
+                    </Container>
+                </main>
+            </SnackbarProvider>
         </div>
     );
 };

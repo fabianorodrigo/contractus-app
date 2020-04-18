@@ -7,6 +7,7 @@ import {getOrdemServico, getOrdensServico} from '../../services/backend';
 import {ToolbarInterna} from '../toolbarInterna';
 import {FormOrdemServico} from './form';
 import {ListaCartoesOrdensServico} from './listaCartoes';
+import {OrdemServicoNova} from './ordemServicoNova';
 import {TabelaOrdensServico} from './tabela';
 
 const privateUseStyles = makeStyles({
@@ -49,12 +50,12 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //### Controle da ordem de serviço visualizada/em edição
     let [ordemServicoEditada, setOrdemServicoEditada]: any = React.useState();
     const abrirDialog = async (ordemServico: OrdemServico) => {
-        let ordemCompleta = {};
+        let ordemCompleta;
         //Busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
             ordemCompleta = await getOrdemServico(ordemServico.id as number);
         } else {
-            //ordemCompleta = new OrdemServicoFull({});
+            ordemCompleta = OrdemServicoNova;
         }
         dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: ordemCompleta});
         setOrdemServicoEditada(ordemCompleta);

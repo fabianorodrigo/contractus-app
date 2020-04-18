@@ -16,9 +16,7 @@ export class OrdemServicoController {
         responses: {
             '200': {
                 description: 'OrdemServico model instance',
-                content: {
-                    'application/json': {schema: getModelSchemaRef(OrdemServico)},
-                },
+                content: {'application/json': {schema: getModelSchemaRef(OrdemServicoFull)}},
             },
         },
     })
@@ -26,16 +24,31 @@ export class OrdemServicoController {
         @requestBody({
             content: {
                 'application/json': {
-                    schema: getModelSchemaRef(OrdemServico, {
-                        title: 'Nova Ordem de Serviço',
+                    schema: getModelSchemaRef(OrdemServicoFull, {
+                        title: 'NewOrdemServicoFull',
                         exclude: ['id'],
                     }),
                 },
             },
         })
-        ordemServico: Omit<OrdemServico, 'id'>,
-    ): Promise<OrdemServico> {
-        return this.ordemServicoRepository.create(ordemServico);
+        osc: Omit<OrdemServicoFull, 'id'>,
+    ): Promise<OrdemServicoFull> {
+        const osRetorno: OrdemServicoFull = JSON.parse(JSON.stringify(osc));
+        osRetorno.itens = []; //limpa os itens pois serão inseridos os com id retornados da criação via repositório de itens
+
+        const ordemServico: OrdemServico = JSON.parse(JSON.stringify(osc)); //clone OS
+        delete ordemServico.itens; //remove atributos de relações pois o repository não aceita
+        delete ordemServico.entregaveis;
+        delete ordemServico.etapas;
+        delete ordemServico.indicadores;
+
+        osRetorno.id = (await this.ordemServicoRepository.create(ordemServico)).id;
+        for await (let i of osc.itens) {
+            const item: ItemOrdemServico = i as ItemOrdemServico;
+            //item.idOrdemServico = osRetorno.id as number;
+            osRetorno.itens.push(await this.itemOrdemServicoRepository.create(item));
+        }
+        return osRetorno;
     }
 
     @get('/ordem-servico/count', {

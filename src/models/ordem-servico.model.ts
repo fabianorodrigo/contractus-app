@@ -21,9 +21,9 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'number',
-        required: true,
+        required: false,
     })
-    numero: number;
+    numero?: number;
 
     @property({
         type: 'boolean',
@@ -39,9 +39,9 @@ export class OrdemServico extends Entity {
 
     @property({
         type: 'date',
-        required: true,
+        required: false,
     })
-    dtEmissao: string;
+    dtEmissao?: string;
 
     @property({
         type: 'string',

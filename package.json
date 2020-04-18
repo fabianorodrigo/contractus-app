@@ -60,6 +60,7 @@
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.19.2",
     "loopback-connector-postgresql": "^3.9.1",
+    "notistack": "^0.9.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "tslib": "^1.10.0",

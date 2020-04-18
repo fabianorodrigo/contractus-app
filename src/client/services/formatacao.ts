@@ -43,3 +43,17 @@ export function encurtaNome(nome: string): string {
 export function formataNumeroTamanho3(valor: string): string {
     return String(valor).padStart(3, '0');
 }
+
+export function formataMensagemErroLoopback(error: any) {
+    if (error.code == 'VALIDATION_FAILED') {
+        return 'Os dados enviados ao servidor não são válidos: '.concat(
+            error.details
+                .map((d: {message: string; code: string; path: string}) => {
+                    return d.message.replace(/should have required property/g, 'atributo não informado');
+                })
+                .join(', '),
+        );
+    } else {
+        return error.message;
+    }
+}

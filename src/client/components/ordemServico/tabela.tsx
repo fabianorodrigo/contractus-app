@@ -18,12 +18,14 @@ export const TabelaOrdensServico: React.FC<{
     const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
 
     function getTipoOrdemServico(idTipoOrdemServicoContrato: number) {
-        return contratos[idContratoSelecionado].tiposOrdemServico.filter(
-            (tos) => tos.id == idTipoOrdemServicoContrato,
-        )[0].descricao;
+        return contratos[idContratoSelecionado]
+            ? contratos[idContratoSelecionado].tiposOrdemServico.filter(
+                  (tos) => tos.id == idTipoOrdemServicoContrato,
+              )[0].descricao
+            : [];
     }
     function formataNumeroOS(numero: number) {
-        return String(numero).padStart(3, '0');
+        return numero ? String(numero).padStart(3, '0') : '-';
     }
 
     const colunas: TabelaColunaDado[] = [];
