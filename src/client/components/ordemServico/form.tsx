@@ -93,7 +93,7 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
                 } else {
                     dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: os});
                     funcaoFecharForm();
-                    enqueueSnackbar(`Ordem de Serviço ${ordemSubmetida.id ? 'cadastrada' : 'atualizada'} com sucesso`, {
+                    enqueueSnackbar(`Ordem de Serviço ${ordemSubmetida.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
                         variant: 'success',
                     });
                 }

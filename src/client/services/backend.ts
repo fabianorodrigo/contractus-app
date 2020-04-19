@@ -27,6 +27,7 @@ export function getOrdemServico(id: number): Promise<OrdemServico> {
 }
 
 export function postOrdemServico(ordemServico: OrdemServico): Promise<OrdemServico> {
+    console.log(JSON.stringify(ordemServico));
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos(ordemServico);
     return post(`/ordem-servico/`, ordemToPost, ordemToPost.id);

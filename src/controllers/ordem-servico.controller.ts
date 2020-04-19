@@ -42,11 +42,19 @@ export class OrdemServicoController {
         delete ordemServico.etapas;
         delete ordemServico.indicadores;
 
-        osRetorno.id = (await this.ordemServicoRepository.create(ordemServico)).id;
-        for await (let i of osc.itens) {
-            const item: ItemOrdemServico = i as ItemOrdemServico;
-            //item.idOrdemServico = osRetorno.id as number;
-            osRetorno.itens.push(await this.itemOrdemServicoRepository.create(item));
+        const transacao = await this.ordemServicoRepository.beginTransaction();
+        try {
+            osRetorno.id = (await this.ordemServicoRepository.create(ordemServico, {transaction: transacao})).id;
+            for await (let i of osc.itens) {
+                const item: ItemOrdemServico = i as ItemOrdemServico;
+                item.idOrdemServico = osRetorno.id as number;
+                osRetorno.itens.push(await this.itemOrdemServicoRepository.create(item, {transaction: transacao}));
+            }
+            await transacao.commit();
+        } catch (e) {
+            console.error(e);
+            await transacao.rollback();
+            throw e;
         }
         return osRetorno;
     }
@@ -170,16 +178,24 @@ export class OrdemServicoController {
             numeroDocumentoSEITermoRecebimentoDefinitivo: osc.numeroDocumentoSEITermoRecebimentoDefinitivo,
             dtCancelamento: osc.dtCancelamento,
         });
-        await this.ordemServicoRepository.replaceById(id, ordemServico);
-        for await (let i of osc.itens) {
-            const item: ItemOrdemServico = i as ItemOrdemServico;
-            if (item.hasOwnProperty('toDelete')) {
-                await this.itemOrdemServicoRepository.deleteById(item.id);
-            } else if (item.id) {
-                await this.itemOrdemServicoRepository.updateById(item.id, item);
-            } else {
-                await this.itemOrdemServicoRepository.create(item);
+        const transacao = await this.ordemServicoRepository.beginTransaction();
+        try {
+            await this.ordemServicoRepository.replaceById(id, ordemServico, {transaction: transacao});
+            for await (let i of osc.itens) {
+                const item: ItemOrdemServico = i as ItemOrdemServico;
+                if (item.hasOwnProperty('toDelete')) {
+                    await this.itemOrdemServicoRepository.deleteById(item.id, {transaction: transacao});
+                } else if (item.id) {
+                    await this.itemOrdemServicoRepository.updateById(item.id, item, {transaction: transacao});
+                } else {
+                    await this.itemOrdemServicoRepository.create(item, {transaction: transacao});
+                }
             }
+            await transacao.commit();
+        } catch (e) {
+            console.error(e);
+            await transacao.rollback();
+            throw e;
         }
     }
 

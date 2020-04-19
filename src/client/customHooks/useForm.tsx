@@ -6,8 +6,9 @@ import React, {FormEvent} from 'react';
  * And in order for React to recognize any custom hooks in our apps, their name should start with “use”.
  * @param callback function that gets called whenever the user submits the form
  */
-export const useFormHook = (callback: Function, initValue: object) => {
-    const [inputs, setInputs] = React.useState<{[atributo: string]: any}>(initValue);
+export const useFormHook = (callback: Function, valorInicial: object) => {
+    const [inputs, setInputs] = React.useState<{[atributo: string]: any}>(valorInicial);
+    const [tiposAtributos] = React.useState(typeOfAtributos(valorInicial));
     //trata o submit do formulário
     const onSubmit = (event: FormEvent<HTMLFormElement> | React.MouseEvent) => {
         if (event) {
@@ -18,7 +19,7 @@ export const useFormHook = (callback: Function, initValue: object) => {
     //trata das mudanças de valores
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.persist();
-        let valor = event.target.value;
+        let valor = tiposAtributos[event.target.name] == 'number' ? parseInt(event.target.value) : event.target.value;
         setInputs((inputs) => ({...inputs, [event.target.name]: valor}));
     };
     //trata inclusão de itens em propriedades arrays
@@ -57,3 +58,11 @@ export const useFormHook = (callback: Function, initValue: object) => {
         inputs,
     };
 };
+
+function typeOfAtributos(obj: {[atributo: string]: any}) {
+    const retorno: {[atributo: string]: any} = {};
+    Object.keys(obj).forEach((k) => {
+        retorno[k] = typeof obj[k];
+    });
+    return retorno;
+}
