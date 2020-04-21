@@ -7,7 +7,14 @@ import {CartaoOrdemServico} from './cartao';
 
 export const ListaCartoesOrdensServico: React.FC<{idContratoSelecionado: number}> = ({idContratoSelecionado}) => {
     //Buscando dados
-    const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    //A component calling useContext will always re-render when the context value changes.
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
+    const {
+        state,
+    }: {
+        state: AppContextStoreType;
+        dispatch: Dispatch<any>;
+    } = useContext(AppContext);
     const ordens: OrdensServicoMap = state.ordensServico;
     const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
 

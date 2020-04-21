@@ -17,18 +17,28 @@ export const App: React.FC<{}> = ({}) => {
         setMenu(newMenu);
     }
 
-    //Buscando dados
+    //Atualizando dados
+    //A component calling useContext will always re-render when the context value changes.
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     //Executa uma vez
     React.useEffect(() => {
         getFornecedores().then((fornecedores) => {
             fornecedores.forEach((f) => {
-                dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.FORNECEDOR, dados: f}); //FIXME
+                dispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.FORNECEDOR,
+                    dados: f,
+                }); //FIXME
             });
         });
         getContratos().then((contratos) => {
             contratos.forEach((c) => {
-                dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.CONTRATO, dados: c}); //FIXME
+                dispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.CONTRATO,
+                    dados: c,
+                }); //FIXME
             });
         });
     }, []);

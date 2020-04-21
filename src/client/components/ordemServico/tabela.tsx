@@ -12,7 +12,14 @@ export const TabelaOrdensServico: React.FC<{
     funcaoVisualizar: TypeOrdemServico_Void;
 }> = ({idContratoSelecionado, funcaoVisualizar}) => {
     //Buscando dados
-    const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    //A component calling useContext will always re-render when the context value changes.
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
+    const {
+        state,
+    }: {
+        state: AppContextStoreType;
+        dispatch: Dispatch<any>;
+    } = useContext(AppContext);
     const contratos: ContratosMap = state.contratos;
     const ordens: OrdensServicoMap = state.ordensServico;
     const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
@@ -29,16 +36,32 @@ export const TabelaOrdensServico: React.FC<{
     }
 
     const colunas: TabelaColunaDado[] = [];
-    colunas.push({atributo: 'numero', titulo: '#', funcaoFormatacao: formataNumeroOS});
-    colunas.push({atributo: 'idTipoOrdemServicoContrato', titulo: 'Tipo', funcaoFormatacao: getTipoOrdemServico});
+    colunas.push({
+        atributo: 'numero',
+        titulo: '#',
+        funcaoFormatacao: formataNumeroOS,
+    });
+    colunas.push({
+        atributo: 'idTipoOrdemServicoContrato',
+        titulo: 'Tipo',
+        funcaoFormatacao: getTipoOrdemServico,
+    });
     colunas.push({
         atributo: 'dtEmissao',
         titulo: 'Emissão',
         funcaoFormatacao: formataDataStringLocal,
     });
     colunas.push({atributo: 'idProduto', titulo: 'Produto'});
-    colunas.push({atributo: 'nomeRequisitante', titulo: 'Fiscal Requisitante', funcaoFormatacao: encurtaNome});
-    colunas.push({atributo: 'nomeFiscalTecnico', titulo: 'Fiscal Técnico', funcaoFormatacao: encurtaNome});
+    colunas.push({
+        atributo: 'nomeRequisitante',
+        titulo: 'Fiscal Requisitante',
+        funcaoFormatacao: encurtaNome,
+    });
+    colunas.push({
+        atributo: 'nomeFiscalTecnico',
+        titulo: 'Fiscal Técnico',
+        funcaoFormatacao: encurtaNome,
+    });
 
     return (
         <Tabela

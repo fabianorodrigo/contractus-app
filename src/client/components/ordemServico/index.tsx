@@ -24,7 +24,15 @@ const privateUseStyles = makeStyles({
 export const OrdensServico: React.FC<{}> = ({}) => {
     const classeFiltroContratoFormControl = privateUseStyles();
     //Buscando contratos
-    const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    //A component calling useContext will always re-render when the context value changes.
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
+    const {
+        state,
+        dispatch,
+    }: {
+        state: AppContextStoreType;
+        dispatch: Dispatch<any>;
+    } = useContext(AppContext);
     const fornecedores: FornecedoresMap = state.fornecedores;
     const contratos: ContratosMap = state.contratos;
     //### Controlando filtro de OS's por contrato
@@ -37,7 +45,11 @@ export const OrdensServico: React.FC<{}> = ({}) => {
         if (idContratoSelecionado != -1) {
             getOrdensServico(idContratoSelecionado).then((ordens) => {
                 ordens.forEach((o) => {
-                    dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: o});
+                    dispatch({
+                        tipo: ActionType.INCLUIR,
+                        entidade: ActionEntity.ORDEM_SERVICO,
+                        dados: o,
+                    });
                 });
             });
         }
@@ -57,7 +69,11 @@ export const OrdensServico: React.FC<{}> = ({}) => {
         } else {
             ordemCompleta = OrdemServicoNova;
         }
-        dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: ordemCompleta});
+        dispatch({
+            tipo: ActionType.INCLUIR,
+            entidade: ActionEntity.ORDEM_SERVICO,
+            dados: ordemCompleta,
+        });
         setOrdemServicoEditada(ordemCompleta);
     };
     const fecharDialog = () => {
@@ -74,7 +90,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 funcaoNovoOnClick={abrirDialog}
             >
                 <TextField
-                    InputProps={{classes: classeFiltroContratoFormControl}}
+                    InputProps={{
+                        classes: classeFiltroContratoFormControl,
+                    }}
                     id="idContratoSelecionado"
                     key="tfIdContratoSelecionado"
                     select
