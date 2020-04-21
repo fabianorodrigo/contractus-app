@@ -1,6 +1,6 @@
 import {Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import React from 'react';
-import {ItemOrdemServico, OrdemServico} from '../../../../models';
+import {ItemOrdemServico, MetricaContrato, OrdemServico} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
 import useStyles from '../../../services/styles';
 import {FooterItensOrdensServico} from './footer';
@@ -10,11 +10,12 @@ import {RowItemOrdemServico} from './row';
 
 export const TabelaItensOrdensServico: React.FC<{
     ordemServico: OrdemServico;
+    metricasContrato: MetricaContrato[];
     funcaoAdiciona: Function;
     funcaoRemove: Function;
 }> = (props) => {
     const inputRef = React.useRef<HTMLInputElement>();
-    const {ordemServico, funcaoAdiciona, funcaoRemove} = props;
+    const {ordemServico, metricasContrato, funcaoAdiciona, funcaoRemove} = props;
     const classes = useStyles();
     const fechaFormItem = () => {
         setMostraFormItem(false);
@@ -62,6 +63,7 @@ export const TabelaItensOrdensServico: React.FC<{
             {mostraFormItem && (
                 <FormItemOrdensServico
                     ordemServico={ordemServico}
+                    metricasContrato={metricasContrato}
                     statusOrdemServico={
                         ordemServico.numeroDocumentoSEIOrdemServico
                             ? StatusOrdemServico.EMITIDA

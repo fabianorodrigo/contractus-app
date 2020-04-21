@@ -41,7 +41,8 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
     funcaoFecharForm,
 }) => {
     const classes = useStyles();
-    const privateClasses = privateUseStyles();
+    //A component calling useContext will always re-render when the context value changes.
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const fornecedores: FornecedoresMap = state.fornecedores;
@@ -85,7 +86,6 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
     const onSubmitOS = async (ordemSubmetida: OrdemServico) => {
         if (valida(ordemSubmetida)) {
             try {
-                console.log(ordemSubmetida);
                 const os = await postOrdemServico(ordemSubmetida);
                 if (os.hasOwnProperty('error')) {
                     enqueueSnackbar(formataMensagemErroLoopback((os as any).error), {variant: 'error'});
@@ -296,6 +296,11 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
                             <Grid item xs={12}>
                                 <TabelaItensOrdensServico
                                     ordemServico={inputs as OrdemServico}
+                                    metricasContrato={
+                                        contratos[inputs.idContrato] == null
+                                            ? []
+                                            : Object.values(contratos[inputs.idContrato].metricas)
+                                    }
                                     funcaoAdiciona={onAdicionaItem}
                                     funcaoRemove={onRemoveItem}
                                 />

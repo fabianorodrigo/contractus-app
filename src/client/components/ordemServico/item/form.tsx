@@ -1,24 +1,20 @@
 import {Grid, IconButton} from '@material-ui/core';
-import React, {Dispatch, useContext} from 'react';
-import {ItemOrdemServico, OrdemServico} from '../../../../models';
+import React from 'react';
+import {ItemOrdemServico, MetricaContrato, OrdemServico} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
-import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useFormHook} from '../../../customHooks/useForm';
-import {ContratosMap} from '../../../models/TypeContext';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
 import {AddIcon, ClearIcon} from '../../lib/icons';
 export const FormItemOrdensServico: React.FC<{
     ordemServico: OrdemServico;
+    metricasContrato: MetricaContrato[];
     statusOrdemServico: number;
     onSubmitItem: Function;
     fechaFormItem: Function;
     inputRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
-    const {ordemServico, statusOrdemServico, onSubmitItem, fechaFormItem, inputRef} = props;
-    //Buscando dados
-    const {state}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
-    const contratos: ContratosMap = state.contratos;
+    const {ordemServico, metricasContrato, statusOrdemServico, onSubmitItem, fechaFormItem, inputRef} = props;
     const [errosInput, setErrosInput] = React.useState({
         descricao: '',
         siglaMetrica: '',
@@ -29,8 +25,12 @@ export const FormItemOrdensServico: React.FC<{
     });
 
     const valida = (item: ItemOrdemServico) => {
-        errosInput.descricao = item.descricao.trim() == '' ? 'Uma descrição do serviço deve ser informada' : '';
-        errosInput.siglaMetrica = item.siglaMetrica.trim() == '' ? 'A unidade do serviço deve ser informada' : '';
+        errosInput.descricao =
+            item.descricao == null || item.descricao.trim() == '' ? 'Uma descrição do serviço deve ser informada' : '';
+        errosInput.siglaMetrica =
+            item.siglaMetrica == null || item.siglaMetrica.trim() == ''
+                ? 'A unidade do serviço deve ser informada'
+                : '';
         errosInput.quantidadeEstimada =
             item.quantidadeEstimada <= 0 ? 'O quantitavo do serviço deve ser informado' : '';
         errosInput.valorUnitarioEstimado =
@@ -43,13 +43,13 @@ export const FormItemOrdensServico: React.FC<{
             setErrosInput({...errosInput});
         }
     };
-
+    console.log(2, 'metricasContrato.length', metricasContrato.length);
     const {inputs, onInputChange, onSubmit} = useFormHook(valida, {
         idOrdemServico: ordemServico.id,
         descricao: '',
-        siglaMetrica: contratos[ordemServico.idContrato].metricas[0].sigla,
+        siglaMetrica: metricasContrato.length > 0 ? metricasContrato[0].sigla : '',
         quantidadeEstimada: '',
-        valorUnitarioEstimado: contratos[ordemServico.idContrato].metricas[0].valorUnitario,
+        valorUnitarioEstimado: metricasContrato.length > 0 ? metricasContrato[0].valorUnitario : '',
     });
     const limpaForm = () => {
         inputs.descricao = '';
@@ -57,7 +57,7 @@ export const FormItemOrdensServico: React.FC<{
         inputs.quantidadeEstimada = '';
         inputs.valorUnitarioEstimado = '';
     };
-
+    console.log(4, 'renderizou', metricasContrato, ordemServico, inputs);
     return (
         <Grid container>
             <Grid item xs={4}>
@@ -81,9 +81,9 @@ export const FormItemOrdensServico: React.FC<{
                     somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    defaultValue={contratos[ordemServico.idContrato].metricas[0].sigla}
+                    defaultValue={metricasContrato.length > 0 ? metricasContrato[0].sigla : ''}
                     error={errosInput.siglaMetrica != ''}
-                    opcoes={Object.values(contratos[ordemServico.idContrato].metricas).map((metrica) => {
+                    opcoes={metricasContrato.map((metrica) => {
                         return {
                             valor: metrica.sigla,
                             label: metrica.sigla,
