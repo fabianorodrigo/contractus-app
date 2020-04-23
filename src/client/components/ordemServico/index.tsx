@@ -1,14 +1,14 @@
 import {makeStyles, TextField} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
-import {OrdemServico} from '../../../models';
-import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
+import {OrdemServicoFull} from '../../../models';
+import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
+import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {getOrdemServico, getOrdensServico} from '../../services/backend';
 import {ToolbarInterna} from '../toolbarInterna';
-import {OrdemServicoContextProvider} from './context';
+import {OrdemServicoContext} from './context';
 import {FormOrdemServico} from './form';
 import {ListaCartoesOrdensServico} from './listaCartoes';
-import {OrdemServicoNova} from './ordemServicoNova';
 import {TabelaOrdensServico} from './tabela';
 
 const privateUseStyles = makeStyles({
@@ -25,17 +25,19 @@ const privateUseStyles = makeStyles({
 export const OrdensServico: React.FC<{}> = ({}) => {
     const classeFiltroContratoFormControl = privateUseStyles();
     //Buscando contratos
-    //A component calling useContext will always re-render when the context value changes.
+    //TIP: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {
-        state,
+        state: appState,
         dispatch,
     }: {
         state: AppContextStoreType;
-        dispatch: Dispatch<any>;
+        dispatch: Dispatch<AppDispatch>;
     } = useContext(AppContext);
-    const fornecedores: FornecedoresMap = state.fornecedores;
-    const contratos: ContratosMap = state.contratos;
+    const fornecedores: FornecedoresMap = appState.fornecedores;
+    const contratos: ContratosMap = appState.contratos;
+    const {state: osState, dispatch: osDispatch}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+
     //### Controlando filtro de OS's por contrato
     const [idContratoSelecionado, setIdContratoSelecionado] = React.useState<number>(-1);
     const onChangeContrato = (event: React.ChangeEvent<{value: unknown}>) => {
@@ -61,28 +63,27 @@ export const OrdensServico: React.FC<{}> = ({}) => {
         event.target.value == 'grid' ? setVisaoSelecionada('grid') : setVisaoSelecionada('cards');
     };
     //### Controle da ordem de serviço visualizada/em edição
-    let [ordemServicoEditada, setOrdemServicoEditada]: any = React.useState();
-    const abrirDialog = async (ordemServico: OrdemServico) => {
-        let ordemCompleta;
-        //Busca todos os dados incluindo as relations da ordem de serviço
+    const abrirDialog = async (ordemServico: OrdemServicoFull) => {
+        console.log(ordemServico);
+        //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
-            ordemCompleta = await getOrdemServico(ordemServico.id as number);
+            ordemServico = await getOrdemServico(ordemServico.id as number);
+            //atualiza na state da aplicação os dados completos
+            dispatch({
+                tipo: ActionType.INCLUIR,
+                entidade: ActionEntity.ORDEM_SERVICO,
+                dados: ordemServico,
+            });
+            //atualiza o state do contexto da ordem de serviço com a ordem sendo editada
+            osDispatch({tipo: EditionType.EDITAR, dado: ordemServico});
         } else {
-            ordemCompleta = OrdemServicoNova;
+            //atualiza o state do contexto uma ordem de serviço em branco
+            osDispatch({tipo: EditionType.NOVO});
         }
-        dispatch({
-            tipo: ActionType.INCLUIR,
-            entidade: ActionEntity.ORDEM_SERVICO,
-            dados: ordemCompleta,
-        });
-        setOrdemServicoEditada(ordemCompleta);
+        //setOrdemServicoEditada(ordemCompleta);
     };
-    const fecharDialog = () => {
-        setOrdemServicoEditada(null);
-    };
-
     return (
-        <OrdemServicoContextProvider>
+        <React.Fragment>
             <ToolbarInterna
                 key="toolBarOrdemServico"
                 onChangeVisao={onChangeVisao}
@@ -126,9 +127,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     funcaoVisualizar={abrirDialog}
                 />
             )}
-            {ordemServicoEditada && (
-                <FormOrdemServico key="formOSs" ordemServico={ordemServicoEditada} funcaoFecharForm={fecharDialog} />
-            )}
-        </OrdemServicoContextProvider>
+            {osState.editando && <FormOrdemServico key="formOSs" />}
+        </React.Fragment>
     );
 };

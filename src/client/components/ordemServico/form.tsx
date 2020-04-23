@@ -1,15 +1,15 @@
-import {DialogActions, Grid, makeStyles} from '@material-ui/core';
+import {DialogActions, Grid} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Slide from '@material-ui/core/Slide';
 import {TransitionProps} from '@material-ui/core/transitions';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {ItemOrdemServico, OrdemServico} from '../../../models';
+import {ItemOrdemServico, OrdemServico, OrdemServicoFull} from '../../../models';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
+import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
-import {Type_Void} from '../../models/TypeFunctions';
 import {postOrdemServico} from '../../services/backend';
 import {formataDataStringLocal, formataMensagemErroLoopback, formataNumeroTamanho3} from '../../services/formatacao';
 import useStyles from '../../services/styles';
@@ -17,6 +17,7 @@ import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
+import {OrdemServicoContext} from './context';
 import {TabelaItensOrdensServico} from './item';
 
 const Transition = React.forwardRef(function Transition(
@@ -26,27 +27,19 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const privateUseStyles = makeStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    rootContent: {
-        padding: theme.spacing(2),
-    },
-}));
-
-export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecharForm: Type_Void}> = ({
-    ordemServico,
-    funcaoFecharForm,
-}) => {
+export const FormOrdemServico: React.FC<{}> = ({}) => {
     const classes = useStyles();
-    //A component calling useContext will always re-render when the context value changes.
+    //TIP REACT:A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
-    const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
+        AppContext,
+    );
+    const ordemServicoContexto: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState, dispatch: osDispatch} = ordemServicoContexto;
+
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
-    const fornecedores: FornecedoresMap = state.fornecedores;
-    const contratos: ContratosMap = state.contratos;
+    const fornecedores: FornecedoresMap = appState.fornecedores;
+    const contratos: ContratosMap = appState.contratos;
 
     const [errosInput, setErrosInput] = React.useState({
         idContrato: '',
@@ -57,7 +50,7 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
         itens: '',
     });
 
-    const valida = (os: OrdemServico) => {
+    const valida = (os: OrdemServicoFull) => {
         errosInput.idContrato =
             os.idContrato == null || os.idContrato < 0
                 ? 'O contrato ao qual a ordem de serviço se refere deve ser informado'
@@ -83,17 +76,17 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
         return Object.values(errosInput).every((v) => v == '');
     };
 
-    const onSubmitOS = async (ordemSubmetida: OrdemServico) => {
-        if (valida(ordemSubmetida)) {
+    const onSubmitOS = async () => {
+        if (valida(osState.dado)) {
             try {
-                const os = await postOrdemServico(ordemSubmetida);
+                const os = await postOrdemServico(osState.dado);
                 if (os.hasOwnProperty('error')) {
                     enqueueSnackbar(formataMensagemErroLoopback((os as any).error), {variant: 'error'});
                     console.error(os);
                 } else {
-                    dispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: os});
-                    funcaoFecharForm();
-                    enqueueSnackbar(`Ordem de Serviço ${ordemSubmetida.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
+                    appDispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: os});
+                    osDispatch({tipo: EditionType.FECHAR});
+                    enqueueSnackbar(`Ordem de Serviço ${osState.dado.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
                         variant: 'success',
                     });
                 }
@@ -110,15 +103,16 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
             });
         }
     };
-    const {inputs, onInputChange, addItemArray, markToRemoveItemArray, onSubmit} = useFormHook(
+    const {inputs, onInputChange, addItemArray, markToRemoveItemArray, onSubmit} = useFormHook<OrdemServicoFull>(
         onSubmitOS,
-        ordemServico,
+        osState.dado as OrdemServicoFull,
+        ordemServicoContexto,
     );
     const [aberto, setAberto] = React.useState(true);
 
     const onClickClose = () => {
         setAberto(false);
-        funcaoFecharForm();
+        osDispatch({tipo: EditionType.FECHAR});
     };
     const onAdicionaItem = (item: ItemOrdemServico) => {
         addItemArray('itens', item);
@@ -169,7 +163,9 @@ export const FormOrdemServico: React.FC<{ordemServico: OrdemServico; funcaoFecha
                                     label="Contrato"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={inputs.id != null}
+                                    somenteLeitura={
+                                        inputs.id != null || (osState.dado as OrdemServicoFull).itens?.length > 0
+                                    }
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={inputs.idContrato}

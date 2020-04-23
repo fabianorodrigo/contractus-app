@@ -1,17 +1,10 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
 import {OrdemServicoFull} from '../../../models';
+import {EditionType, IEntidadeContexto, IEntidadeDispatch, IEntidadeState} from '../../models/EntidadeContext';
 import {OrdemServicoNova} from './ordemServicoNova';
 
-export enum EditionType {
-    INCLUIR,
-    EDITAR,
-}
-
-const initialState: OrdemServicoFull = OrdemServicoNova;
-export const OrdemServicoContext = createContext<{
-    state: OrdemServicoFull;
-    dispatch: React.Dispatch<{tipo: EditionType; ordemServico: OrdemServicoFull}>;
-}>({
+const initialState: IEntidadeState<OrdemServicoFull> = {editando: false, dado: OrdemServicoNova};
+export const OrdemServicoContext = createContext<IEntidadeContexto<OrdemServicoFull>>({
     state: initialState,
     dispatch: () => null,
 });
@@ -28,15 +21,21 @@ export const OrdemServicoContextProvider: React.FC<{children: ReactNode}> = ({ch
  * @param state
  * @param acao
  */
-const reducer = (state: OrdemServicoFull, acao: {tipo: EditionType; ordemServico: OrdemServicoFull}) => {
+function reducer(
+    state: IEntidadeState<OrdemServicoFull>,
+    acao: IEntidadeDispatch<OrdemServicoFull>,
+): IEntidadeState<OrdemServicoFull> {
     switch (acao.tipo) {
-        case EditionType.INCLUIR:
+        case EditionType.NOVO:
+            console.log('é novo', OrdemServicoNova);
             //Se você retornar o mesmo valor do Hook Reducer que o valor do state atual, React irá pular a ação sem
             //renderizar os filhos ou disparar os efeitos. (React usa o algoritmo de comparação Object.is.)
-            return OrdemServicoNova;
+            return {editando: true, dado: OrdemServicoNova};
         case EditionType.EDITAR:
-            return acao.ordemServico;
+            return {editando: true, dado: acao.dado as OrdemServicoFull};
+        case EditionType.FECHAR:
+            return {editando: false, dado: OrdemServicoNova};
         default:
             return state;
     }
-};
+}

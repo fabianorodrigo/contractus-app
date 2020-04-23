@@ -1,4 +1,5 @@
 import {Paper, Table, TableBody, TableContainer} from '@material-ui/core';
+import {useSnackbar} from 'notistack';
 import React from 'react';
 import {ItemOrdemServico, MetricaContrato, OrdemServico} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
@@ -17,6 +18,7 @@ export const TabelaItensOrdensServico: React.FC<{
     const inputRef = React.useRef<HTMLInputElement>();
     const {ordemServico, metricasContrato, funcaoAdiciona, funcaoRemove} = props;
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const fechaFormItem = () => {
         setMostraFormItem(false);
     };
@@ -36,8 +38,18 @@ export const TabelaItensOrdensServico: React.FC<{
                     <HeaderItensOrdensServico
                         mostraFormItem={mostraFormItem}
                         funcaoMostraForm={() => {
-                            setMostraFormItem(true);
-                            //FIXME: if (inputRef) (inputRef as any).focus();
+                            let msg = null;
+                            if (!ordemServico.idContrato || ordemServico.idContrato == -1) {
+                                msg = `O contrato para o qual a Ordem de Serviço de serviço está sendo emitida deve ser informado`;
+                            } else if (metricasContrato.length == 0) {
+                                msg = `O contrato para o qual a Ordem de Serviço está sendo emitida não possui unidades de medidas vigentes`;
+                            }
+                            if (msg) {
+                                enqueueSnackbar(msg, {variant: 'warning'});
+                            } else {
+                                setMostraFormItem(true);
+                                //FIXME: if (inputRef) (inputRef as any).focus();
+                            }
                         }}
                     />
                     <TableBody>

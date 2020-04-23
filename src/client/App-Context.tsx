@@ -16,10 +16,16 @@ export enum ActionType {
     REMOVER,
 }
 
+export interface AppDispatch {
+    tipo: ActionType;
+    entidade: ActionEntity;
+    dados: any;
+}
+
 const initialState: AppContextStoreType = {fornecedores: {}, contratos: {}, ordensServico: {}};
 export const AppContext = createContext<{
     state: AppContextStoreType;
-    dispatch: React.Dispatch<{tipo: ActionType; entidade: ActionEntity; dados: any}>;
+    dispatch: React.Dispatch<AppDispatch>;
 }>({
     state: initialState,
     dispatch: () => null,

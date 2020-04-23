@@ -6,6 +6,7 @@ import {ListaContratos} from './components/contrato/lista';
 import {MenuContainer} from './components/menuContainer';
 import {NavBar} from './components/navBar';
 import {OrdensServico} from './components/ordemServico';
+import {OrdemServicoContextProvider} from './components/ordemServico/context';
 import {getContratos, getFornecedores} from './services/backend';
 import useStyles from './services/styles';
 
@@ -56,7 +57,11 @@ export const App: React.FC<{}> = ({}) => {
                 <main className={classes.content}>
                     <div className={classes.appBarSpacer} />
                     <Container className={classes.container}>
-                        {menu == 'ordens' && <OrdensServico />}
+                        {menu == 'ordens' && (
+                            <OrdemServicoContextProvider>
+                                <OrdensServico />
+                            </OrdemServicoContextProvider>
+                        )}
                         {menu == 'contratos' && <ListaContratos />}
                     </Container>
                 </main>

@@ -78,7 +78,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="siglaMetrica"
                     label="Unidade"
                     objetoValor={inputs}
-                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     defaultValue={metricasContrato.length > 0 ? metricasContrato[0].sigla : ''}
@@ -97,7 +97,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="quantidadeEstimada"
                     label="Quantidade"
                     objetoValor={inputs}
-                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -110,7 +110,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="valorUnitarioEstimado"
                     label="Valor Unitário"
                     objetoValor={inputs}
-                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -123,7 +123,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="quantidadeReal"
                     label="Qtd Real"
                     objetoValor={inputs}
-                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico == null}
+                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico == null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -136,7 +136,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="valorUnitarioReal"
                     label="Valor Unitário Real"
                     objetoValor={inputs}
-                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico == null}
+                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico == null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"

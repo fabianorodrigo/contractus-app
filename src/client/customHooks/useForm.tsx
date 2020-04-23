@@ -1,13 +1,20 @@
 import React, {FormEvent} from 'react';
+import {EditionType, IEntidadeContexto} from '../models/EntidadeContext';
 
 /**
  * It is very important that the name of this functional component starts with “use”.
  * This functional component is actually going to be our custom hook.
  * And in order for React to recognize any custom hooks in our apps, their name should start with “use”.
  * @param callback function that gets called whenever the user submits the form
+ * @param valorInicial Valor inicial do form que será carregado
+ * @param entidadeContexto Contexto da entidade ao qual o form se refere. Se for passado, quando houver mudanças no input, o contexto será atualizado também
  */
-export const useFormHook = (callback: Function, valorInicial: object) => {
-    const [inputs, setInputs] = React.useState<{[atributo: string]: any}>(valorInicial);
+export const useFormHook = <T extends {}>(
+    callback: Function,
+    valorInicial: T,
+    entidadeContexto?: IEntidadeContexto<T>,
+) => {
+    const [inputs, setInputs] = React.useState<T>(valorInicial);
     const [tiposAtributos] = React.useState(typeOfAtributos(valorInicial));
     //trata o submit do formulário
     const onSubmit = (event: FormEvent<HTMLFormElement> | React.MouseEvent) => {
@@ -20,16 +27,34 @@ export const useFormHook = (callback: Function, valorInicial: object) => {
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.persist();
         let valor = tiposAtributos[event.target.name] == 'number' ? parseInt(event.target.value) : event.target.value;
+        if (entidadeContexto) {
+            const entidade = entidadeContexto.state;
+            (entidade.dado as any)[event.target.name] = valor;
+            if (entidadeContexto) {
+                entidadeContexto.dispatch({
+                    tipo: EditionType.ATUALIZAR_CONTEXTO,
+                    dado: {...entidade.dado} as T,
+                });
+            }
+        }
         setInputs((inputs) => ({...inputs, [event.target.name]: valor}));
     };
     //trata inclusão de itens em propriedades arrays
     const addItemArray = (nomepropriedadeArray: string, item: object) => {
         let valorFinal: Array<any>;
         const cloneItem = JSON.parse(JSON.stringify(item));
-        if (inputs[nomepropriedadeArray] == null) {
+        if ((inputs as any)[nomepropriedadeArray] == null) {
             valorFinal = [cloneItem];
         } else {
-            valorFinal = inputs[nomepropriedadeArray].concat(cloneItem);
+            valorFinal = (inputs as any)[nomepropriedadeArray].concat(cloneItem);
+        }
+        if (entidadeContexto) {
+            const entidade = entidadeContexto.state;
+            (entidade.dado as any)[nomepropriedadeArray] = valorFinal;
+            entidadeContexto.dispatch({
+                tipo: EditionType.ATUALIZAR_CONTEXTO,
+                dado: {...entidade.dado} as T,
+            });
         }
 
         setInputs((inputs) => ({
@@ -39,14 +64,26 @@ export const useFormHook = (callback: Function, valorInicial: object) => {
     };
     //trata inclusão de itens em propriedades arrays
     const markToRemoveItemArray = (nomepropriedadeArray: string, indice: number) => {
-        if (inputs[nomepropriedadeArray][indice].id) {
-            inputs[nomepropriedadeArray][indice].toDelete = true;
+        if (entidadeContexto) {
+            const entidade = entidadeContexto.state;
+            if ((entidade.dado as any)[nomepropriedadeArray][indice].id) {
+                (entidade.dado as any)[nomepropriedadeArray][indice].toDelete = true;
+            } else {
+                (entidade.dado as any)[nomepropriedadeArray].splice(indice, 1);
+            }
+            entidadeContexto.dispatch({
+                tipo: EditionType.ATUALIZAR_CONTEXTO,
+                dado: {...entidade.dado} as T,
+            });
+        }
+        if ((inputs as any)[nomepropriedadeArray][indice].id) {
+            (inputs as any)[nomepropriedadeArray][indice].toDelete = true;
         } else {
-            inputs[nomepropriedadeArray].splice(indice, 1);
+            (inputs as any)[nomepropriedadeArray].splice(indice, 1);
         }
         setInputs((inputs) => ({
             ...inputs,
-            [nomepropriedadeArray]: inputs[nomepropriedadeArray],
+            [nomepropriedadeArray]: (inputs as any)[nomepropriedadeArray],
         }));
     };
 

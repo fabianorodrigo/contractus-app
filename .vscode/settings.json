@@ -31,5 +31,5 @@
   "eslint.validate": [
     "javascript",
     "typescript"
-  ]
+  ],
 }

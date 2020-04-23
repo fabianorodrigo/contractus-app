@@ -1,4 +1,4 @@
-import {Contrato, Fornecedor, OrdemServico} from '../../models';
+import {Contrato, Fornecedor, OrdemServico, OrdemServicoFull} from '../../models';
 import {get, post} from './restService';
 
 export function getFornecedores(): Promise<Fornecedor[]> {
@@ -26,8 +26,7 @@ export function getOrdemServico(id: number): Promise<OrdemServico> {
     { "relation": "itens"}]}`);
 }
 
-export function postOrdemServico(ordemServico: OrdemServico): Promise<OrdemServico> {
-    console.log(JSON.stringify(ordemServico));
+export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<OrdemServico> {
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos(ordemServico);
     return post(`/ordem-servico/`, ordemToPost, ordemToPost.id);

@@ -12,7 +12,7 @@ export const TabelaOrdensServico: React.FC<{
     funcaoVisualizar: TypeOrdemServico_Void;
 }> = ({idContratoSelecionado, funcaoVisualizar}) => {
     //Buscando dados
-    //A component calling useContext will always re-render when the context value changes.
+    //TIP REACT: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {
         state: appState,
