@@ -5,6 +5,7 @@ import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../A
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {getOrdemServico, getOrdensServico} from '../../services/backend';
 import {ToolbarInterna} from '../toolbarInterna';
+import {OrdemServicoContextProvider} from './context';
 import {FormOrdemServico} from './form';
 import {ListaCartoesOrdensServico} from './listaCartoes';
 import {OrdemServicoNova} from './ordemServicoNova';
@@ -81,7 +82,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     };
 
     return (
-        <React.Fragment key="fragmentOSindex">
+        <OrdemServicoContextProvider>
             <ToolbarInterna
                 key="toolBarOrdemServico"
                 onChangeVisao={onChangeVisao}
@@ -128,6 +129,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
             {ordemServicoEditada && (
                 <FormOrdemServico key="formOSs" ordemServico={ordemServicoEditada} funcaoFecharForm={fecharDialog} />
             )}
-        </React.Fragment>
+        </OrdemServicoContextProvider>
     );
 };
