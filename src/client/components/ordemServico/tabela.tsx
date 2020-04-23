@@ -15,13 +15,13 @@ export const TabelaOrdensServico: React.FC<{
     //A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {
-        state,
+        state: appState,
     }: {
         state: AppContextStoreType;
         dispatch: Dispatch<any>;
     } = useContext(AppContext);
-    const contratos: ContratosMap = state.contratos;
-    const ordens: OrdensServicoMap = state.ordensServico;
+    const contratos: ContratosMap = appState.contratos;
+    const ordens: OrdensServicoMap = appState.ordensServico;
     const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
 
     function getTipoOrdemServico(idTipoOrdemServicoContrato: number) {
