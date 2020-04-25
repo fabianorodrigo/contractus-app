@@ -3,7 +3,7 @@
  * @param dataStringISO Data no formato ISO
  */
 export function formataDataStringLocal(dataStringISO: string): string {
-    return new Date(dataStringISO).toLocaleDateString();
+    return dataStringISO == null ? '' : new Date(dataStringISO).toLocaleDateString();
 }
 
 export function formataNumeroStringLocal(numero: number | string, financeiro: boolean, casosDecimais: number = 2) {
