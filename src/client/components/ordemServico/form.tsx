@@ -5,7 +5,8 @@ import Slide from '@material-ui/core/Slide';
 import {TransitionProps} from '@material-ui/core/transitions';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {ItemOrdemServico, OrdemServico, OrdemServicoFull} from '../../../models';
+import {ItemOrdemServico, OrdemServicoFull} from '../../../models';
+import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
@@ -18,6 +19,7 @@ import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
 import {OrdemServicoContext} from './context';
+import {getStatusOrdemServico} from './getStatusOrdemServico';
 import {TabelaItensOrdensServico} from './item';
 
 const Transition = React.forwardRef(function Transition(
@@ -34,12 +36,13 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
     const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
         AppContext,
     );
-    const ordemServicoContexto: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
-    const {state: osState, dispatch: osDispatch} = ordemServicoContexto;
-
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const fornecedores: FornecedoresMap = appState.fornecedores;
     const contratos: ContratosMap = appState.contratos;
+    const ordemServicoContexto: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState, dispatch: osDispatch} = ordemServicoContexto;
+    const statusOS = getStatusOrdemServico(osState.dado);
+
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
     const [errosInput, setErrosInput] = React.useState({
         idContrato: '',
@@ -83,6 +86,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                 if (os.hasOwnProperty('error')) {
                     enqueueSnackbar(formataMensagemErroLoopback((os as any).error), {variant: 'error'});
                     console.error(os);
+                    console.warn(osState.dado);
                 } else {
                     appDispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: os});
                     osDispatch({tipo: EditionType.FECHAR});
@@ -141,7 +145,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                     ></TituloDialog>
                     <ConteudoDialog dividers>
                         <Grid container>
-                            {inputs.numeroDocumentoSEIOrdemServico != null && (
+                            {statusOS > StatusOrdemServico.RASCUNHO && (
                                 <React.Fragment>
                                     <Grid item xs={2}>
                                         <CampoTexto
@@ -185,15 +189,16 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                         }),
                                     )}
                                     error={errosInput.idContrato != ''}
+                                    autoFocus={true}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={6}>
                                 <CampoLista
                                     atributo="idTipoOrdemServicoContrato"
                                     label="Tipo da Ordem de Serviço"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={inputs.idTipoOrdemServicoContrato}
@@ -220,7 +225,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Criticidade"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={false}
@@ -231,15 +236,17 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     error={errosInput.emergencial != ''}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
-                                <CampoTexto
-                                    atributo="dtEmissao"
-                                    label="Data de Emissão"
-                                    objetoValor={inputs}
-                                    fullWidth={false}
-                                    somenteLeitura={true}
-                                    funcaoFormatacao={formataDataStringLocal}
-                                />
+                            <Grid item xs={2}>
+                                {statusOS > StatusOrdemServico.RASCUNHO && (
+                                    <CampoTexto
+                                        atributo="dtEmissao"
+                                        label="Data de Emissão"
+                                        objetoValor={inputs}
+                                        fullWidth={false}
+                                        somenteLeitura={true}
+                                        funcaoFormatacao={formataDataStringLocal}
+                                    />
+                                )}
                             </Grid>
                             <Grid item xs={6}>
                                 <CampoTexto
@@ -247,7 +254,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Código Projeto"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO && inputs.idProjeto != null}
                                     obrigatorio={false}
                                     onChange={onInputChange}
                                 />
@@ -258,9 +265,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Sigla Produto"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={
-                                        inputs.numeroDocumentoSEIOrdemServico != null && inputs.idProduto != null
-                                    }
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO && inputs.idProduto != null}
                                     obrigatorio={false}
                                     onChange={onInputChange}
                                 />
@@ -271,7 +276,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Nome do Requisitante"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     error={errosInput.nomeRequisitante != ''}
@@ -283,23 +288,14 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Fiscal Técnico"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={inputs.numeroDocumentoSEIOrdemServico != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     error={errosInput.nomeFiscalTecnico != ''}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TabelaItensOrdensServico
-                                    ordemServico={inputs as OrdemServico}
-                                    metricasContrato={
-                                        contratos[inputs.idContrato] == null
-                                            ? []
-                                            : Object.values(contratos[inputs.idContrato].metricas)
-                                    }
-                                    funcaoAdiciona={onAdicionaItem}
-                                    funcaoRemove={onRemoveItem}
-                                />
+                                <TabelaItensOrdensServico funcaoAdiciona={onAdicionaItem} funcaoRemove={onRemoveItem} />
                             </Grid>
                         </Grid>
                     </ConteudoDialog>

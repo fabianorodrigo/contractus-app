@@ -17,6 +17,7 @@ export const CampoBase: React.FC<{
     helperText?: string;
     error?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
+    autoFocus?: boolean;
 }> = (props) => {
     const {
         atributo,
@@ -34,6 +35,7 @@ export const CampoBase: React.FC<{
         helperText,
         error,
         inputRef,
+        autoFocus,
     } = props;
     let valor = funcaoFormatacao ? funcaoFormatacao(objetoValor[atributo]) : objetoValor[atributo];
     return (
@@ -59,6 +61,7 @@ export const CampoBase: React.FC<{
             helperText={helperText}
             error={error}
             inputRef={inputRef}
+            autoFocus={autoFocus}
         >
             {props.children}
         </TextField>

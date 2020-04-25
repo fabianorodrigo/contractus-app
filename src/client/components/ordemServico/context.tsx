@@ -1,16 +1,16 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
 import {OrdemServicoFull} from '../../../models';
-import {EditionType, IEntidadeContexto, IEntidadeDispatch, IEntidadeState} from '../../models/EntidadeContext';
-import {OrdemServicoNova} from './ordemServicoNova';
+import {criaReducerEntidade, IEntidadeContexto, IEntidadeState} from '../../models/EntidadeContext';
+import {novaOrdemServico} from './new';
 
-const initialState: IEntidadeState<OrdemServicoFull> = {editando: false, dado: OrdemServicoNova};
+const initialState: IEntidadeState<OrdemServicoFull> = {editando: false, dado: novaOrdemServico()};
 export const OrdemServicoContext = createContext<IEntidadeContexto<OrdemServicoFull>>({
     state: initialState,
     dispatch: () => null,
 });
 
 export const OrdemServicoContextProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [state, dispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(criaReducerEntidade<OrdemServicoFull>(novaOrdemServico), initialState);
     return <OrdemServicoContext.Provider value={{state, dispatch}}>{children}</OrdemServicoContext.Provider>;
 };
 
@@ -21,21 +21,18 @@ export const OrdemServicoContextProvider: React.FC<{children: ReactNode}> = ({ch
  * @param state
  * @param acao
  */
-function reducer(
-    state: IEntidadeState<OrdemServicoFull>,
-    acao: IEntidadeDispatch<OrdemServicoFull>,
-): IEntidadeState<OrdemServicoFull> {
+/*function reducer<T>(state: IEntidadeState<T>, acao: IEntidadeDispatch<T>): IEntidadeState<T> {
     switch (acao.tipo) {
         case EditionType.NOVO:
-            console.log('é novo', OrdemServicoNova);
             //Se você retornar o mesmo valor do Hook Reducer que o valor do state atual, React irá pular a ação sem
             //renderizar os filhos ou disparar os efeitos. (React usa o algoritmo de comparação Object.is.)
-            return {editando: true, dado: OrdemServicoNova};
+            return {editando: true, dado: novaOrdemServico()};
         case EditionType.EDITAR:
-            return {editando: true, dado: acao.dado as OrdemServicoFull};
+            return {editando: true, dado: acao.dado};
         case EditionType.FECHAR:
-            return {editando: false, dado: OrdemServicoNova};
+            return {editando: false, dado: novaOrdemServico()};
         default:
             return state;
     }
 }
+*/

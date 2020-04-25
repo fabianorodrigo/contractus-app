@@ -4,8 +4,9 @@ import {AddIcon} from '../../lib/icons';
 export const HeaderItensOrdensServico: React.FC<{
     mostraFormItem: boolean;
     funcaoMostraForm: Function;
+    buttonAdicionaItemRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraFormItem, funcaoMostraForm} = props;
+    const {mostraFormItem, funcaoMostraForm, buttonAdicionaItemRef} = props;
 
     return (
         <TableHead>
@@ -13,6 +14,7 @@ export const HeaderItensOrdensServico: React.FC<{
                 <TableCell>
                     {!mostraFormItem && (
                         <IconButton
+                            ref={buttonAdicionaItemRef}
                             key={`buttonMostraFormItem`}
                             aria-label="Adicionar Item"
                             color="primary"

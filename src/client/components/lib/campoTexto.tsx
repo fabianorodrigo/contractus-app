@@ -14,6 +14,7 @@ export const CampoTexto: React.FC<{
     helperText?: string;
     error?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
+    autoFocus?: boolean;
 }> = ({
     atributo,
     label,
@@ -27,6 +28,7 @@ export const CampoTexto: React.FC<{
     helperText,
     error,
     inputRef,
+    autoFocus,
 }) => {
     return (
         <CampoBase
@@ -42,6 +44,7 @@ export const CampoTexto: React.FC<{
             helperText={helperText}
             error={error}
             inputRef={inputRef}
+            autoFocus={autoFocus}
         />
     );
 };

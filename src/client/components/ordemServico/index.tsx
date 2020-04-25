@@ -24,7 +24,6 @@ const privateUseStyles = makeStyles({
 
 export const OrdensServico: React.FC<{}> = ({}) => {
     const classeFiltroContratoFormControl = privateUseStyles();
-    //Buscando contratos
     //TIP: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {
@@ -64,7 +63,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     };
     //### Controle da ordem de serviço visualizada/em edição
     const abrirDialog = async (ordemServico: OrdemServicoFull) => {
-        console.log(ordemServico);
         //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
             ordemServico = await getOrdemServico(ordemServico.id as number);

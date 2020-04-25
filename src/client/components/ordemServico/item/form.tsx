@@ -1,20 +1,23 @@
 import {Grid, IconButton} from '@material-ui/core';
-import React from 'react';
-import {ItemOrdemServico, MetricaContrato, OrdemServico} from '../../../../models';
+import React, {Dispatch, useContext} from 'react';
+import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useFormHook} from '../../../customHooks/useForm';
+import {IEntidadeContexto} from '../../../models/EntidadeContext';
+import {ContratosMap} from '../../../models/TypeContext';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
 import {AddIcon, ClearIcon} from '../../lib/icons';
+import {OrdemServicoContext} from '../context';
+import {novoItemOrdemServico} from './new';
 export const FormItemOrdensServico: React.FC<{
-    ordemServico: OrdemServico;
-    metricasContrato: MetricaContrato[];
-    statusOrdemServico: number;
+    statusOrdemServico: StatusOrdemServico;
     onSubmitItem: Function;
     fechaFormItem: Function;
-    inputRef?: React.RefObject<HTMLInputElement>;
+    inputDescricaoItemRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
-    const {ordemServico, metricasContrato, statusOrdemServico, onSubmitItem, fechaFormItem, inputRef} = props;
+    const {statusOrdemServico, onSubmitItem, fechaFormItem, inputDescricaoItemRef} = props;
     const [errosInput, setErrosInput] = React.useState({
         descricao: '',
         siglaMetrica: '',
@@ -23,6 +26,13 @@ export const FormItemOrdensServico: React.FC<{
         quantidadeReal: '',
         valorUnitarioReal: '',
     });
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
+    const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
+        AppContext,
+    );
+    const contratos: ContratosMap = appState.contratos;
+
+    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
 
     const valida = (item: ItemOrdemServico) => {
         errosInput.descricao =
@@ -43,21 +53,13 @@ export const FormItemOrdensServico: React.FC<{
             setErrosInput({...errosInput});
         }
     };
-    console.log(2, 'metricasContrato.length', metricasContrato.length);
-    const {inputs, onInputChange, onSubmit} = useFormHook(valida, {
-        idOrdemServico: ordemServico.id,
-        descricao: '',
-        siglaMetrica: metricasContrato.length > 0 ? metricasContrato[0].sigla : '',
-        quantidadeEstimada: '',
-        valorUnitarioEstimado: metricasContrato.length > 0 ? metricasContrato[0].valorUnitario : '',
-    });
+    const {inputs, onInputChange, onSubmit} = useFormHook(valida, novoItemOrdemServico(osState.dado));
     const limpaForm = () => {
         inputs.descricao = '';
         inputs.siglaMetrica = '';
         inputs.quantidadeEstimada = '';
         inputs.valorUnitarioEstimado = '';
     };
-    console.log(4, 'renderizou', metricasContrato, ordemServico, inputs);
     return (
         <Grid container>
             <Grid item xs={4}>
@@ -66,11 +68,11 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="descricao"
                     label="Descrição"
                     objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                    somenteLeitura={statusOrdemServico > statusOrdemServico}
                     obrigatorio={true}
                     onChange={onInputChange}
                     error={errosInput.descricao != ''}
-                    inputRef={inputRef}
+                    inputRef={inputDescricaoItemRef}
                 />
             </Grid>
             <Grid item xs={1}>
@@ -78,17 +80,25 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="siglaMetrica"
                     label="Unidade"
                     objetoValor={inputs}
-                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={osState.dado.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    defaultValue={metricasContrato.length > 0 ? metricasContrato[0].sigla : ''}
+                    defaultValue={
+                        contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas.length > 0
+                            ? contratos[osState.dado.idContrato].metricas[0].sigla
+                            : ''
+                    }
                     error={errosInput.siglaMetrica != ''}
-                    opcoes={metricasContrato.map((metrica) => {
-                        return {
-                            valor: metrica.sigla,
-                            label: metrica.sigla,
-                        };
-                    })}
+                    opcoes={
+                        contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas
+                            ? contratos[osState.dado.idContrato].metricas.map((metrica) => {
+                                  return {
+                                      valor: metrica.sigla,
+                                      label: metrica.sigla,
+                                  };
+                              })
+                            : []
+                    }
                 ></CampoLista>
             </Grid>
             <Grid item xs={1}>
@@ -97,7 +107,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="quantidadeEstimada"
                     label="Quantidade"
                     objetoValor={inputs}
-                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={osState.dado.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -110,7 +120,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="valorUnitarioEstimado"
                     label="Valor Unitário"
                     objetoValor={inputs}
-                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico != null}
+                    somenteLeitura={osState.dado.numeroDocumentoSEIOrdemServico != null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -123,7 +133,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="quantidadeReal"
                     label="Qtd Real"
                     objetoValor={inputs}
-                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico == null}
+                    somenteLeitura={osState.dado.numeroDocumentoSEIOrdemServico == null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"
@@ -136,7 +146,7 @@ export const FormItemOrdensServico: React.FC<{
                     atributo="valorUnitarioReal"
                     label="Valor Unitário Real"
                     objetoValor={inputs}
-                    somenteLeitura={ordemServico.numeroDocumentoSEIOrdemServico == null}
+                    somenteLeitura={osState.dado.numeroDocumentoSEIOrdemServico == null}
                     obrigatorio={true}
                     onChange={onInputChange}
                     type="number"

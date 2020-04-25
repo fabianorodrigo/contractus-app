@@ -21,6 +21,7 @@ export const CampoLista: React.FC<{
     margin?: number;
     helperText?: string;
     error?: boolean;
+    autoFocus?: boolean;
 }> = (props) => {
     const {
         atributo,
@@ -35,6 +36,7 @@ export const CampoLista: React.FC<{
         margin,
         helperText,
         error,
+        autoFocus,
     } = props;
     return (
         <FormControl fullWidth={fullWidth} style={{margin: margin != undefined ? margin : 8}}>
@@ -44,6 +46,7 @@ export const CampoLista: React.FC<{
                 </InputLabel>
             )}
             <Select
+                autoFocus={autoFocus}
                 native
                 id={atributo}
                 name={atributo}
