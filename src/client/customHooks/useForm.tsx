@@ -25,13 +25,18 @@ export const useFormHook = <T extends {}>(
     };
     //trata das mudanças de valores
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        event.persist();
-        let valor: any = event.target.value;
+        let valor: any;
+
+        if (event.persist) {
+            event.persist();
+        }
+        valor = event.target.value;
         if (tiposAtributos[event.target.name] == 'number') {
             valor = valor.indexOf('.') > -1 || valor.indexOf(',') > -1 ? parseFloat(valor) : parseInt(valor);
         } else if (tiposAtributos[event.target.name] == 'boolean') {
             valor = Boolean(valor == true || valor == 'true');
         }
+
         if (entidadeContexto) {
             const entidade = entidadeContexto.state;
             (entidade.dado as any)[event.target.name] = valor;

@@ -1,22 +1,22 @@
 import {IconButton, TableCell, TableHead, TableRow} from '@material-ui/core';
 import React from 'react';
 import {AddIcon} from '../../lib/icons';
-export const HeaderItensOrdensServico: React.FC<{
-    mostraFormItem: boolean;
+export const HeaderEtapasOrdensServico: React.FC<{
+    mostraFormEtapa: boolean;
     funcaoMostraForm: Function;
-    buttonAdicionaItemRef?: React.RefObject<any>;
+    buttonAdicionaEtapaRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraFormItem, funcaoMostraForm, buttonAdicionaItemRef} = props;
+    const {mostraFormEtapa, funcaoMostraForm, buttonAdicionaEtapaRef} = props;
 
     return (
         <TableHead>
             <TableRow>
                 <TableCell>
-                    {!mostraFormItem && (
+                    {!mostraFormEtapa && (
                         <IconButton
-                            ref={buttonAdicionaItemRef}
-                            key={`buttonMostraFormItem`}
-                            aria-label="Adicionar Item"
+                            ref={buttonAdicionaEtapaRef}
+                            key={`buttonMostraFormEtapa`}
+                            aria-label="Adicionar Etapa"
                             color="primary"
                             size="small"
                             onClick={() => {
@@ -27,7 +27,6 @@ export const HeaderItensOrdensServico: React.FC<{
                         </IconButton>
                     )}
                 </TableCell>
-                <TableCell></TableCell>
                 <TableCell component="th" align="center" scope="row" key={`thPlanejamento`} colSpan={2}>
                     Planejamento
                 </TableCell>
@@ -38,22 +37,19 @@ export const HeaderItensOrdensServico: React.FC<{
             </TableRow>
             <TableRow>
                 <TableCell valign="bottom" component="th" scope="row" key={`thDescricao`}>
-                    Descrição
+                    Etapa
                 </TableCell>
-                <TableCell valign="bottom" component="th" scope="row" key={`thUnidade`}>
-                    Unidade
+                <TableCell align="center" valign="bottom" component="th" scope="row" key={`thInicioPlan`}>
+                    Início
                 </TableCell>
-                <TableCell component="th" scope="row" align="right" key={`thQtdPlan`}>
-                    Quantidade
+                <TableCell align="center" component="th" scope="row" key={`thFimPlan`}>
+                    Fim
                 </TableCell>
-                <TableCell component="th" scope="row" align="right" key={`thValorPlan`}>
-                    Vl.Unitário
+                <TableCell align="center" component="th" scope="row" key={`thInicioReal`}>
+                    Início
                 </TableCell>
-                <TableCell component="th" scope="row" align="right" key={`thQtdReal`}>
-                    Quantidade
-                </TableCell>
-                <TableCell component="th" scope="row" align="right" key={`thValorReal`}>
-                    Vl.Unitário
+                <TableCell align="center" component="th" scope="row" key={`thFimReal`}>
+                    Fim
                 </TableCell>
                 <TableCell valign="bottom" component="th" scope="row" key={`thAcoes`} align="right">
                     Ações

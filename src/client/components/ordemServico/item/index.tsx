@@ -1,4 +1,4 @@
-import {Paper, Table, TableBody, TableContainer} from '@material-ui/core';
+import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
@@ -17,6 +17,7 @@ export const TabelaItensOrdensServico: React.FC<{
     funcaoAdiciona: Function;
     funcaoRemove: Function;
 }> = (props) => {
+    const classes = useStyles();
     const refInputDescricaoItem = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaItem = React.useRef<HTMLInputElement>(null);
 
@@ -29,7 +30,6 @@ export const TabelaItensOrdensServico: React.FC<{
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
 
     const {funcaoAdiciona, funcaoRemove} = props;
-    const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const fechaFormItem = () => {
         setMostraFormItem(false);
@@ -53,7 +53,8 @@ export const TabelaItensOrdensServico: React.FC<{
     let totalRealizado = 0;
 
     return (
-        <React.Fragment>
+        <div style={{marginLeft: 8, marginTop: 8}}>
+            <InputLabel shrink>Serviços</InputLabel>
             <TableContainer component={Paper}>
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderItensOrdensServico
@@ -98,6 +99,6 @@ export const TabelaItensOrdensServico: React.FC<{
                     inputDescricaoItemRef={refInputDescricaoItem}
                 />
             )}
-        </React.Fragment>
+        </div>
     );
 };

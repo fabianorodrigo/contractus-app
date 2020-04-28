@@ -5,7 +5,7 @@ import Slide from '@material-ui/core/Slide';
 import {TransitionProps} from '@material-ui/core/transitions';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {ItemOrdemServico, OrdemServicoFull} from '../../../models';
+import {EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../models';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
@@ -19,6 +19,7 @@ import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
 import {OrdemServicoContext} from './context';
+import {TabelaEtapasOrdensServico} from './etapa';
 import {getStatusOrdemServico} from './getStatusOrdemServico';
 import {TabelaItensOrdensServico} from './item';
 
@@ -118,12 +119,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         setAberto(false);
         osDispatch({tipo: EditionType.FECHAR});
     };
-    const onAdicionaItem = (item: ItemOrdemServico) => {
-        addItemArray('itens', item);
-    };
-    const onRemoveItem = (indice: number) => {
-        markToRemoveItemArray('itens', indice);
-    };
+
     return (
         <div>
             <Dialog
@@ -295,7 +291,24 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TabelaItensOrdensServico funcaoAdiciona={onAdicionaItem} funcaoRemove={onRemoveItem} />
+                                <TabelaItensOrdensServico
+                                    funcaoAdiciona={(item: ItemOrdemServico) => {
+                                        addItemArray('itens', item);
+                                    }}
+                                    funcaoRemove={(indice: number) => {
+                                        markToRemoveItemArray('itens', indice);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TabelaEtapasOrdensServico
+                                    funcaoAdiciona={(etapa: EtapaOrdemServico) => {
+                                        addItemArray('etapas', etapa);
+                                    }}
+                                    funcaoRemove={(indice: number) => {
+                                        markToRemoveItemArray('etapas', indice);
+                                    }}
+                                />
                             </Grid>
                         </Grid>
                     </ConteudoDialog>

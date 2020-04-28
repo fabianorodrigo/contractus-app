@@ -96,7 +96,7 @@ export class OrdemServicoFull extends Model {
         type: 'array',
         itemType: 'object',
     })
-    etapas?: object[];
+    etapas: object[];
 
     @property({
         type: 'array',

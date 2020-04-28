@@ -23,7 +23,7 @@ export function getOrdensServico(idContrato: number): Promise<OrdemServico[]> {
 
 export function getOrdemServico(id: number): Promise<OrdemServico> {
     return get(`/ordem-servico/${id}?filter={ "include": [
-    { "relation": "itens"}]}`);
+    { "relation": "itens"},{ "relation": "etapas"}]}`);
 }
 
 export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<OrdemServico> {

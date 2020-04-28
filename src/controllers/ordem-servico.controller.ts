@@ -1,8 +1,8 @@
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
-import {ItemOrdemServico, OrdemServico} from '../models';
+import {EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
-import {ItemOrdemServicoRepository, OrdemServicoRepository} from '../repositories';
+import {EtapaOrdemServicoRepository, ItemOrdemServicoRepository, OrdemServicoRepository} from '../repositories';
 
 export class OrdemServicoController {
     constructor(
@@ -10,6 +10,8 @@ export class OrdemServicoController {
         public ordemServicoRepository: OrdemServicoRepository,
         @repository(ItemOrdemServicoRepository)
         public itemOrdemServicoRepository: ItemOrdemServicoRepository,
+        @repository(EtapaOrdemServicoRepository)
+        public etapaOrdemServicoRepository: EtapaOrdemServicoRepository,
     ) {}
 
     @post('/ordem-servico', {
@@ -49,6 +51,11 @@ export class OrdemServicoController {
                 const item: ItemOrdemServico = i as ItemOrdemServico;
                 item.idOrdemServico = osRetorno.id as number;
                 osRetorno.itens.push(await this.itemOrdemServicoRepository.create(item, {transaction: transacao}));
+            }
+            for await (let i of osc.etapas) {
+                const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
+                etapa.idOrdemServico = osRetorno.id as number;
+                osRetorno.itens.push(await this.etapaOrdemServicoRepository.create(etapa, {transaction: transacao}));
             }
             await transacao.commit();
         } catch (e) {
@@ -189,6 +196,16 @@ export class OrdemServicoController {
                     await this.itemOrdemServicoRepository.updateById(item.id, item, {transaction: transacao});
                 } else {
                     await this.itemOrdemServicoRepository.create(item, {transaction: transacao});
+                }
+            }
+            for await (let i of osc.etapas) {
+                const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
+                if (etapa.hasOwnProperty('toDelete')) {
+                    await this.etapaOrdemServicoRepository.deleteById(etapa.id, {transaction: transacao});
+                } else if (etapa.id) {
+                    await this.etapaOrdemServicoRepository.updateById(etapa.id, etapa, {transaction: transacao});
+                } else {
+                    await this.etapaOrdemServicoRepository.create(etapa, {transaction: transacao});
                 }
             }
             await transacao.commit();

@@ -44,7 +44,7 @@ export const RowItemOrdemServico: React.FC<{
                     ? formataNumeroStringLocal(item.valorUnitarioReal, true)
                     : item.valorUnitarioReal}
             </TableCell>
-            <TableCell scope="row" key={`tdAcoes${i}`}>
+            <TableCell scope="row" key={`tdAcoes${i}`} align="right">
                 <IconButton
                     key={`buttonRemove${i}`}
                     aria-label="Remover Item"
