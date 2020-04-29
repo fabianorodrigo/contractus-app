@@ -1,23 +1,23 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
-import {EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../../models';
+import {EntregavelOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
 import {getStatusOrdemServico} from '../getStatusOrdemServico';
-import {FormEtapaOrdensServico} from './form';
-import {HeaderEtapasOrdensServico} from './header';
-import {RowEtapaOrdemServico} from './row';
+import {FormEntregavelOrdemServico} from './form';
+import {HeaderEntregaveisOrdensServico} from './header';
+import {RowEntregavelOrdemServico} from './row';
 
-export const TabelaEtapasOrdensServico: React.FC<{
+export const TabelaEntregaveisOrdensServico: React.FC<{
     funcaoAdiciona: Function;
     funcaoRemove: Function;
 }> = (props) => {
-    const refInputDescricaoEtapa = React.useRef<HTMLInputElement>(null);
-    const refButtonAdicionaEtapa = React.useRef<HTMLInputElement>(null);
+    const refInputDescricao = React.useRef<HTMLInputElement>(null);
+    const refButtonAdiciona = React.useRef<HTMLInputElement>(null);
 
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
@@ -31,43 +31,43 @@ export const TabelaEtapasOrdensServico: React.FC<{
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const fechaForm = () => {
-        setMostraFormEtapa(false);
+        setMostraForm(false);
     };
     const onSubmit = (item: ItemOrdemServico) => {
         funcaoAdiciona(item);
         fechaForm();
     };
 
-    const [mostraFormEtapa, setMostraFormEtapa] = React.useState(false);
+    const [mostraForm, setMostraForm] = React.useState(false);
     //quando mudar o valor de mostra item, se for para TRUE, foca no campo descrição
     //Se for FALSE e o contrato já estiver selecionado, foca no botão adicionar
     useEffect(() => {
-        if (mostraFormEtapa && refInputDescricaoEtapa.current != null) {
-            refInputDescricaoEtapa.current.focus();
-        } else if (contratos[osState.dado.idContrato] && !mostraFormEtapa && refButtonAdicionaEtapa.current != null) {
-            refButtonAdicionaEtapa.current.focus();
+        if (mostraForm && refInputDescricao.current != null) {
+            refInputDescricao.current.focus();
+        } else if (contratos[osState.dado.idContrato] && !mostraForm && refButtonAdiciona.current != null) {
+            refButtonAdiciona.current.focus();
         }
-    }, [mostraFormEtapa]);
+    }, [mostraForm]);
 
     return (
         <div style={{marginLeft: 8, marginTop: 8}}>
-            <InputLabel shrink>Cronograma de Etapas</InputLabel>
+            <InputLabel shrink>Entregáveis</InputLabel>
             <TableContainer component={Paper}>
                 <Table size="small" className={classes.tableInForm}>
-                    <HeaderEtapasOrdensServico
-                        mostraFormEtapa={mostraFormEtapa}
+                    <HeaderEntregaveisOrdensServico
+                        mostraForm={mostraForm}
                         funcaoMostraForm={() => {
-                            setMostraFormEtapa(true);
+                            setMostraForm(true);
                         }}
-                        buttonAdicionaEtapaRef={refButtonAdicionaEtapa}
+                        buttonAdicionaRef={refButtonAdiciona}
                     />
                     <TableBody>
-                        {osState.dado.etapas &&
-                            osState.dado.etapas.map((etapaObj, i) => {
-                                const etapa = etapaObj as EtapaOrdemServico;
+                        {osState.dado.entregaveis &&
+                            osState.dado.entregaveis.map((entregavelObj, i) => {
+                                const entregavel = entregavelObj as EntregavelOrdemServico;
                                 return (
-                                    <RowEtapaOrdemServico
-                                        etapa={etapa}
+                                    <RowEntregavelOrdemServico
+                                        entregavel={entregavel}
                                         key={i}
                                         funcaoRemove={funcaoRemove.bind(null, i)}
                                     />
@@ -76,12 +76,12 @@ export const TabelaEtapasOrdensServico: React.FC<{
                     </TableBody>
                 </Table>
             </TableContainer>
-            {mostraFormEtapa && (
-                <FormEtapaOrdensServico
+            {mostraForm && (
+                <FormEntregavelOrdemServico
                     statusOrdemServico={getStatusOrdemServico(osState.dado)}
                     onSubmitForm={onSubmit}
                     fechaForm={fechaForm}
-                    inputDescricaoEtapaRef={refInputDescricaoEtapa}
+                    inputDescricaoRef={refInputDescricao}
                 />
             )}
         </div>

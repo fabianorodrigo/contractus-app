@@ -1,13 +1,16 @@
 import {makeStyles, TextField} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {OrdemServicoFull} from '../../../models';
+import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {getOrdemServico, getOrdensServico} from '../../services/backend';
+import DialogConfirmacao from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';
 import {OrdemServicoContext} from './context';
 import {FormOrdemServico} from './form';
+import {getStatusOrdemServico} from './getStatusOrdemServico';
 import {ListaCartoesOrdensServico} from './listaCartoes';
 import {TabelaOrdensServico} from './tabela';
 
@@ -80,6 +83,24 @@ export const OrdensServico: React.FC<{}> = ({}) => {
         }
         //setOrdemServicoEditada(ordemCompleta);
     };
+    const excluirOrdemServico = async (ordemServico: OrdemServicoFull) => {
+        ordemServico = await getOrdemServico(ordemServico.id as number);
+        if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
+            DialogConfirmacao('Confirma exclusão da ordem de serviço?', (sim: boolean) => {
+                if (sim) {
+                    alert('mandou excluir, maluco');
+                } else {
+                    alert('peidou');
+                }
+            });
+        } else {
+            dispatch({
+                tipo: ActionType.INCLUIR,
+                entidade: ActionEntity.ORDEM_SERVICO,
+                dados: ordemServico,
+            });
+        }
+    };
     return (
         <React.Fragment>
             <ToolbarInterna
@@ -123,6 +144,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     key="tabelaOSs"
                     idContratoSelecionado={idContratoSelecionado}
                     funcaoVisualizar={abrirDialog}
+                    funcaoExcluir={excluirOrdemServico}
                 />
             )}
             {osState.editando && <FormOrdemServico key="formOSs" />}

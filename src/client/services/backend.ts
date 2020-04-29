@@ -23,10 +23,11 @@ export function getOrdensServico(idContrato: number): Promise<OrdemServico[]> {
 
 export function getOrdemServico(id: number): Promise<OrdemServico> {
     return get(`/ordem-servico/${id}?filter={ "include": [
-    { "relation": "itens"},{ "relation": "etapas"}]}`);
+    { "relation": "itens"},{ "relation": "etapas"},{ "relation": "entregaveis"}]}`);
 }
 
 export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<OrdemServico> {
+    console.log(ordemServico);
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos(ordemServico);
     return post(`/ordem-servico/`, ordemToPost, ordemToPost.id);

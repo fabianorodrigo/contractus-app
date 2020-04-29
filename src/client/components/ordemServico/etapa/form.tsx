@@ -16,11 +16,11 @@ import {OrdemServicoContext} from '../context';
 import {novaEtapaOrdemServico} from './new';
 export const FormEtapaOrdensServico: React.FC<{
     statusOrdemServico: StatusOrdemServico;
-    onSubmitItem: Function;
-    fechaFormItem: Function;
+    onSubmitForm: Function;
+    fechaForm: Function;
     inputDescricaoEtapaRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
-    const {statusOrdemServico, onSubmitItem, fechaFormItem, inputDescricaoEtapaRef} = props;
+    const {statusOrdemServico, onSubmitForm, fechaForm, inputDescricaoEtapaRef} = props;
     const [errosInput, setErrosInput] = React.useState({
         descricao: '',
         dtInicioPlanejada: '',
@@ -50,7 +50,7 @@ export const FormEtapaOrdensServico: React.FC<{
                 : '';
 
         if (Object.values(errosInput).every((v) => v == '')) {
-            onSubmitItem(etapa);
+            onSubmitForm(etapa);
         } else {
             setErrosInput({...errosInput});
             Object.values(errosInput).forEach((msg) => {
@@ -70,7 +70,7 @@ export const FormEtapaOrdensServico: React.FC<{
                         atributo="descricao"
                         label="Etapa"
                         objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > statusOrdemServico}
+                        somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                         obrigatorio={true}
                         onChange={onInputChange}
                         error={errosInput.descricao != ''}
@@ -107,7 +107,10 @@ export const FormEtapaOrdensServico: React.FC<{
                         atributo="dtInicioReal"
                         label="Início"
                         objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.EMITIDA}
+                        somenteLeitura={
+                            statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                            statusOrdemServico > StatusOrdemServico.RECEBIDA
+                        }
                         obrigatorio={true}
                         onChange={onInputChange}
                         error={errosInput.dtInicioReal != ''}
@@ -119,7 +122,10 @@ export const FormEtapaOrdensServico: React.FC<{
                         atributo="dtFimReal"
                         label="Conclusão"
                         objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.EMITIDA}
+                        somenteLeitura={
+                            statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                            statusOrdemServico > StatusOrdemServico.RECEBIDA
+                        }
                         obrigatorio={true}
                         onChange={onInputChange}
                         error={errosInput.dtFimReal != ''}
@@ -133,7 +139,7 @@ export const FormEtapaOrdensServico: React.FC<{
                         key={`buttonClearEtapa`}
                         size="small"
                         onClick={() => {
-                            fechaFormItem();
+                            fechaForm();
                         }}
                     >
                         <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />

@@ -1,16 +1,19 @@
 import {IconButton} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
+import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../App-Context';
 import {ContratosMap, OrdensServicoMap} from '../../models/TypeContext';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
 import {encurtaNome, formataDataStringLocal} from '../../services/formatacao';
-import {SearchIcon} from '../lib/icons';
+import {DeleteIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';
+import {getStatusOrdemServico} from './getStatusOrdemServico';
 
 export const TabelaOrdensServico: React.FC<{
     idContratoSelecionado: number;
     funcaoVisualizar: TypeOrdemServico_Void;
-}> = ({idContratoSelecionado, funcaoVisualizar}) => {
+    funcaoExcluir: TypeOrdemServico_Void;
+}> = ({idContratoSelecionado, funcaoVisualizar, funcaoExcluir}) => {
     //Buscando dados
     //TIP REACT: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
@@ -68,10 +71,18 @@ export const TabelaOrdensServico: React.FC<{
             colunas={colunas}
             dados={ordensContrato}
             colunasAcao={ordensContrato.map((oc) => {
+                const statusOrdemServico = getStatusOrdemServico(oc);
                 return (
-                    <IconButton aria-label="Visualizar" color="secondary" size="small">
-                        <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
-                    </IconButton>
+                    <React.Fragment>
+                        <IconButton aria-label="Visualizar" color="secondary" size="small">
+                            <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
+                        </IconButton>
+                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                            <IconButton aria-label="Excluir" color="secondary" size="small">
+                                <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
+                            </IconButton>
+                        )}
+                    </React.Fragment>
                 );
             })}
         />

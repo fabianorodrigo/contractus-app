@@ -42,7 +42,7 @@ export const RowEtapaOrdemServico: React.FC<{
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
                 <IconButton
                     key={`buttonRemove${i}`}
-                    aria-label="Remover Item"
+                    aria-label="Remover Etapa"
                     color="primary"
                     size="small"
                     disabled={etapa.hasOwnProperty('toDelete')}

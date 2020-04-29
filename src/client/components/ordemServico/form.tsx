@@ -5,7 +5,7 @@ import Slide from '@material-ui/core/Slide';
 import {TransitionProps} from '@material-ui/core/transitions';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../models';
+import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../models';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
@@ -19,6 +19,7 @@ import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
 import {OrdemServicoContext} from './context';
+import {TabelaEntregaveisOrdensServico} from './entregavel';
 import {TabelaEtapasOrdensServico} from './etapa';
 import {getStatusOrdemServico} from './getStatusOrdemServico';
 import {TabelaItensOrdensServico} from './item';
@@ -307,6 +308,16 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     }}
                                     funcaoRemove={(indice: number) => {
                                         markToRemoveItemArray('etapas', indice);
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TabelaEntregaveisOrdensServico
+                                    funcaoAdiciona={(entregavel: EntregavelOrdemServico) => {
+                                        addItemArray('entregaveis', entregavel);
+                                    }}
+                                    funcaoRemove={(indice: number) => {
+                                        markToRemoveItemArray('entregaveis', indice);
                                     }}
                                 />
                             </Grid>

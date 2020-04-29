@@ -1,8 +1,13 @@
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
-import {EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
+import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
-import {EtapaOrdemServicoRepository, ItemOrdemServicoRepository, OrdemServicoRepository} from '../repositories';
+import {
+    EntregavelOrdemServicoRepository,
+    EtapaOrdemServicoRepository,
+    ItemOrdemServicoRepository,
+    OrdemServicoRepository,
+} from '../repositories';
 
 export class OrdemServicoController {
     constructor(
@@ -12,6 +17,8 @@ export class OrdemServicoController {
         public itemOrdemServicoRepository: ItemOrdemServicoRepository,
         @repository(EtapaOrdemServicoRepository)
         public etapaOrdemServicoRepository: EtapaOrdemServicoRepository,
+        @repository(EntregavelOrdemServicoRepository)
+        public entregavelOrdemServicoRepository: EntregavelOrdemServicoRepository,
     ) {}
 
     @post('/ordem-servico', {
@@ -39,23 +46,45 @@ export class OrdemServicoController {
         osRetorno.itens = []; //limpa os itens pois serão inseridos os com id retornados da criação via repositório de itens
 
         const ordemServico: OrdemServico = JSON.parse(JSON.stringify(osc)); //clone OS
-        delete ordemServico.itens; //remove atributos de relações pois o repository não aceita
+        //remove atributos de relações pois o repository não aceita
+        delete ordemServico.itens;
         delete ordemServico.entregaveis;
         delete ordemServico.etapas;
         delete ordemServico.indicadores;
 
         const transacao = await this.ordemServicoRepository.beginTransaction();
         try {
-            osRetorno.id = (await this.ordemServicoRepository.create(ordemServico, {transaction: transacao})).id;
+            osRetorno.id = (
+                await this.ordemServicoRepository.create(ordemServico, {
+                    transaction: transacao,
+                })
+            ).id;
             for await (let i of osc.itens) {
                 const item: ItemOrdemServico = i as ItemOrdemServico;
                 item.idOrdemServico = osRetorno.id as number;
-                osRetorno.itens.push(await this.itemOrdemServicoRepository.create(item, {transaction: transacao}));
+                osRetorno.itens.push(
+                    await this.itemOrdemServicoRepository.create(item, {
+                        transaction: transacao,
+                    }),
+                );
             }
             for await (let i of osc.etapas) {
                 const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
                 etapa.idOrdemServico = osRetorno.id as number;
-                osRetorno.itens.push(await this.etapaOrdemServicoRepository.create(etapa, {transaction: transacao}));
+                osRetorno.itens.push(
+                    await this.etapaOrdemServicoRepository.create(etapa, {
+                        transaction: transacao,
+                    }),
+                );
+            }
+            for await (let i of osc.entregaveis) {
+                const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
+                entregavel.idOrdemServico = osRetorno.id as number;
+                osRetorno.itens.push(
+                    await this.entregavelOrdemServicoRepository.create(entregavel, {
+                        transaction: transacao,
+                    }),
+                );
             }
             await transacao.commit();
         } catch (e) {
@@ -206,6 +235,18 @@ export class OrdemServicoController {
                     await this.etapaOrdemServicoRepository.updateById(etapa.id, etapa, {transaction: transacao});
                 } else {
                     await this.etapaOrdemServicoRepository.create(etapa, {transaction: transacao});
+                }
+            }
+            for await (let i of osc.entregaveis) {
+                const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
+                if (entregavel.hasOwnProperty('toDelete')) {
+                    await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {transaction: transacao});
+                } else if (entregavel.id) {
+                    await this.entregavelOrdemServicoRepository.updateById(entregavel.id, entregavel, {
+                        transaction: transacao,
+                    });
+                } else {
+                    await this.entregavelOrdemServicoRepository.create(entregavel, {transaction: transacao});
                 }
             }
             await transacao.commit();
