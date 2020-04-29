@@ -2,6 +2,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import {Grid, IconButton} from '@material-ui/core';
 import {MuiPickersUtilsProvider} from '@material-ui/pickers';
 import 'date-fns';
+import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {EtapaOrdemServico, OrdemServicoFull} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
@@ -31,6 +32,7 @@ export const FormEtapaOrdensServico: React.FC<{
     const {state: appState}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
 
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const valida = (etapa: EtapaOrdemServico) => {
         errosInput.descricao =
             etapa.descricao == null || etapa.descricao.trim() == ''
@@ -51,6 +53,11 @@ export const FormEtapaOrdensServico: React.FC<{
             onSubmitItem(etapa);
         } else {
             setErrosInput({...errosInput});
+            Object.values(errosInput).forEach((msg) => {
+                if (msg != '') {
+                    enqueueSnackbar(msg, {variant: 'warning'});
+                }
+            });
         }
     };
     const {inputs, onInputChange, onSubmit} = useFormHook(valida, novaEtapaOrdemServico(osState.dado));

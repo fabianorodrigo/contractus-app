@@ -1,4 +1,5 @@
 import {Grid, IconButton} from '@material-ui/core';
+import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
@@ -34,6 +35,7 @@ export const FormItemOrdensServico: React.FC<{
 
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
 
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const valida = (item: ItemOrdemServico) => {
         errosInput.descricao =
             item.descricao == null || item.descricao.trim() == '' ? 'Uma descrição do serviço deve ser informada' : '';
@@ -51,6 +53,11 @@ export const FormItemOrdensServico: React.FC<{
             limpaForm();
         } else {
             setErrosInput({...errosInput});
+            Object.values(errosInput).forEach((msg) => {
+                if (msg != '') {
+                    enqueueSnackbar(msg, {variant: 'warning'});
+                }
+            });
         }
     };
     const {inputs, onInputChange, onSubmit} = useFormHook(valida, novoItemOrdemServico(osState.dado));
