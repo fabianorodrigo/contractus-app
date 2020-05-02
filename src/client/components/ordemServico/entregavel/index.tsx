@@ -2,12 +2,12 @@ import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
 import {EntregavelOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../../models';
+import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
-import {getStatusOrdemServico} from '../getStatusOrdemServico';
 import {FormEntregavelOrdemServico} from './form';
 import {HeaderEntregaveisOrdensServico} from './header';
 import {RowEntregavelOrdemServico} from './row';

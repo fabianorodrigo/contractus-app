@@ -1,72 +1,107 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
-export class Fornecedor extends Entity {
-  @property({
-    type: 'number',
-    id: true,
-    generated: true,
-  })
-  id?: number;
-
-  @property({
-    type: 'number',
-    required: true,
-    postgresql: {
-      dataType: 'bigint',
+@model({
+    settings: {
+        postgresql: {
+            schema: 'contractusapp',
+            table: 'TB_FORNECEDOR',
+        },
     },
-  })
-  cnpj: number;
+})
+export class Fornecedor extends Entity {
+    @property({
+        type: 'number',
+        id: true,
+        generated: true,
+        postgresql: {
+            columnName: 'ID_FORNECEDOR',
+        },
+    })
+    id?: number;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  razaoSocial: string;
+    @property({
+        type: 'string',
+        required: true,
+        postgresql: {
+            columnName: 'NR_CNPJ_FORNECEDOR',
+            dataType: 'bigint',
+        },
+    })
+    cnpj: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  apelido: string;
+    @property({
+        type: 'string',
+        required: true,
+        postgresql: {
+            columnName: 'NM_RAZAO_SOCIAL',
+        },
+    })
+    razaoSocial: string;
 
-  @property({
-    type: 'string',
-  })
-  endereco?: string;
+    @property({
+        type: 'string',
+        required: true,
+        postgresql: {
+            columnName: 'NM_APELIDO',
+        },
+    })
+    apelido: string;
 
-  @property({
-    type: 'string',
-  })
-  bairro?: string;
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'TX_ENDERECO',
+        },
+    })
+    endereco?: string;
 
-  @property({
-    type: 'string',
-  })
-  cidade?: string;
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'NM_BAIRRO',
+        },
+    })
+    bairro?: string;
 
-  @property({
-    type: 'string',
-  })
-  uf?: string;
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'NM_CIDADE',
+        },
+    })
+    cidade?: string;
 
-  @property({
-    type: 'string',
-  })
-  email?: string;
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'SG_UF',
+        },
+    })
+    uf?: string;
 
-  @property({
-    type: 'string',
-  })
-  telefone?: string;
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'TX_EMAIL',
+        },
+    })
+    email?: string;
 
-  constructor(data?: Partial<Fornecedor>) {
-    super(data);
-  }
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'NR_TELEFONE',
+        },
+    })
+    telefone?: string;
+
+    constructor(data?: Partial<Fornecedor>) {
+        super(data);
+    }
 }
 
 export interface FornecedorRelations {
-  // describe navigational properties here
+    // describe navigational properties here
 }
 
 export type FornecedorWithRelations = Fornecedor & FornecedorRelations;

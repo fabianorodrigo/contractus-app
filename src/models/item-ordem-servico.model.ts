@@ -1,29 +1,48 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model()
+@model({
+    settings: {
+        postgresql: {
+            schema: 'contractusapp',
+            table: 'TB_ITEM_ORDEM_SERVICO',
+        },
+    },
+})
 export class ItemOrdemServico extends Entity {
     @property({
         type: 'number',
         id: true,
         generated: true,
+        postgresql: {
+            columnName: 'ID_ITEM_ORDEM_SERVICO',
+        },
     })
     id?: number;
 
     @property({
         type: 'number',
         required: true,
+        postgresql: {
+            columnName: 'ID_ORDEM_SERVICO',
+        },
     })
     idOrdemServico: number;
 
     @property({
         type: 'string',
         required: true,
+        postgresql: {
+            columnName: 'DE_ITEM',
+        },
     })
     descricao: string;
 
     @property({
         type: 'string',
         required: true,
+        postgresql: {
+            columnName: 'SG_METRICA',
+        },
     })
     siglaMetrica: string;
 
@@ -31,6 +50,7 @@ export class ItemOrdemServico extends Entity {
         type: 'number',
         required: true,
         postgresql: {
+            columnName: 'QT_ESTIMADA',
             dataType: 'NUMERIC(10,2)',
         },
     })
@@ -40,6 +60,7 @@ export class ItemOrdemServico extends Entity {
         type: 'number',
         required: true,
         postgresql: {
+            columnName: 'VL_UNITARIO_ESTIMADO',
             dataType: 'NUMERIC(10,2)',
         },
     })
@@ -48,6 +69,7 @@ export class ItemOrdemServico extends Entity {
     @property({
         type: 'number',
         postgresql: {
+            columnName: 'QT_REAL',
             dataType: 'NUMERIC(10,2)',
         },
     })
@@ -56,6 +78,7 @@ export class ItemOrdemServico extends Entity {
     @property({
         type: 'number',
         postgresql: {
+            columnName: 'VL_UNITARIO_REAL',
             dataType: 'NUMERIC(10,2)',
         },
     })
@@ -63,6 +86,9 @@ export class ItemOrdemServico extends Entity {
 
     @property({
         type: 'boolean',
+        postgresql: {
+            columnName: 'IN_CANCELADO',
+        },
     })
     itemCancelado?: boolean;
 

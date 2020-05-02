@@ -4,14 +4,14 @@ import {ContractusDataSource} from '../datasources';
 import {PapeisContratoRelations, PapelContrato} from '../models';
 
 export class PapelContratoRepository extends DefaultCrudRepository<
-  PapelContrato,
-  typeof PapelContrato.prototype.id,
-  PapeisContratoRelations
+    PapelContrato,
+    typeof PapelContrato.prototype.id,
+    PapeisContratoRelations
 > {
-  constructor(
-    @inject('datasources.contractusDataSource')
-    dataSource: ContractusDataSource,
-  ) {
-    super(PapelContrato, dataSource);
-  }
+    constructor(
+        @inject('datasources.contractusDataSource')
+        dataSource: ContractusDataSource,
+    ) {
+        super(PapelContrato, dataSource);
+    }
 }

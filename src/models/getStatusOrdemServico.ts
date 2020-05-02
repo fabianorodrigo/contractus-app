@@ -1,5 +1,5 @@
-import {OrdemServicoFull} from '../../../models';
-import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
+import {OrdemServicoFull} from '.';
+import {StatusOrdemServico} from './StatusOrdemServico';
 
 export function getStatusOrdemServico(ordemServico: OrdemServicoFull) {
     if (ordemServico.numeroDocumentoSEIOrdemServico) {

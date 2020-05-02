@@ -1,10 +1,13 @@
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
+import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
+import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {
     EntregavelOrdemServicoRepository,
     EtapaOrdemServicoRepository,
+    IndicadorOrdemServicoRepository,
     ItemOrdemServicoRepository,
     OrdemServicoRepository,
 } from '../repositories';
@@ -19,6 +22,8 @@ export class OrdemServicoController {
         public etapaOrdemServicoRepository: EtapaOrdemServicoRepository,
         @repository(EntregavelOrdemServicoRepository)
         public entregavelOrdemServicoRepository: EntregavelOrdemServicoRepository,
+        @repository(IndicadorOrdemServicoRepository)
+        public indicadorOrdemServicoRepository: IndicadorOrdemServicoRepository,
     ) {}
 
     @post('/ordem-servico', {
@@ -247,7 +252,9 @@ export class OrdemServicoController {
                 const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
 
                 if (entregavel.hasOwnProperty('toDelete')) {
-                    await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {transaction: transacao});
+                    await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {
+                        transaction: transacao,
+                    });
                 } else if (entregavel.id) {
                     await this.entregavelOrdemServicoRepository.updateById(entregavel.id, entregavel, {
                         transaction: transacao,
@@ -272,6 +279,46 @@ export class OrdemServicoController {
         },
     })
     async deleteById(@param.path.number('id') id: number): Promise<void> {
-        await this.ordemServicoRepository.deleteById(id);
+        //busca a ordem de serviço com todas as suas relações
+        const ordemServico = await this.ordemServicoRepository.findById(id, {
+            include: [{relation: 'itens'}, {relation: 'etapas'}, {relation: 'entregaveis'}, {relation: 'indicadores'}],
+        });
+        //Só exclui se ainda estiver no status RASCUNHO
+        if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
+            const transacao = await this.ordemServicoRepository.beginTransaction();
+            try {
+                if (ordemServico.itens) {
+                    for await (let item of ordemServico.itens) {
+                        await this.itemOrdemServicoRepository.deleteById(item.id, {transaction: transacao});
+                    }
+                }
+                if (ordemServico.etapas) {
+                    for await (let etapa of ordemServico.etapas) {
+                        await this.etapaOrdemServicoRepository.deleteById(etapa.id, {transaction: transacao});
+                    }
+                }
+                if (ordemServico.entregaveis) {
+                    for await (let entregavel of ordemServico.entregaveis) {
+                        await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {
+                            transaction: transacao,
+                        });
+                    }
+                }
+                if (ordemServico.indicadores) {
+                    for await (let indicador of ordemServico.indicadores) {
+                        await this.indicadorOrdemServicoRepository.deleteById(indicador.id, {
+                            transaction: transacao,
+                        });
+                    }
+                }
+
+                await this.ordemServicoRepository.deleteById(id);
+                await transacao.commit();
+            } catch (e) {
+                console.error(e);
+                await transacao.rollback();
+                throw e;
+            }
+        }
     }
 }

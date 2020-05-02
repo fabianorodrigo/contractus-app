@@ -14,19 +14,30 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/EditTwoTone';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartTwoTone';
+import {useSnackbar} from 'notistack';
 import React from 'react';
 import {Contrato} from '../../../models';
 import {getContratos} from '../../services/backend';
+import {formataMensagemErroLoopback} from '../../services/formatacao';
 import useStyles from '../../services/styles';
 
 export const ListaContratos: React.FC<{}> = ({}) => {
     const classes = useStyles();
 
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+
     //Buscando contratos
     const [contratos, setContratos] = React.useState<Contrato[]>([]);
     React.useEffect(() => {
-        getContratos().then((contratos) => {
-            setContratos(contratos);
+        getContratos().then((respostaServico) => {
+            if (respostaServico.sucesso) {
+                setContratos(respostaServico.dados);
+            } else {
+                enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                    variant: 'error',
+                });
+                console.error(respostaServico.dados);
+            }
         });
     }, []);
 

@@ -44,6 +44,23 @@ export function formataNumeroTamanho3(valor: string): string {
     return String(valor).padStart(3, '0');
 }
 
+const nomeEntidades: {[nomeClasseModel: string]: string} = {
+    Contrato: 'Contrato',
+    Fornecedor: 'Fornecedor',
+    OrdemServico: 'Ordem de Serviço',
+    OrdemServicoFull: 'Ordem de Serviço',
+    EntregavelOrdemServico: 'Entregável',
+    EntregavelTipoOrdemServico: 'Entregável',
+    EtapaOrdemServico: 'Etapa',
+    IndicadorNiveisServicoContrato: 'Indicador de Nível de Serviço',
+    IndicadorOrdemServico: 'Indicador de Nível de Serviço',
+    ItemOrdemServico: 'Item',
+    MetricaContrato: 'Métrica do Contrato',
+    PapelContrato: 'Papel do Contrato',
+    Papel: 'Papel',
+    SancaoIndicadorNiveisServicoContrato: 'Sanção de Indicador de Nível de Serviço do Contrato',
+    TipoOrdemServicoContrato: 'Tipo de Ordem de Serviço do Contrato',
+};
 export function formataMensagemErroLoopback(error: any) {
     if (error.code == 'VALIDATION_FAILED') {
         return 'Os dados enviados ao servidor não são válidos: '.concat(
@@ -53,7 +70,16 @@ export function formataMensagemErroLoopback(error: any) {
                 })
                 .join(', '),
         );
-    } else {
-        return error.message;
+    } else if (error.code == 'ENTITY_NOT_FOUND') {
+        const regex = /Entity not found:(.*) with id (\d+)/gm;
+        const partes = regex.exec(error.message);
+        console.log(partes);
+
+        if (partes != null && partes?.length > 2) {
+            return `O servidor não encontrou  ${
+                nomeEntidades[partes[1].trim()] ? nomeEntidades[partes[1].trim()] : partes[1]
+            } com o ID ${partes[2]}`;
+        }
     }
+    return error.message;
 }

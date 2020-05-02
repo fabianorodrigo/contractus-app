@@ -1,11 +1,11 @@
 import {Contrato, Fornecedor, OrdemServico, OrdemServicoFull} from '../../models';
-import {get, post} from './restService';
+import {del, get, post, RespostaServico} from './restService';
 
-export function getFornecedores(): Promise<Fornecedor[]> {
+export function getFornecedores(): Promise<RespostaServico<Fornecedor[]>> {
     return get('/fornecedor');
 }
 
-export function getContratos(): Promise<Contrato[]> {
+export function getContratos(): Promise<RespostaServico<Contrato[]>> {
     return get(`/contrato?filter={ "order": ["dtInicioVigencia DESC"
   ],
   "include": [
@@ -17,20 +17,23 @@ export function getContratos(): Promise<Contrato[]> {
 }`);
 }
 
-export function getOrdensServico(idContrato: number): Promise<OrdemServico[]> {
+export function getOrdensServico(idContrato: number): Promise<RespostaServico<OrdemServico[]>> {
     return get(`/contratoes/${idContrato}/ordem-servicos`);
 }
 
-export function getOrdemServico(id: number): Promise<OrdemServico> {
+export function getOrdemServico(id: number): Promise<RespostaServico<OrdemServicoFull>> {
     return get(`/ordem-servico/${id}?filter={ "include": [
     { "relation": "itens"},{ "relation": "etapas"},{ "relation": "entregaveis"}]}`);
 }
 
-export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<OrdemServico> {
-    console.log(ordemServico);
+export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<RespostaServico<OrdemServicoFull>> {
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos(ordemServico);
-    return post(`/ordem-servico/`, ordemToPost, ordemToPost.id);
+    return post(`/ordem-servico/`, ordemToPost as OrdemServicoFull, ordemToPost.id);
+}
+
+export function deleteOrdemServico(id: number): Promise<RespostaServico<void>> {
+    return del(`/ordem-servico/${id}`);
 }
 
 function removerAtributosNulos(obj: {[atributo: string]: any}) {

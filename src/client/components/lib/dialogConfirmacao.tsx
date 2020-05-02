@@ -5,10 +5,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import React from 'react';
+import {HelpOutlineOutlinedIcon} from './icons';
+import {Transicao} from './Transicao';
 
-export default function DialogConfirmacao(mensagem: string, funcaoFecharCallback: Function) {
-    //const [open, setOpen] = React.useState(true);
-
+export const DialogConfirmacao: React.FC<{
+    mensagem: string;
+    detalhesMensagem?: string[];
+    funcaoFecharCallback: Function;
+}> = (props) => {
+    const {mensagem, detalhesMensagem, funcaoFecharCallback} = props;
     const fechar = (sim: boolean) => {
         //setOpen(false);
         funcaoFecharCallback(sim);
@@ -16,14 +21,34 @@ export default function DialogConfirmacao(mensagem: string, funcaoFecharCallback
 
     return (
         <Dialog
-            open={true}
+            open={mensagem != null && mensagem.trim() != ''}
             onClose={fechar.bind(null, false)}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            TransitionComponent={Transicao}
         >
-            <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">
+                <HelpOutlineOutlinedIcon fontSize="large" style={{float: 'left'}} />
+                {mensagem}
+            </DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description">{mensagem}</DialogContentText>
+                <DialogContentText id="alert-dialog-description">
+                    {detalhesMensagem?.map((msg, i) => {
+                        const msgSplit = msg.split(':');
+                        return (
+                            <React.Fragment key={`msgDetalhe${i}`}>
+                                {msgSplit.length == 2 ? (
+                                    <React.Fragment>
+                                        <b>{msgSplit[0]}:</b> {msgSplit[1]}
+                                    </React.Fragment>
+                                ) : (
+                                    {msg}
+                                )}
+                                <br key={`BRmsgDetalhe${i}`} />
+                            </React.Fragment>
+                        );
+                    })}
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={fechar.bind(null, false)} color="primary">
@@ -35,4 +60,4 @@ export default function DialogConfirmacao(mensagem: string, funcaoFecharCallback
             </DialogActions>
         </Dialog>
     );
-}
+};

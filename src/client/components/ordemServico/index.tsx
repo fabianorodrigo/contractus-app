@@ -1,16 +1,19 @@
 import {makeStyles, TextField} from '@material-ui/core';
+import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {OrdemServicoFull} from '../../../models';
+import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
-import {getOrdemServico, getOrdensServico} from '../../services/backend';
-import DialogConfirmacao from '../lib/dialogConfirmacao';
+import {deleteOrdemServico, getOrdemServico, getOrdensServico} from '../../services/backend';
+import {formataMensagemErroLoopback} from '../../services/formatacao';
+import {DialogConfirmacao} from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';
 import {OrdemServicoContext} from './context';
 import {FormOrdemServico} from './form';
-import {getStatusOrdemServico} from './getStatusOrdemServico';
+import {getTipoOrdemServico} from './getTipoOrdemServico';
 import {ListaCartoesOrdensServico} from './listaCartoes';
 import {TabelaOrdensServico} from './tabela';
 
@@ -40,6 +43,8 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const contratos: ContratosMap = appState.contratos;
     const {state: osState, dispatch: osDispatch}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
 
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+
     //### Controlando filtro de OS's por contrato
     const [idContratoSelecionado, setIdContratoSelecionado] = React.useState<number>(-1);
     const onChangeContrato = (event: React.ChangeEvent<{value: unknown}>) => {
@@ -48,14 +53,23 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //Busca avalia a busca sempre que selecionar um contrato
     React.useEffect(() => {
         if (idContratoSelecionado != -1) {
-            getOrdensServico(idContratoSelecionado).then((ordens) => {
-                ordens.forEach((o) => {
-                    dispatch({
-                        tipo: ActionType.INCLUIR,
-                        entidade: ActionEntity.ORDEM_SERVICO,
-                        dados: o,
+            getOrdensServico(idContratoSelecionado).then((respostaServico) => {
+                if (respostaServico.sucesso) {
+                    const ordens = respostaServico.dados;
+                    ordens.forEach((o) => {
+                        dispatch({
+                            tipo: ActionType.INCLUIR,
+                            entidade: ActionEntity.ORDEM_SERVICO,
+                            dados: o,
+                        });
                     });
-                });
+                } else {
+                    enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                        variant: 'error',
+                    });
+                    console.error(respostaServico.dados);
+                    console.warn(osState.dado);
+                }
             });
         }
     }, [idContratoSelecionado]);
@@ -68,41 +82,97 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const abrirDialog = async (ordemServico: OrdemServicoFull) => {
         //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
-            ordemServico = await getOrdemServico(ordemServico.id as number);
-            //atualiza na state da aplicação os dados completos
-            dispatch({
-                tipo: ActionType.INCLUIR,
-                entidade: ActionEntity.ORDEM_SERVICO,
-                dados: ordemServico,
-            });
-            //atualiza o state do contexto da ordem de serviço com a ordem sendo editada
-            osDispatch({tipo: EditionType.EDITAR, dado: ordemServico});
+            const respostaServico = await getOrdemServico(ordemServico.id as number);
+            if (respostaServico.sucesso) {
+                ordemServico = respostaServico.dados;
+                //atualiza na state da aplicação os dados completos
+                dispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.ORDEM_SERVICO,
+                    dados: ordemServico,
+                });
+                //atualiza o state do contexto da ordem de serviço com a ordem sendo editada
+                osDispatch({tipo: EditionType.EDITAR, dado: ordemServico});
+            } else {
+                enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                    variant: 'error',
+                });
+                console.error(respostaServico.dados);
+                console.warn(osState.dado);
+            }
         } else {
             //atualiza o state do contexto uma ordem de serviço em branco
             osDispatch({tipo: EditionType.NOVO});
         }
         //setOrdemServicoEditada(ordemCompleta);
     };
+    //Exclusão de rascunhos de ordem de serviço
+    const [mensagemDialogExclusao, setMensagemDialogExclusao] = React.useState<string>('');
+    const [detalhesMensagem, setDetalhesMensagem] = React.useState<Array<string>>([]);
+    const [idOSExcluir, setIdOSExcluir] = React.useState<number | undefined>(undefined);
     const excluirOrdemServico = async (ordemServico: OrdemServicoFull) => {
-        ordemServico = await getOrdemServico(ordemServico.id as number);
-        if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
-            DialogConfirmacao('Confirma exclusão da ordem de serviço?', (sim: boolean) => {
-                if (sim) {
-                    alert('mandou excluir, maluco');
-                } else {
-                    alert('peidou');
-                }
-            });
+        const respostaServico = await getOrdemServico(ordemServico.id as number);
+        if (respostaServico.sucesso) {
+            ordemServico = respostaServico.dados;
+            if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
+                //guarda o id da OS a se excluir
+                setIdOSExcluir(ordemServico.id);
+                //Ao setar uma mensagem, o dialog aparece
+                setMensagemDialogExclusao(`Confirma exclusão do rascunho de ordem de serviço?`);
+                //Setar detalhes da mensagem
+                setDetalhesMensagem([
+                    `Contrato: ${contratos[ordemServico.idContrato].numeroContrato}/${
+                        contratos[ordemServico.idContrato].anoContrato
+                    } - ${fornecedores[contratos[ordemServico.idContrato].idFornecedor]?.apelido}`,
+                    `Tipo da Ordem de Serviço: ${getTipoOrdemServico(ordemServico, contratos)?.descricao}`,
+                    `Requisitante: ${ordemServico.nomeRequisitante}`,
+                    `Fiscal Técnico: ${ordemServico.nomeFiscalTecnico}`,
+                    `Produto: ${ordemServico.idProduto ? ordemServico.idProduto : ''}`,
+                    `Projeto: ${ordemServico.idProjeto ? ordemServico.idProjeto : ''}`,
+                ]);
+            } else {
+                dispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.ORDEM_SERVICO,
+                    dados: ordemServico,
+                });
+            }
         } else {
-            dispatch({
-                tipo: ActionType.INCLUIR,
-                entidade: ActionEntity.ORDEM_SERVICO,
-                dados: ordemServico,
-            });
+            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {variant: 'error'});
+            console.error(respostaServico.dados);
+            console.warn(osState.dado);
         }
     };
     return (
         <React.Fragment>
+            <DialogConfirmacao
+                mensagem={mensagemDialogExclusao}
+                detalhesMensagem={detalhesMensagem}
+                funcaoFecharCallback={async (sim: boolean) => {
+                    if (sim) {
+                        const respostaServico = await deleteOrdemServico(idOSExcluir as number);
+                        if (respostaServico.sucesso) {
+                            dispatch({
+                                tipo: ActionType.REMOVER,
+                                entidade: ActionEntity.ORDEM_SERVICO,
+                                dados: appState.ordensServico[idOSExcluir as number],
+                            });
+                            enqueueSnackbar(`Exclusão realizada com sucesso`, {
+                                variant: 'success',
+                            });
+                        } else {
+                            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                                variant: 'error',
+                            });
+                            console.error(respostaServico.dados);
+                            console.warn(osState.dado);
+                        }
+                    }
+                    //ZERA o id da OS a se excluir
+                    setIdOSExcluir(undefined);
+                    setMensagemDialogExclusao('');
+                }}
+            />
             <ToolbarInterna
                 key="toolBarOrdemServico"
                 onChangeVisao={onChangeVisao}

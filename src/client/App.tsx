@@ -8,6 +8,7 @@ import {NavBar} from './components/navBar';
 import {OrdensServico} from './components/ordemServico';
 import {OrdemServicoContextProvider} from './components/ordemServico/context';
 import {getContratos, getFornecedores} from './services/backend';
+import {formataMensagemErroLoopback} from './services/formatacao';
 import useStyles from './services/styles';
 
 export const App: React.FC<{}> = ({}) => {
@@ -24,23 +25,36 @@ export const App: React.FC<{}> = ({}) => {
     const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     //Executa uma vez
     React.useEffect(() => {
-        getFornecedores().then((fornecedores) => {
-            fornecedores.forEach((f) => {
-                dispatch({
-                    tipo: ActionType.INCLUIR,
-                    entidade: ActionEntity.FORNECEDOR,
-                    dados: f,
-                }); //FIXME
-            });
+        getFornecedores().then((respostaServicoFornecedores) => {
+            if (respostaServicoFornecedores.sucesso) {
+                const fornecedores = respostaServicoFornecedores.dados;
+                fornecedores.forEach((f) => {
+                    dispatch({
+                        tipo: ActionType.INCLUIR,
+                        entidade: ActionEntity.FORNECEDOR,
+                        dados: f,
+                    });
+                });
+            } else {
+                alert(formataMensagemErroLoopback((respostaServicoFornecedores.dados as any).error));
+                console.error(respostaServicoFornecedores.dados);
+            }
         });
-        getContratos().then((contratos) => {
-            contratos.forEach((c) => {
-                dispatch({
-                    tipo: ActionType.INCLUIR,
-                    entidade: ActionEntity.CONTRATO,
-                    dados: c,
-                }); //FIXME
-            });
+
+        getContratos().then((respostaServicoContratos) => {
+            if (respostaServicoContratos.sucesso) {
+                const contratos = respostaServicoContratos.dados;
+                contratos.forEach((c) => {
+                    dispatch({
+                        tipo: ActionType.INCLUIR,
+                        entidade: ActionEntity.CONTRATO,
+                        dados: c,
+                    });
+                });
+            } else {
+                alert(formataMensagemErroLoopback((respostaServicoContratos.dados as any).error));
+                console.error(respostaServicoContratos.dados);
+            }
         });
     }, []);
 

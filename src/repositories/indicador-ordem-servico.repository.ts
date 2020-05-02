@@ -4,14 +4,14 @@ import {ContractusDataSource} from '../datasources';
 import {IndicadorOrdemServico, IndicadorOrdemServicoRelations} from '../models';
 
 export class IndicadorOrdemServicoRepository extends DefaultCrudRepository<
-  IndicadorOrdemServico,
-  typeof IndicadorOrdemServico.prototype.id,
-  IndicadorOrdemServicoRelations
+    IndicadorOrdemServico,
+    typeof IndicadorOrdemServico.prototype.id,
+    IndicadorOrdemServicoRelations
 > {
-  constructor(
-    @inject('datasources.contractusDataSource')
-    dataSource: ContractusDataSource,
-  ) {
-    super(IndicadorOrdemServico, dataSource);
-  }
+    constructor(
+        @inject('datasources.contractusDataSource')
+        dataSource: ContractusDataSource,
+    ) {
+        super(IndicadorOrdemServico, dataSource);
+    }
 }

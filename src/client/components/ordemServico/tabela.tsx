@@ -1,5 +1,6 @@
 import {IconButton} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
+import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../App-Context';
 import {ContratosMap, OrdensServicoMap} from '../../models/TypeContext';
@@ -7,7 +8,6 @@ import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
 import {encurtaNome, formataDataStringLocal} from '../../services/formatacao';
 import {DeleteIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';
-import {getStatusOrdemServico} from './getStatusOrdemServico';
 
 export const TabelaOrdensServico: React.FC<{
     idContratoSelecionado: number;
@@ -74,11 +74,11 @@ export const TabelaOrdensServico: React.FC<{
                 const statusOrdemServico = getStatusOrdemServico(oc);
                 return (
                     <React.Fragment>
-                        <IconButton aria-label="Visualizar" color="secondary" size="small">
+                        <IconButton aria-label="Visualizar" color="primary" size="small">
                             <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
                         </IconButton>
                         {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
-                            <IconButton aria-label="Excluir" color="secondary" size="small">
+                            <IconButton aria-label="Excluir" color="primary" size="small">
                                 <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
                             </IconButton>
                         )}

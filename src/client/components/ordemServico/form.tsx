@@ -1,11 +1,10 @@
 import {DialogActions, Grid} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import Slide from '@material-ui/core/Slide';
-import {TransitionProps} from '@material-ui/core/transitions';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../models';
+import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
@@ -18,18 +17,11 @@ import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
+import {Transicao} from '../lib/Transicao';
 import {OrdemServicoContext} from './context';
 import {TabelaEntregaveisOrdensServico} from './entregavel';
 import {TabelaEtapasOrdensServico} from './etapa';
-import {getStatusOrdemServico} from './getStatusOrdemServico';
 import {TabelaItensOrdensServico} from './item';
-
-const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & {children?: React.ReactElement},
-    ref: React.Ref<unknown>,
-) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export const FormOrdemServico: React.FC<{}> = ({}) => {
     const classes = useStyles();
@@ -84,13 +76,19 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
     const onSubmitOS = async () => {
         if (valida(osState.dado)) {
             try {
-                const os = await postOrdemServico(osState.dado);
-                if (os.hasOwnProperty('error')) {
-                    enqueueSnackbar(formataMensagemErroLoopback((os as any).error), {variant: 'error'});
-                    console.error(os);
+                const respostaServico = await postOrdemServico(osState.dado);
+                if (!respostaServico.sucesso) {
+                    enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                        variant: 'error',
+                    });
+                    console.error(respostaServico.dados);
                     console.warn(osState.dado);
                 } else {
-                    appDispatch({tipo: ActionType.INCLUIR, entidade: ActionEntity.ORDEM_SERVICO, dados: os});
+                    appDispatch({
+                        tipo: ActionType.INCLUIR,
+                        entidade: ActionEntity.ORDEM_SERVICO,
+                        dados: respostaServico.dados,
+                    });
                     osDispatch({tipo: EditionType.FECHAR});
                     enqueueSnackbar(`Ordem de Serviço ${osState.dado.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
                         variant: 'success',
@@ -137,7 +135,10 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
             //se o tipo OS foi selecionado
             if (tipoOS) {
                 //se não existe nenhum além dos carregados automaticamente, carrega os entregáveis default do tipo da OS
-                if (osState.dado.entregaveis.filter((entregavel) => !entregavel.hasOwnProperty('auto')).length == 0) {
+                if (
+                    !osState.dado.entregaveis ||
+                    osState.dado.entregaveis.filter((entregavel) => !entregavel.hasOwnProperty('auto')).length == 0
+                ) {
                     entregaveis = tipoOS.entregaveis.map((e) => {
                         return {
                             descricao: e.descricao,
@@ -164,7 +165,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                 scroll="body"
                 open={aberto}
                 onClose={onClickClose}
-                TransitionComponent={Transition}
+                TransitionComponent={Transicao}
             >
                 <form className={classes.form} noValidate onSubmit={onSubmit}>
                     <TituloDialog

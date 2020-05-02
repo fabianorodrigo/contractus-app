@@ -1,5 +1,10 @@
 import axios, {AxiosInstance} from 'axios';
 
+export interface RespostaServico<T> {
+    sucesso: boolean;
+    dados: T;
+}
+
 const apiClient: AxiosInstance = axios.create({
     responseType: 'json',
     headers: {
@@ -7,56 +12,44 @@ const apiClient: AxiosInstance = axios.create({
     },
 });
 
-export async function get(url: string): Promise<any> {
+export async function get<T>(url: string): Promise<RespostaServico<T>> {
     try {
         const response = await apiClient.get(url);
-        return response.data;
+        return {sucesso: true, dados: response.data};
     } catch (e) {
         if (e && e.response) {
-            return e.response.data;
+            return {sucesso: false, dados: e.response.data};
         }
         throw e;
     }
 }
 
-export async function post(url: string, data: object, id: number | null) {
+export async function post<T>(url: string, dados: T, id: number | null): Promise<RespostaServico<T>> {
     try {
         let response;
         if (id) {
-            response = await apiClient.put(url.concat(String(id)), data);
+            response = await apiClient.put(url.concat(String(id)), dados);
             // O PUT do Loopback não retorna dados, então, se foi bem sucedido vamos retornar o mesmo valor enviado para manter um padrão na resposta
-            if (response.status == 204) return data;
+            if (response.status == 204) return {sucesso: true, dados: dados};
         } else {
-            response = await apiClient.post(url, data);
+            response = await apiClient.post(url, dados);
         }
-        return response.data;
+        return {sucesso: true, dados: response.data};
     } catch (e) {
         if (e && e.response) {
-            return e.response.data;
-        }
-        throw e;
-    }
-}
-
-export async function put(url: string, data: object) {
-    try {
-        const response = await apiClient.put(url, data);
-        return response.data;
-    } catch (e) {
-        if (e && e.response) {
-            return e.response.data;
+            return {sucesso: false, dados: e.response.data};
         }
         throw e;
     }
 }
 
-export async function del(url: string, data: object) {
+export async function del(url: string): Promise<RespostaServico<void>> {
     try {
-        const response = await apiClient.delete(url, data);
-        return response.data;
+        const response = await apiClient.delete(url);
+        return {sucesso: true, dados: response.data};
     } catch (e) {
         if (e && e.response) {
-            return e.response.data;
+            return {sucesso: false, dados: e.response.data};
         }
         throw e;
     }

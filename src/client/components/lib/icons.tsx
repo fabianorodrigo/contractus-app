@@ -5,8 +5,10 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/EditTwoTone';
 import GavelIcon from '@material-ui/icons/Gavel';
+import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -30,4 +32,6 @@ export {
     CloseIcon,
     DeleteIcon,
     ClearIcon,
+    DoneIcon,
+    HelpOutlineOutlinedIcon,
 };

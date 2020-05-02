@@ -9,7 +9,7 @@ import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
-import {AddIcon, ClearIcon} from '../../lib/icons';
+import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 import {novoItemOrdemServico} from './new';
 export const FormItemOrdensServico: React.FC<{
@@ -162,7 +162,7 @@ export const FormItemOrdensServico: React.FC<{
             </Grid>
             <Grid item xs={1}>
                 <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
-                    <AddIcon aria-label="Adicionar" color="primary" fontSize="small" />
+                    <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
                 </IconButton>
                 <IconButton
                     key={`buttonClearItem`}

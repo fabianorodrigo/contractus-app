@@ -2,12 +2,12 @@ import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
+import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
-import {getStatusOrdemServico} from '../getStatusOrdemServico';
 import {FooterItensOrdensServico} from './footer';
 import {FormItemOrdensServico} from './form';
 import {HeaderItensOrdensServico} from './header';
@@ -63,7 +63,10 @@ export const TabelaItensOrdensServico: React.FC<{
                             let msg = null;
                             if (!osState.dado.idContrato || osState.dado.idContrato == -1) {
                                 msg = `O contrato para o qual a Ordem de Serviço de serviço está sendo emitida deve ser informado`;
-                            } else if (contratos[osState.dado.idContrato].metricas.length == 0) {
+                            } else if (
+                                !contratos[osState.dado.idContrato].metricas ||
+                                contratos[osState.dado.idContrato].metricas.length == 0
+                            ) {
                                 msg = `O contrato para o qual a Ordem de Serviço está sendo emitida não possui unidades de medidas vigentes`;
                             }
                             msg ? enqueueSnackbar(msg, {variant: 'warning'}) : setMostraFormItem(true);

@@ -11,7 +11,7 @@ import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {CampoData} from '../../lib/CampoData';
 import {CampoTexto} from '../../lib/campoTexto';
-import {AddIcon, ClearIcon} from '../../lib/icons';
+import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 import {novaEtapaOrdemServico} from './new';
 export const FormEtapaOrdensServico: React.FC<{
@@ -133,7 +133,7 @@ export const FormEtapaOrdensServico: React.FC<{
                 </Grid>
                 <Grid item xs={1}>
                     <IconButton key={`buttonAddEtapa`} size="small" onClick={onSubmit}>
-                        <AddIcon aria-label="Adicionar" color="primary" fontSize="small" />
+                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
                     </IconButton>
                     <IconButton
                         key={`buttonClearEtapa`}

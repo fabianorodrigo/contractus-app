@@ -9,22 +9,22 @@ import theme from './theme';
 const appTheme = createMuiTheme({
     palette: {
         primary: {
-            main: '#2670E8', //'#195128',
+            main: '#1351B4', //'#195128', //-color-primary-05 em dsgov.estaleiro.gov.br
         },
         secondary: {
-            main: '#9E9D9D', //''#3E67B1',
+            main: '#9E9D9D', //''#3E67B1', //-color-secondary-05 em dsgov.estaleiro.gov.br
         },
         success: {
-            main: '#168821',
+            main: '#168821', //cor de aviso SUCCESS no dsvgov
         },
         info: {
-            main: '#155BCB',
+            main: '#155BCB', //cor de aviso INFO no dsgov
         },
         warning: {
-            main: '#FFCD07',
+            main: '#FFCD07', //cor de aviso WARN no dsgov
         },
         error: {
-            main: '#E60000',
+            main: '#E60000', //cor de aviso DANGER no dsgov
         },
     },
     overrides: {
@@ -61,6 +61,7 @@ const appTheme = createMuiTheme({
         MuiDialogTitle: {
             root: {
                 backgroundColor: '#DBE8FB', //-color-primary-01 em dsgov.estaleiro.gov.br
+                padding: `8px 16px`,
             },
         },
     },
