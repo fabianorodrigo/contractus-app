@@ -36,41 +36,41 @@ export const useFormHook = <T extends {}>(
         } else if (tiposAtributos[event.target.name] == 'boolean') {
             valor = Boolean(valor == true || valor == 'true');
         }
-
         if (entidadeContexto) {
             const entidade = entidadeContexto.state;
             (entidade.dado as any)[event.target.name] = valor;
-            if (entidadeContexto) {
-                entidadeContexto.dispatch({
-                    tipo: EditionType.ATUALIZAR_CONTEXTO,
-                    dado: {...entidade.dado} as T,
-                });
-            }
-        }
-        setInputs((inputs) => ({...inputs, [event.target.name]: valor}));
-    };
-    //trata inclusão de itens em propriedades arrays
-    const addItemArray = (nomepropriedadeArray: string, item: object) => {
-        let valorFinal: Array<any>;
-        const cloneItem = JSON.parse(JSON.stringify(item));
-        if ((inputs as any)[nomepropriedadeArray] == null) {
-            valorFinal = [cloneItem];
-        } else {
-            valorFinal = (inputs as any)[nomepropriedadeArray].concat(cloneItem);
-        }
-        if (entidadeContexto) {
-            const entidade = entidadeContexto.state;
-            (entidade.dado as any)[nomepropriedadeArray] = valorFinal;
             entidadeContexto.dispatch({
                 tipo: EditionType.ATUALIZAR_CONTEXTO,
                 dado: {...entidade.dado} as T,
             });
         }
-
+        setInputs((inputs) => ({...inputs, [event.target.name]: valor}));
+    };
+    //trata inclusão de itens em propriedades arrays
+    const addItemArray = (nomepropriedadeArray: string, item: object) => {
+        if (entidadeContexto) {
+            const entidade = entidadeContexto.state;
+            let valorFinal: Array<any>;
+            const cloneItem = JSON.parse(JSON.stringify(item));
+            if ((entidade.dado as any)[nomepropriedadeArray] == null) {
+                valorFinal = [cloneItem];
+            } else {
+                valorFinal = (entidade.dado as any)[nomepropriedadeArray].concat(cloneItem);
+            }
+            (entidade.dado as any)[nomepropriedadeArray] = valorFinal;
+            entidadeContexto.dispatch({
+                tipo: EditionType.ATUALIZAR_CONTEXTO,
+                dado: {...entidade.dado} as T,
+            });
+        } else {
+            console.warn('addItemArray: entidadeContexto não setada');
+        }
+        /* testando remoção do código que mexe no input pois estava dando exceção no remover
         setInputs((inputs) => ({
             ...inputs,
             [nomepropriedadeArray]: valorFinal,
         }));
+        */
     };
     //trata inclusão de itens em propriedades arrays
     const markToRemoveItemArray = (nomepropriedadeArray: string, indice: number) => {
@@ -85,7 +85,10 @@ export const useFormHook = <T extends {}>(
                 tipo: EditionType.ATUALIZAR_CONTEXTO,
                 dado: {...entidade.dado} as T,
             });
+        } else {
+            console.warn('markToRemoveItemArray: entidadeContexto não setada');
         }
+        /* testando remoção do código que mexe no input pois estava dando exceção
         if ((inputs as any)[nomepropriedadeArray][indice].id) {
             (inputs as any)[nomepropriedadeArray][indice].toDelete = true;
         } else {
@@ -95,6 +98,7 @@ export const useFormHook = <T extends {}>(
             ...inputs,
             [nomepropriedadeArray]: (inputs as any)[nomepropriedadeArray],
         }));
+        */
     };
 
     return {

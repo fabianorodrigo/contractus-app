@@ -2,43 +2,38 @@ import {Entity, model, property} from '@loopback/repository';
 
 @model()
 export class EntregavelTipoOrdemServico extends Entity {
-  @property({
-    type: 'number',
-    id: true,
-    generated: true,
-  })
-  id?: number;
+    @property({
+        type: 'number',
+        id: true,
+        generated: true,
+    })
+    id?: number;
 
-  @property({
-    type: 'number',
-    required: true,
-  })
-  idTiposOrdemServicoContrato: number;
+    @property({
+        type: 'number',
+        required: true,
+    })
+    idTipoOrdemServicoContrato: number;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  descricao: string;
+    @property({
+        type: 'string',
+        required: true,
+    })
+    descricao: string;
 
-  @property({
-    type: 'number',
-  })
-  ordem?: number;
+    @property({
+        type: 'number',
+    })
+    ordem?: number;
 
-  @property({
-    type: 'number',
-  })
-  idTipoOrdemServicoContrato?: number;
-
-  constructor(data?: Partial<EntregavelTipoOrdemServico>) {
-    super(data);
-  }
+    constructor(data?: Partial<EntregavelTipoOrdemServico>) {
+        super(data);
+    }
 }
 
 export interface EntregaveisTipoOrdemServicoRelations {
-  // describe navigational properties here
+    // describe navigational properties here
 }
 
 export type EntregaveisTipoOrdemServicoWithRelations = EntregavelTipoOrdemServico &
-  EntregaveisTipoOrdemServicoRelations;
+    EntregaveisTipoOrdemServicoRelations;

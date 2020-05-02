@@ -78,6 +78,9 @@ export class OrdemServicoController {
                 );
             }
             for await (let i of osc.entregaveis) {
+                //Remove a propriedade de controle que colocamos na interface para decidir se carrega ou não
+                //os entregáveis default do contrato (se o usuário já mexeu na coleção, não carrega)
+                delete (i as any).auto;
                 const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
                 entregavel.idOrdemServico = osRetorno.id as number;
                 osRetorno.itens.push(
@@ -238,7 +241,11 @@ export class OrdemServicoController {
                 }
             }
             for await (let i of osc.entregaveis) {
+                //Remove a propriedade de controle que colocamos na interface para decidir se carrega ou não
+                //os entregáveis default do contrato (se o usuário já mexeu na coleção, não carrega)
+                delete (i as any).auto;
                 const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
+
                 if (entregavel.hasOwnProperty('toDelete')) {
                     await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {transaction: transacao});
                 } else if (entregavel.id) {

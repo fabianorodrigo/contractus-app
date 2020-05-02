@@ -1,6 +1,7 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
 import {OrdemServicoFull} from '../../../models';
-import {criaReducerEntidade, IEntidadeContexto, IEntidadeState} from '../../models/EntidadeContext';
+import {IEntidadeContexto, IEntidadeState} from '../../models/EntidadeContext';
+import {criaReducerEntidade} from '../../services/criaReducerEntidade';
 import {novaOrdemServico} from './new';
 
 const initialState: IEntidadeState<OrdemServicoFull> = {editando: false, dado: novaOrdemServico()};

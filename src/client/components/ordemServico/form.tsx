@@ -121,6 +121,41 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         osDispatch({tipo: EditionType.FECHAR});
     };
 
+    /**
+     * Tratamento diferenciado quando muda o contrato ou o tipo da Ordem de Serviço
+     */
+    const onChangeContratoOuTipoOrdemServiço = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let entregaveis = [];
+        //se mudou contrato ou o tipo da Ordem de Serviço e não há nenhum entregável que não seja
+        //exatamente os carregados por esta função (auto=true), carrega os entregáveis default do tipo da OS no contrato
+        onInputChange(event);
+        //contrato existe
+        if (contratos[osState.dado.idContrato]) {
+            const tipoOS = contratos[osState.dado.idContrato].tiposOrdemServico.find((tipo) => {
+                return tipo.id == osState.dado.idTipoOrdemServicoContrato;
+            });
+            //se o tipo OS foi selecionado
+            if (tipoOS) {
+                //se não existe nenhum além dos carregados automaticamente, carrega os entregáveis default do tipo da OS
+                if (osState.dado.entregaveis.filter((entregavel) => !entregavel.hasOwnProperty('auto')).length == 0) {
+                    entregaveis = tipoOS.entregaveis.map((e) => {
+                        return {
+                            descricao: e.descricao,
+                            ordem: e.ordem,
+                            idOrdemServico: osState.dado.id,
+                            auto: true,
+                        };
+                    });
+                    const entidade = osState;
+                    entidade.dado.entregaveis = entregaveis;
+                    osDispatch({
+                        tipo: EditionType.ATUALIZAR_CONTEXTO,
+                        dado: {...entidade.dado} as OrdemServicoFull,
+                    });
+                }
+            }
+        }
+    };
     return (
         <div>
             <Dialog
@@ -168,7 +203,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                         inputs.id != null || (osState.dado as OrdemServicoFull).itens?.length > 0
                                     }
                                     obrigatorio={true}
-                                    onChange={onInputChange}
+                                    onChange={onChangeContratoOuTipoOrdemServiço}
                                     defaultValue={inputs.idContrato}
                                     opcoes={[SelectItemNulo].concat(
                                         Object.values(contratos).map((contrato) => {
@@ -197,7 +232,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     fullWidth={true}
                                     somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={true}
-                                    onChange={onInputChange}
+                                    onChange={onChangeContratoOuTipoOrdemServiço}
                                     defaultValue={inputs.idTipoOrdemServicoContrato}
                                     opcoes={
                                         contratos[inputs.idContrato]

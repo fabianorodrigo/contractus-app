@@ -10,7 +10,7 @@ export function getContratos(): Promise<Contrato[]> {
   ],
   "include": [
     { "relation": "metricas","scope": {"order": ["sigla"]}},
-    { "relation": "tiposOrdemServico","scope": {"order": ["descricao"]}},
+    { "relation": "tiposOrdemServico","scope": {"order": ["descricao"],"include":[{"relation":"entregaveis"}]}},
     { "relation": "papeis","scope": {"order": ["nome"]}}
 
   ]
