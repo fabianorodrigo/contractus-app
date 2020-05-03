@@ -1,5 +1,4 @@
-import {belongsTo, Entity, hasMany, model, property} from '@loopback/repository';
-import {Fornecedor} from './fornecedor.model';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {MetricaContrato} from './metrica-contrato.model';
 import {OrdemServico} from './ordem-servico.model';
 import {PapelContrato} from './papel-contrato.model';
@@ -68,7 +67,7 @@ export class Contrato extends Entity {
     dtAssinatura?: string;
 
     @property({
-        type: 'number',
+        type: 'string',
         required: true,
         postgresql: {
             columnName: 'NR_PROCESSO_LICITACAO',
@@ -108,7 +107,13 @@ export class Contrato extends Entity {
     })
     numeroDocumentoSEIContrato?: number;
 
-    @belongsTo(() => Fornecedor, {name: 'fornecedor'})
+    @property({
+        type: 'number',
+        required: true,
+        postgresql: {
+            columnName: 'ID_FORNECEDOR',
+        },
+    })
     idFornecedor: number;
 
     @hasMany(() => PapelContrato, {keyTo: 'idContrato'})
