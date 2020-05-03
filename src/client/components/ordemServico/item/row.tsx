@@ -1,4 +1,4 @@
-import {IconButton, makeStyles, TableCell, TableRow} from '@material-ui/core';
+import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {ItemOrdemServico} from '../../../../models';
 import {formataNumeroStringLocal} from '../../../services/formatacao';
@@ -45,20 +45,22 @@ export const RowItemOrdemServico: React.FC<{
                     : item.valorUnitarioReal}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <IconButton
-                    key={`buttonRemove${i}`}
-                    aria-label="Remover Item"
-                    color="primary"
-                    size="small"
-                    disabled={item.hasOwnProperty('toDelete')}
-                >
-                    <DeleteIcon
-                        fontSize="small"
-                        onClick={() => {
-                            funcaoRemove();
-                        }}
-                    />
-                </IconButton>
+                <Tooltip title="Remover Item">
+                    <IconButton
+                        key={`buttonRemove${i}`}
+                        aria-label="Remover Item"
+                        color="primary"
+                        size="small"
+                        disabled={item.hasOwnProperty('toDelete')}
+                    >
+                        <DeleteIcon
+                            fontSize="small"
+                            onClick={() => {
+                                funcaoRemove();
+                            }}
+                        />
+                    </IconButton>
+                </Tooltip>
             </TableCell>
         </TableRow>
     );

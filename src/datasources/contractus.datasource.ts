@@ -1,6 +1,6 @@
 import {inject, lifeCycleObserver, LifeCycleObserver, ValueOrPromise} from '@loopback/core';
 import {juggler} from '@loopback/repository';
-import config from './contractus-data-source.datasource.config.json';
+import config from './contractus.datasource.config.json';
 
 @lifeCycleObserver('datasource')
 export class ContractusDataSource extends juggler.DataSource implements LifeCycleObserver {

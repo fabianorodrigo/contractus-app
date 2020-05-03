@@ -1,4 +1,4 @@
-import {IconButton, TableCell, TableHead, TableRow} from '@material-ui/core';
+import {IconButton, TableCell, TableHead, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {AddIcon} from '../../lib/icons';
 export const HeaderItensOrdensServico: React.FC<{
@@ -13,18 +13,20 @@ export const HeaderItensOrdensServico: React.FC<{
             <TableRow>
                 <TableCell>
                     {!mostraFormItem && (
-                        <IconButton
-                            ref={buttonAdicionaItemRef}
-                            key={`buttonMostraFormItem`}
-                            aria-label="Adicionar Item"
-                            color="primary"
-                            size="small"
-                            onClick={() => {
-                                funcaoMostraForm();
-                            }}
-                        >
-                            <AddIcon fontSize="small" />
-                        </IconButton>
+                        <Tooltip title="Adicionar Item de Serviço">
+                            <IconButton
+                                ref={buttonAdicionaItemRef}
+                                key={`buttonMostraFormItem`}
+                                aria-label="Adicionar Item"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                    funcaoMostraForm();
+                                }}
+                            >
+                                <AddIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
                     )}
                 </TableCell>
                 <TableCell></TableCell>

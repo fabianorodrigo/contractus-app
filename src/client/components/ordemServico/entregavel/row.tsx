@@ -1,4 +1,4 @@
-import {IconButton, makeStyles, TableCell, TableRow} from '@material-ui/core';
+import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {EntregavelOrdemServico} from '../../../../models';
 import {DeleteIcon} from '../../lib/icons';
@@ -32,20 +32,22 @@ export const RowEntregavelOrdemServico: React.FC<{
                 {entregavel.linkEvidencia}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <IconButton
-                    key={`buttonRemove${i}`}
-                    aria-label="Remover Entregável"
-                    color="primary"
-                    size="small"
-                    disabled={entregavel.hasOwnProperty('toDelete')}
-                >
-                    <DeleteIcon
-                        fontSize="small"
-                        onClick={() => {
-                            funcaoRemove();
-                        }}
-                    />
-                </IconButton>
+                <Tooltip title="Remover Entregável">
+                    <IconButton
+                        key={`buttonRemove${i}`}
+                        aria-label="Remover Entregável"
+                        color="primary"
+                        size="small"
+                        disabled={entregavel.hasOwnProperty('toDelete')}
+                    >
+                        <DeleteIcon
+                            fontSize="small"
+                            onClick={() => {
+                                funcaoRemove();
+                            }}
+                        />
+                    </IconButton>
+                </Tooltip>
             </TableCell>
         </TableRow>
     );

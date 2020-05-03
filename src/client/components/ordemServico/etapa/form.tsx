@@ -1,5 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {Grid, IconButton} from '@material-ui/core';
+import {Grid, IconButton, Tooltip} from '@material-ui/core';
 import {MuiPickersUtilsProvider} from '@material-ui/pickers';
 import 'date-fns';
 import {useSnackbar} from 'notistack';
@@ -13,6 +13,7 @@ import {CampoData} from '../../lib/CampoData';
 import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
+import {getTipoOrdemServico} from '../getTipoOrdemServico';
 import {novaEtapaOrdemServico} from './new';
 export const FormEtapaOrdensServico: React.FC<{
     statusOrdemServico: StatusOrdemServico;
@@ -60,7 +61,14 @@ export const FormEtapaOrdensServico: React.FC<{
             });
         }
     };
-    const {inputs, onInputChange, onSubmit} = useFormHook(valida, novaEtapaOrdemServico(osState.dado));
+    const tipoOS = getTipoOrdemServico(osState.dado, appState.contratos);
+    const {inputs, onInputChange, onSubmit} = useFormHook(
+        valida,
+        novaEtapaOrdemServico(
+            osState.dado,
+            tipoOS?.etapas && tipoOS.etapas.length > 0 ? tipoOS.etapas[0].numeroDiasUteisDuracao : 10,
+        ),
+    );
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container>
@@ -132,18 +140,22 @@ export const FormEtapaOrdensServico: React.FC<{
                     />
                 </Grid>
                 <Grid item xs={1}>
-                    <IconButton key={`buttonAddEtapa`} size="small" onClick={onSubmit}>
-                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                        key={`buttonClearEtapa`}
-                        size="small"
-                        onClick={() => {
-                            fechaForm();
-                        }}
-                    >
-                        <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                    </IconButton>
+                    <Tooltip title="Confirmar">
+                        <IconButton key={`buttonAddEtapa`} size="small" onClick={onSubmit}>
+                            <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Cancelar">
+                        <IconButton
+                            key={`buttonClearEtapa`}
+                            size="small"
+                            onClick={() => {
+                                fechaForm();
+                            }}
+                        >
+                            <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                        </IconButton>
+                    </Tooltip>
                 </Grid>
             </Grid>
         </MuiPickersUtilsProvider>

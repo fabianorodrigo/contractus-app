@@ -1,4 +1,4 @@
-import {Grid, IconButton} from '@material-ui/core';
+import {Grid, IconButton, Tooltip} from '@material-ui/core';
 import 'date-fns';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
@@ -76,18 +76,22 @@ export const FormEntregavelOrdemServico: React.FC<{
                 />
             </Grid>
             <Grid item xs={1}>
-                <IconButton key={`buttonAdd`} size="small" onClick={onSubmit}>
-                    <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                </IconButton>
-                <IconButton
-                    key={`buttonClear`}
-                    size="small"
-                    onClick={() => {
-                        fechaForm();
-                    }}
-                >
-                    <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                </IconButton>
+                <Tooltip title="Confirmar">
+                    <IconButton key={`buttonAdd`} size="small" onClick={onSubmit}>
+                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Cancelar">
+                    <IconButton
+                        key={`buttonClear`}
+                        size="small"
+                        onClick={() => {
+                            fechaForm();
+                        }}
+                    >
+                        <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                    </IconButton>
+                </Tooltip>
             </Grid>
         </Grid>
     );

@@ -1,4 +1,4 @@
-import {IconButton, makeStyles, TableCell, TableRow} from '@material-ui/core';
+import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {EtapaOrdemServico} from '../../../../models';
 import {formataDataStringLocal} from '../../../services/formatacao';
@@ -40,20 +40,22 @@ export const RowEtapaOrdemServico: React.FC<{
                 {formataDataStringLocal(etapa.dtFimReal)}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <IconButton
-                    key={`buttonRemove${i}`}
-                    aria-label="Remover Etapa"
-                    color="primary"
-                    size="small"
-                    disabled={etapa.hasOwnProperty('toDelete')}
-                >
-                    <DeleteIcon
-                        fontSize="small"
-                        onClick={() => {
-                            funcaoRemove();
-                        }}
-                    />
-                </IconButton>
+                <Tooltip title="Remover Etapa">
+                    <IconButton
+                        key={`buttonRemove${i}`}
+                        aria-label="Remover Etapa"
+                        color="primary"
+                        size="small"
+                        disabled={etapa.hasOwnProperty('toDelete')}
+                    >
+                        <DeleteIcon
+                            fontSize="small"
+                            onClick={() => {
+                                funcaoRemove();
+                            }}
+                        />
+                    </IconButton>
+                </Tooltip>
             </TableCell>
         </TableRow>
     );

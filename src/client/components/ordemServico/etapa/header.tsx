@@ -1,4 +1,4 @@
-import {IconButton, TableCell, TableHead, TableRow} from '@material-ui/core';
+import {IconButton, TableCell, TableHead, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {AddIcon} from '../../lib/icons';
 export const HeaderEtapasOrdensServico: React.FC<{
@@ -13,18 +13,20 @@ export const HeaderEtapasOrdensServico: React.FC<{
             <TableRow>
                 <TableCell>
                     {!mostraFormEtapa && (
-                        <IconButton
-                            ref={buttonAdicionaEtapaRef}
-                            key={`buttonMostraFormEtapa`}
-                            aria-label="Adicionar Etapa"
-                            color="primary"
-                            size="small"
-                            onClick={() => {
-                                funcaoMostraForm();
-                            }}
-                        >
-                            <AddIcon fontSize="small" />
-                        </IconButton>
+                        <Tooltip title="Adicionar Etapa">
+                            <IconButton
+                                ref={buttonAdicionaEtapaRef}
+                                key={`buttonMostraFormEtapa`}
+                                aria-label="Adicionar Etapa"
+                                color="primary"
+                                size="small"
+                                onClick={() => {
+                                    funcaoMostraForm();
+                                }}
+                            >
+                                <AddIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
                     )}
                 </TableCell>
                 <TableCell component="th" align="center" scope="row" key={`thPlanejamento`} colSpan={2}>

@@ -57,7 +57,5 @@ export class ContratoRepository extends DefaultCrudRepository<
         this.registerInclusionResolver('metricas', this.metricas.inclusionResolver);
         this.papeis = this.createHasManyRepositoryFactoryFor('papeis', papelContratoRepositoryGetter);
         this.registerInclusionResolver('papeis', this.papeis.inclusionResolver);
-        this.fornecedor = this.createBelongsToAccessorFor('fornecedor', fornecedorRepositoryGetter);
-        this.registerInclusionResolver('fornecedor', this.fornecedor.inclusionResolver);
     }
 }

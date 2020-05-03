@@ -1,9 +1,16 @@
 import {DialogActions, Grid} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import moment from 'moment';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../models';
+import {
+    EntregavelOrdemServico,
+    EtapaOrdemServico,
+    ItemOrdemServico,
+    OrdemServicoFull,
+    TipoOrdemServicoContrato,
+} from '../../../models';
 import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
@@ -11,6 +18,7 @@ import {useFormHook} from '../../customHooks/useForm';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {postOrdemServico} from '../../services/backend';
+import {getProximoDiaUtil, LocalFeriado} from '../../services/dataHora';
 import {formataDataStringLocal, formataMensagemErroLoopback, formataNumeroTamanho3} from '../../services/formatacao';
 import useStyles from '../../services/styles';
 import {CampoLista, SelectItemNulo} from '../lib/campoLista';
@@ -21,6 +29,7 @@ import {Transicao} from '../lib/Transicao';
 import {OrdemServicoContext} from './context';
 import {TabelaEntregaveisOrdensServico} from './entregavel';
 import {TabelaEtapasOrdensServico} from './etapa';
+import {getTipoOrdemServico} from './getTipoOrdemServico';
 import {TabelaItensOrdensServico} from './item';
 
 export const FormOrdemServico: React.FC<{}> = ({}) => {
@@ -123,37 +132,17 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
      * Tratamento diferenciado quando muda o contrato ou o tipo da Ordem de Serviço
      */
     const onChangeContratoOuTipoOrdemServiço = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let entregaveis = [];
+        onInputChange(event);
         //se mudou contrato ou o tipo da Ordem de Serviço e não há nenhum entregável que não seja
         //exatamente os carregados por esta função (auto=true), carrega os entregáveis default do tipo da OS no contrato
-        onInputChange(event);
+        // o mesmo acontece no caso das etapas da ordem de serviço
         //contrato existe
+
         if (contratos[osState.dado.idContrato]) {
-            const tipoOS = contratos[osState.dado.idContrato].tiposOrdemServico.find((tipo) => {
-                return tipo.id == osState.dado.idTipoOrdemServicoContrato;
-            });
+            const tipoOS = getTipoOrdemServico(osState.dado, appState.contratos);
             //se o tipo OS foi selecionado
             if (tipoOS) {
-                //se não existe nenhum além dos carregados automaticamente, carrega os entregáveis default do tipo da OS
-                if (
-                    !osState.dado.entregaveis ||
-                    osState.dado.entregaveis.filter((entregavel) => !entregavel.hasOwnProperty('auto')).length == 0
-                ) {
-                    entregaveis = tipoOS.entregaveis.map((e) => {
-                        return {
-                            descricao: e.descricao,
-                            ordem: e.ordem,
-                            idOrdemServico: osState.dado.id,
-                            auto: true,
-                        };
-                    });
-                    const entidade = osState;
-                    entidade.dado.entregaveis = entregaveis;
-                    osDispatch({
-                        tipo: EditionType.ATUALIZAR_CONTEXTO,
-                        dado: {...entidade.dado} as OrdemServicoFull,
-                    });
-                }
+                carregaDefaultsTipoOrdemServico(tipoOS);
             }
         }
     };
@@ -371,4 +360,65 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
             </Dialog>
         </div>
     );
+
+    function carregaDefaultsTipoOrdemServico(tipoOS: TipoOrdemServicoContrato) {
+        let entregaveis = [];
+        let etapas = [];
+        const entidade = osState;
+        let carregou = false;
+        //se não existe nenhuma etapa lém das carregadas automaticamente, carrega as etapas default do tipo da OS
+        if (!osState.dado.etapas || osState.dado.etapas.filter((etapa) => !etapa.hasOwnProperty('auto')).length == 0) {
+            let ini: any = null;
+            let fim: any = null;
+
+            etapas = tipoOS.etapas.map((e) => {
+                ini = getProximoDiaUtil(
+                    ini == null && fim == null
+                        ? moment()
+                        : getProximoDiaUtil(fim.add(1, 'd'), LocalFeriado.RioDeJaneiro),
+                );
+                fim = getProximoDiaUtil(ini);
+                //se for um dia de duração, a data fim é a mesma
+                //por isso, começamos a interação no 1 e não no zero
+                for (let i = 1; i < e.numeroDiasUteisDuracao; i++) {
+                    fim.add(1, 'd');
+                    fim = getProximoDiaUtil(fim, LocalFeriado.RioDeJaneiro);
+                }
+
+                return {
+                    descricao: e.descricao,
+                    idOrdemServico: osState.dado.id,
+                    dtInicioPlanejada: ini.toDate(),
+                    dtFimPlanejada: fim.toDate(),
+                    auto: true,
+                };
+            });
+            entidade.dado.etapas = etapas;
+            carregou = true;
+        }
+        //se não existe nenhum além dos carregados automaticamente, carrega os entregáveis default do tipo da OS
+        if (
+            !osState.dado.entregaveis ||
+            osState.dado.entregaveis.filter((entregavel) => !entregavel.hasOwnProperty('auto')).length == 0
+        ) {
+            entregaveis = tipoOS.entregaveis.map((e) => {
+                return {
+                    descricao: e.descricao,
+                    ordem: e.ordem,
+                    idOrdemServico: osState.dado.id,
+                    auto: true,
+                };
+            });
+            entidade.dado.entregaveis = entregaveis;
+            carregou = true;
+        }
+        if (carregou) {
+            osDispatch({
+                tipo: EditionType.ATUALIZAR_CONTEXTO,
+                dado: {
+                    ...entidade.dado,
+                } as OrdemServicoFull,
+            });
+        }
+    }
 };

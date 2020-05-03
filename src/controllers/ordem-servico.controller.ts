@@ -74,6 +74,9 @@ export class OrdemServicoController {
                 );
             }
             for await (let i of osc.etapas) {
+                //Remove a propriedade de controle que colocamos na interface para decidir se carrega ou não
+                //as entregas default do tipo de OS do contrato (se o usuário já mexeu na coleção, não carrega)
+                delete (i as any).auto;
                 const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
                 etapa.idOrdemServico = osRetorno.id as number;
                 osRetorno.itens.push(
@@ -236,13 +239,22 @@ export class OrdemServicoController {
                 }
             }
             for await (let i of osc.etapas) {
+                //Remove a propriedade de controle que colocamos na interface para decidir se carrega ou não
+                //as etapas default do contrato (se o usuário já mexeu na coleção, não carrega)
+                delete (i as any).auto;
                 const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
                 if (etapa.hasOwnProperty('toDelete')) {
-                    await this.etapaOrdemServicoRepository.deleteById(etapa.id, {transaction: transacao});
+                    await this.etapaOrdemServicoRepository.deleteById(etapa.id, {
+                        transaction: transacao,
+                    });
                 } else if (etapa.id) {
-                    await this.etapaOrdemServicoRepository.updateById(etapa.id, etapa, {transaction: transacao});
+                    await this.etapaOrdemServicoRepository.updateById(etapa.id, etapa, {
+                        transaction: transacao,
+                    });
                 } else {
-                    await this.etapaOrdemServicoRepository.create(etapa, {transaction: transacao});
+                    await this.etapaOrdemServicoRepository.create(etapa, {
+                        transaction: transacao,
+                    });
                 }
             }
             for await (let i of osc.entregaveis) {

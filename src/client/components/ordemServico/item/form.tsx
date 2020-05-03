@@ -1,4 +1,4 @@
-import {Grid, IconButton} from '@material-ui/core';
+import {Grid, IconButton, Tooltip} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
@@ -161,19 +161,23 @@ export const FormItemOrdensServico: React.FC<{
                 />
             </Grid>
             <Grid item xs={1}>
-                <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
-                    <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                </IconButton>
-                <IconButton
-                    key={`buttonClearItem`}
-                    size="small"
-                    onClick={() => {
-                        limpaForm();
-                        fechaFormItem();
-                    }}
-                >
-                    <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                </IconButton>
+                <Tooltip title="Confirmar">
+                    <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
+                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Cancelar">
+                    <IconButton
+                        key={`buttonClearItem`}
+                        size="small"
+                        onClick={() => {
+                            limpaForm();
+                            fechaFormItem();
+                        }}
+                    >
+                        <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                    </IconButton>
+                </Tooltip>
             </Grid>
         </Grid>
     );

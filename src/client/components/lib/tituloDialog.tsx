@@ -1,4 +1,4 @@
-import {IconButton, makeStyles, Typography} from '@material-ui/core';
+import {IconButton, makeStyles, Tooltip, Typography} from '@material-ui/core';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import React from 'react';
 import {TypeOnClickIconButton} from '../../models/TypeFunctions';
@@ -29,14 +29,16 @@ export const TituloDialog: React.FC<{
         <MuiDialogTitle disableTypography className={privateClasses.root}>
             <Typography variant="h6">{titulo}</Typography>
             {funcaoFechar ? (
-                <IconButton
-                    href="#"
-                    aria-label="Fechar"
-                    className={privateClasses.closeButton}
-                    onClick={funcaoFechar.bind(null)}
-                >
-                    <CloseIcon />
-                </IconButton>
+                <Tooltip title="Fechar">
+                    <IconButton
+                        href="#"
+                        aria-label="Fechar"
+                        className={privateClasses.closeButton}
+                        onClick={funcaoFechar.bind(null)}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Tooltip>
             ) : null}
         </MuiDialogTitle>
     );

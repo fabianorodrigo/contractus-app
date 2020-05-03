@@ -1,4 +1,4 @@
-import {IconButton} from '@material-ui/core';
+import {IconButton, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
@@ -74,13 +74,17 @@ export const TabelaOrdensServico: React.FC<{
                 const statusOrdemServico = getStatusOrdemServico(oc);
                 return (
                     <React.Fragment>
-                        <IconButton aria-label="Visualizar" color="primary" size="small">
-                            <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
-                        </IconButton>
-                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
-                            <IconButton aria-label="Excluir" color="primary" size="small">
-                                <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
+                        <Tooltip title="Visualizar">
+                            <IconButton aria-label="Visualizar" color="primary" size="small">
+                                <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
                             </IconButton>
+                        </Tooltip>
+                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                            <Tooltip title="Excluir">
+                                <IconButton aria-label="Excluir" color="primary" size="small">
+                                    <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
+                                </IconButton>
+                            </Tooltip>
                         )}
                     </React.Fragment>
                 );

@@ -12,6 +12,7 @@
     - \<Executar comandos em setup\/database\/0\.pre-DDL\.sql\>
     - exit
   - exit
+- npm run build
 - npm run migrate
 - npm start
 
