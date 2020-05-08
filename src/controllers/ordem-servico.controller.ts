@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
@@ -5,12 +6,23 @@ import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
 import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {
+    ContratoRepository,
     EntregavelOrdemServicoRepository,
     EtapaOrdemServicoRepository,
     IndicadorOrdemServicoRepository,
     ItemOrdemServicoRepository,
     OrdemServicoRepository,
 } from '../repositories';
+import {
+    createDocumento,
+    createIncluirDocumentoRequest,
+    Documento,
+    incluirDocumentoResponse,
+    OPENAPI_INCLUIR_DOCUMENTO_RESPONSE,
+    SeiService,
+    SeiServiceProvider,
+} from '../services';
+import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
 
 export class OrdemServicoController {
     constructor(
@@ -24,7 +36,45 @@ export class OrdemServicoController {
         public entregavelOrdemServicoRepository: EntregavelOrdemServicoRepository,
         @repository(IndicadorOrdemServicoRepository)
         public indicadorOrdemServicoRepository: IndicadorOrdemServicoRepository,
+        @repository(ContratoRepository)
+        public contratoRepository: ContratoRepository,
+        @service(SeiServiceProvider)
+        protected SEIService: SeiService,
     ) {}
+
+    // Map to `GET /ping`
+    @post('/ordem-servico/emitirSEI', {
+        responses: {
+            '200': OPENAPI_INCLUIR_DOCUMENTO_RESPONSE,
+        },
+    })
+    async incluirOSSEI(@requestBody() osc: OrdemServicoFull): Promise<incluirDocumentoResponse> {
+        //busca a ordem de serviço com todas as suas relações
+        const ordemServico = await getValidaOrdemServico(
+            this.ordemServicoRepository,
+            osc.id as number,
+            AcaoGetOrdemServico.Emissao_SEI,
+        );
+        const contrato = await this.contratoRepository.findById(ordemServico.idContrato);
+        if (!contrato.numeroProcessoOrdensServico) {
+            throw new Error(
+                `O Contrato ${contrato.numeroContrato}/${contrato.anoContrato} não possui um Número do Processo para inclusão de Ordens de Serviço`,
+            );
+        }
+        const doc: Documento = createDocumento(
+            '01416.022861/2017-86', //FIXME: contrato.numeroProcessoOrdensServico,
+            'todo',
+            `Ordem de Serviço #todo# - Contrato ${contrato.numeroContrato}/${contrato.anoContrato}`,
+            Buffer.from('teste').toString('base64'),
+        );
+        try {
+            const teste = await this.SEIService.incluirDocumento(createIncluirDocumentoRequest(doc));
+            console.log(teste);
+        } catch (e) {
+            console.error(e);
+        }
+        return this.SEIService.incluirDocumento(createIncluirDocumentoRequest(doc));
+    }
 
     @post('/ordem-servico', {
         responses: {
