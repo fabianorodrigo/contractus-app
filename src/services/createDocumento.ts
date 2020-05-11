@@ -36,7 +36,7 @@ export function createDocumento(
         NivelAcesso: NivelAcesso.Publico,
         IdHipoteseLegal: undefined,
         Conteudo: conteudo,
-        ConteudoMTOM: undefined, //Conteúdo textual ou binário do documento. Este campo somente poderá ser utilizado para documentos externos. O sistema somente aceitará requisições com um dos atributos preenchidos: Conteudo ou ConteudoMTOM,
+        //ConteudoMTOM: undefined, //Conteúdo textual ou binário do documento. Este campo somente poderá ser utilizado para documentos externos. O sistema somente aceitará requisições com um dos atributos preenchidos: Conteudo ou ConteudoMTOM,
         IdArquivo: undefined,
         Campos: [],
         SinBloqueado: 'N',
