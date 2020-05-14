@@ -1,4 +1,4 @@
-import {IconButton, Tooltip} from '@material-ui/core';
+import {IconButton, Link, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
@@ -6,14 +6,15 @@ import {AppContext, AppContextStoreType} from '../../App-Context';
 import {ContratosMap, OrdensServicoMap} from '../../models/TypeContext';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
 import {encurtaNome, formataDataStringLocal} from '../../services/formatacao';
-import {DeleteIcon, SearchIcon} from '../lib/icons';
+import {DeleteIcon, DescriptionIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';
 
 export const TabelaOrdensServico: React.FC<{
     idContratoSelecionado: number;
     funcaoVisualizar: TypeOrdemServico_Void;
     funcaoExcluir: TypeOrdemServico_Void;
-}> = ({idContratoSelecionado, funcaoVisualizar, funcaoExcluir}) => {
+    funcaoEmitirOSSEI: TypeOrdemServico_Void;
+}> = ({idContratoSelecionado, funcaoVisualizar, funcaoExcluir, funcaoEmitirOSSEI}) => {
     //Buscando dados
     //TIP REACT: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
@@ -34,8 +35,14 @@ export const TabelaOrdensServico: React.FC<{
               )[0].descricao
             : [];
     }
-    function formataNumeroOS(numero: number) {
-        return numero ? String(numero).padStart(3, '0') : '-';
+    function formataNumeroOS(numero: number, link: string) {
+        return numero ? (
+            <Link id="linkNumeroSEI" href={link} target="_blank">
+                {String(numero).padStart(3, '0')}
+            </Link>
+        ) : (
+            '-'
+        );
     }
 
     const colunas: TabelaColunaDado[] = [];
@@ -43,6 +50,7 @@ export const TabelaOrdensServico: React.FC<{
         atributo: 'numero',
         titulo: '#',
         funcaoFormatacao: formataNumeroOS,
+        atributoAdicionalFormatacao: 'linkOrdemServicoSEI',
     });
     colunas.push({
         atributo: 'idTipoOrdemServicoContrato',
@@ -83,6 +91,13 @@ export const TabelaOrdensServico: React.FC<{
                             <Tooltip title="Excluir">
                                 <IconButton aria-label="Excluir" color="primary" size="small">
                                     <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                            <Tooltip title="Emitir Ordem de Serviço no SEI">
+                                <IconButton aria-label="Emitir Ordem de Serviço no SEI" color="primary" size="small">
+                                    <DescriptionIcon fontSize="small" onClick={funcaoEmitirOSSEI.bind(null, oc)} />
                                 </IconButton>
                             </Tooltip>
                         )}

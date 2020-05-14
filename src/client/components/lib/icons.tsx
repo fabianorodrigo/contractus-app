@@ -5,6 +5,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DescriptionIcon from '@material-ui/icons/Description';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/EditTwoTone';
 import GavelIcon from '@material-ui/icons/Gavel';
@@ -34,4 +35,5 @@ export {
     ClearIcon,
     DoneIcon,
     HelpOutlineOutlinedIcon,
+    DescriptionIcon,
 };

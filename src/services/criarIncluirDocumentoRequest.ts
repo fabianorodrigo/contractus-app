@@ -1,7 +1,7 @@
 import {Documento} from '.';
 
 export const CDS = '110000072';
-export function createIncluirDocumentoRequest(documento: Documento) {
+export function criarIncluirDocumentoRequest(documento: Documento) {
     return {
         SiglaSistema: 'contractusapp',
         IdentificacaoServico: 'cadastro_documento',

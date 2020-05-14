@@ -78,14 +78,6 @@ export class Contrato extends Entity {
     @property({
         type: 'string',
         postgresql: {
-            columnName: 'NR_PROCESSO_ORDENS_SERVICO',
-        },
-    })
-    numeroProcessoOrdensServico?: string;
-
-    @property({
-        type: 'string',
-        postgresql: {
             columnName: 'NR_PROCESSO_PAGAMENTOS',
         },
     })

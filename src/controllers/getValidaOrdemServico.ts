@@ -3,6 +3,7 @@ import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {OrdemServicoRepository} from '../repositories';
 
 export enum AcaoGetOrdemServico {
+    Excluir,
     Emissao_SEI,
 }
 
@@ -20,7 +21,10 @@ export async function getValidaOrdemServico(
     proposito: AcaoGetOrdemServico,
 ) {
     //busca a ordem de serviço com todas as suas relações necessárias ao propósito
-    const include = [{relation: 'itens'}, {relation: 'etapas'}, {relation: 'entregaveis'}];
+    const include =
+        proposito == AcaoGetOrdemServico.Excluir
+            ? []
+            : [{relation: 'itens'}, {relation: 'etapas'}, {relation: 'entregaveis'}];
     const ordemServico = await ordemServicoRepository.findById(id, {
         include,
     });
@@ -43,6 +47,11 @@ export async function getValidaOrdemServico(
             throw new Error(
                 `Ordem de Serviço com identificador ${ordemServico.id} está com a lista de entregáveis esperados vazia`,
             );
+        if (!ordemServico.idTipoOrdemServicoContrato) {
+            throw new Error(
+                `Ordem de Serviço com identificador ${ordemServico.id} não possui um Tipo de Ordem de Serviço estabelecido`,
+            );
+        }
     }
     return ordemServico;
 }

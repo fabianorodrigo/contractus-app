@@ -85,6 +85,15 @@ export class OrdemServico extends Entity {
     idProduto?: string;
 
     @property({
+        type: 'number',
+        required: true,
+        postgresql: {
+            columnName: 'ID_AREA_REQUISITANTE',
+        },
+    })
+    idAreaRequisitante: number;
+
+    @property({
         type: 'string',
         required: false,
         postgresql: {
@@ -128,7 +137,17 @@ export class OrdemServico extends Entity {
             columnName: 'NR_ORDEM_SERVICO_SEI',
         },
     })
-    numeroDocumentoSEIOrdemServico?: number;
+    numeroDocumentoOrdemServicoSEI?: number;
+
+    @property({
+        type: 'string',
+        nullable: true,
+        default: null,
+        postgresql: {
+            columnName: 'DE_LINK_ORDEM_SERVICO_SEI',
+        },
+    })
+    linkOrdemServicoSEI?: string;
 
     @property({
         type: 'number',

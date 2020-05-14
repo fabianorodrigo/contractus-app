@@ -3,11 +3,12 @@ import {SnackbarProvider} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from './App-Context';
 import {ListaContratos} from './components/contrato/lista';
+import {Progresso} from './components/lib/progresso';
 import {MenuContainer} from './components/menuContainer';
 import {NavBar} from './components/navBar';
 import {OrdensServico} from './components/ordemServico';
 import {OrdemServicoContextProvider} from './components/ordemServico/context';
-import {getContratos, getFornecedores} from './services/backend';
+import {getAreasRequisitantes, getContratos, getFornecedores} from './services/backend';
 import {formataMensagemErroLoopback} from './services/formatacao';
 import useStyles from './services/styles';
 
@@ -22,14 +23,26 @@ export const App: React.FC<{}> = ({}) => {
     //Atualizando dados
     //A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
-    const {state, dispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    const {state, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
+        AppContext,
+    );
+    //Função que para setar o state que coloca o BackDrop na frente da tela com o indicador de progresso ativo
+    const emEspera = (emEspera: boolean) => {
+        appDispatch({
+            tipo: ActionType.EM_ESPERA,
+            dados: emEspera,
+        });
+    };
+
     //Executa uma vez
     React.useEffect(() => {
+        emEspera(true);
+        //FIXME: Promise.all()
         getFornecedores().then((respostaServicoFornecedores) => {
             if (respostaServicoFornecedores.sucesso) {
                 const fornecedores = respostaServicoFornecedores.dados;
                 fornecedores.forEach((f) => {
-                    dispatch({
+                    appDispatch({
                         tipo: ActionType.INCLUIR,
                         entidade: ActionEntity.FORNECEDOR,
                         dados: f,
@@ -39,13 +52,14 @@ export const App: React.FC<{}> = ({}) => {
                 alert(formataMensagemErroLoopback((respostaServicoFornecedores.dados as any).error));
                 console.error(respostaServicoFornecedores.dados);
             }
+            emEspera(false);
         });
 
         getContratos().then((respostaServicoContratos) => {
             if (respostaServicoContratos.sucesso) {
                 const contratos = respostaServicoContratos.dados;
                 contratos.forEach((c) => {
-                    dispatch({
+                    appDispatch({
                         tipo: ActionType.INCLUIR,
                         entidade: ActionEntity.CONTRATO,
                         dados: c,
@@ -55,6 +69,24 @@ export const App: React.FC<{}> = ({}) => {
                 alert(formataMensagemErroLoopback((respostaServicoContratos.dados as any).error));
                 console.error(respostaServicoContratos.dados);
             }
+            emEspera(false);
+        });
+
+        getAreasRequisitantes().then((respostaServicoAreas) => {
+            if (respostaServicoAreas.sucesso) {
+                const areas = respostaServicoAreas.dados;
+                areas.forEach((a) => {
+                    appDispatch({
+                        tipo: ActionType.INCLUIR,
+                        entidade: ActionEntity.AREA_REQUISIGANTE,
+                        dados: a,
+                    });
+                });
+            } else {
+                alert(formataMensagemErroLoopback((respostaServicoAreas.dados as any).error));
+                console.error(respostaServicoAreas.dados);
+            }
+            emEspera(false);
         });
     }, []);
 
@@ -69,6 +101,7 @@ export const App: React.FC<{}> = ({}) => {
             />
             <SnackbarProvider maxSnack={3}>
                 <main className={classes.content}>
+                    <Progresso mostra={state.emEspera} />
                     <div className={classes.appBarSpacer} />
                     <Container className={classes.container}>
                         {menu == 'ordens' && (

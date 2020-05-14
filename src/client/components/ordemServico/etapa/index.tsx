@@ -26,6 +26,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
     const contratos: ContratosMap = appState.contratos;
 
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const statusOS = getStatusOrdemServico(osState.dado);
 
     const {funcaoAdiciona, funcaoRemove} = props;
     const classes = useStyles();
@@ -68,6 +69,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                 return (
                                     <RowEtapaOrdemServico
                                         etapa={etapa}
+                                        statusOrdemServico={statusOS}
                                         key={i}
                                         funcaoRemove={funcaoRemove.bind(null, i)}
                                     />
@@ -78,7 +80,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
             </TableContainer>
             {mostraFormEtapa && (
                 <FormEtapaOrdensServico
-                    statusOrdemServico={getStatusOrdemServico(osState.dado)}
+                    statusOrdemServico={statusOS}
                     onSubmitForm={onSubmit}
                     fechaForm={fechaForm}
                     inputDescricaoEtapaRef={refInputDescricaoEtapa}

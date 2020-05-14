@@ -1,4 +1,4 @@
-import {DialogActions, Grid} from '@material-ui/core';
+import {DialogActions, FormControl, Grid, InputLabel, Link, makeStyles} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import moment from 'moment';
@@ -16,10 +16,10 @@ import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
-import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
+import {AreasRequisitantesMap, ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {postOrdemServico} from '../../services/backend';
 import {getProximoDiaUtil, LocalFeriado} from '../../services/dataHora';
-import {formataDataStringLocal, formataMensagemErroLoopback, formataNumeroTamanho3} from '../../services/formatacao';
+import {formataDataStringLocal, formataMensagemErroLoopback} from '../../services/formatacao';
 import useStyles from '../../services/styles';
 import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';
@@ -32,8 +32,15 @@ import {TabelaEtapasOrdensServico} from './etapa';
 import {getTipoOrdemServico} from './getTipoOrdemServico';
 import {TabelaItensOrdensServico} from './item';
 
+const privateUseStyles = makeStyles((theme) => ({
+    linkNumeroSEI: {
+        marginTop: theme.spacing(3),
+    },
+}));
+
 export const FormOrdemServico: React.FC<{}> = ({}) => {
     const classes = useStyles();
+    const privateClasses = privateUseStyles();
     //TIP REACT:A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
@@ -41,6 +48,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
     );
     const fornecedores: FornecedoresMap = appState.fornecedores;
     const contratos: ContratosMap = appState.contratos;
+    const areas: AreasRequisitantesMap = appState.areasRequisigantes;
     const ordemServicoContexto: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
     const {state: osState, dispatch: osDispatch} = ordemServicoContexto;
     const statusOS = getStatusOrdemServico(osState.dado);
@@ -51,6 +59,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         idContrato: '',
         idTipoOrdemServicoContrato: '',
         emergencial: '',
+        idAreaRequisitante: '',
         nomeRequisitante: '',
         nomeFiscalTecnico: '',
         itens: '',
@@ -66,6 +75,10 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                 ? 'O tipo da Ordem de Serviço deve ser informado'
                 : '';
         errosInput.emergencial = os.emergencial == null ? 'A criticidade dos serviços deve ser informada' : '';
+        errosInput.idAreaRequisitante =
+            os.idAreaRequisitante == null || os.idAreaRequisitante < 0
+                ? 'A Área Requisitante do serviço deve ser informada'
+                : '';
         errosInput.nomeRequisitante =
             os.nomeRequisitante == null || os.nomeRequisitante.trim() == ''
                 ? 'O nome do requisitante do serviço deve ser informado'
@@ -169,18 +182,33 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                         <Grid container>
                             {statusOS > StatusOrdemServico.RASCUNHO && (
                                 <React.Fragment>
-                                    <Grid item xs={2}>
-                                        <CampoTexto
-                                            atributo="numeroDocumentoSEIOrdemServico"
-                                            label="Número SEI"
-                                            objetoValor={inputs}
-                                            fullWidth={false}
-                                            somenteLeitura={true}
-                                            obrigatorio={false}
-                                            funcaoFormatacao={formataNumeroTamanho3}
-                                        />
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth style={{margin: 8}}>
+                                            <InputLabel shrink htmlFor="linkNumeroSEI">
+                                                Número Documento SEI{' '}
+                                            </InputLabel>
+                                            <Link
+                                                className={privateClasses.linkNumeroSEI}
+                                                id="linkNumeroSEI"
+                                                href={osState.dado.linkOrdemServicoSEI}
+                                                target="_blank"
+                                            >
+                                                {osState.dado.numeroDocumentoOrdemServicoSEI}
+                                            </Link>
+                                        </FormControl>
                                     </Grid>
-                                    <Grid item xs={10}></Grid>
+                                    <Grid item xs={6}>
+                                        {statusOS > StatusOrdemServico.RASCUNHO && (
+                                            <CampoTexto
+                                                atributo="dtEmissao"
+                                                label="Data de Emissão"
+                                                objetoValor={inputs}
+                                                fullWidth={false}
+                                                somenteLeitura={true}
+                                                funcaoFormatacao={formataDataStringLocal}
+                                            />
+                                        )}
+                                    </Grid>
                                 </React.Fragment>
                             )}
                             <Grid item xs={12}>
@@ -258,38 +286,49 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     error={errosInput.emergencial != ''}
                                 />
                             </Grid>
-                            <Grid item xs={2}>
-                                {statusOS > StatusOrdemServico.RASCUNHO && (
-                                    <CampoTexto
-                                        atributo="dtEmissao"
-                                        label="Data de Emissão"
-                                        objetoValor={inputs}
-                                        fullWidth={false}
-                                        somenteLeitura={true}
-                                        funcaoFormatacao={formataDataStringLocal}
-                                    />
-                                )}
-                            </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={2}></Grid>
+                            <Grid item xs={3}>
                                 <CampoTexto
                                     atributo="idProjeto"
                                     label="Código Projeto"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO && inputs.idProjeto != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={false}
                                     onChange={onInputChange}
                                 />
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={3}>
                                 <CampoTexto
                                     atributo="idProduto"
                                     label="Sigla Produto"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO && inputs.idProduto != null}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={false}
                                     onChange={onInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <CampoLista
+                                    atributo="idAreaRequisitante"
+                                    label="Área Requisitante"
+                                    objetoValor={inputs}
+                                    fullWidth={true}
+                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    obrigatorio={true}
+                                    onChange={onInputChange}
+                                    defaultValue={inputs.idAreaRequisitante}
+                                    opcoes={[SelectItemNulo].concat(
+                                        Object.values(areas).map((area) => {
+                                            return {
+                                                valor: area.id,
+                                                label: area.siglaArea.concat(' - ', area.nomeArea),
+                                            };
+                                        }),
+                                    )}
+                                    error={errosInput.idAreaRequisitante != ''}
+                                    autoFocus={true}
                                 />
                             </Grid>
                             <Grid item xs={6}>

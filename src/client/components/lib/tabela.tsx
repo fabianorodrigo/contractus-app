@@ -6,6 +6,7 @@ export interface TabelaColunaDado {
     titulo: string;
     alinhamento?: 'right' | 'left' | 'center';
     funcaoFormatacao?: Function;
+    atributoAdicionalFormatacao?: string;
 }
 
 export const Tabela: React.FC<{colunas: TabelaColunaDado[]; dados: Array<any>; colunasAcao?: ReactNode[]}> = ({
@@ -40,7 +41,14 @@ export const Tabela: React.FC<{colunas: TabelaColunaDado[]; dados: Array<any>; c
                             {colunas.map((c, j) => {
                                 return (
                                     <TableCell scope="row" align={c.alinhamento || 'left'} key={`td_${i}_${j}`}>
-                                        {c.funcaoFormatacao ? c.funcaoFormatacao(r[c.atributo]) : r[c.atributo]}
+                                        {c.funcaoFormatacao
+                                            ? c.funcaoFormatacao(
+                                                  r[c.atributo],
+                                                  c.atributoAdicionalFormatacao
+                                                      ? r[c.atributoAdicionalFormatacao]
+                                                      : null,
+                                              )
+                                            : r[c.atributo]}
                                     </TableCell>
                                 );
                             })}

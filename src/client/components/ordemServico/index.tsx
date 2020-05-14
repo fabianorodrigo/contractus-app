@@ -6,8 +6,8 @@ import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
-import {ContratosMap, FornecedoresMap} from '../../models/TypeContext';
-import {deleteOrdemServico, getOrdemServico, getOrdensServico} from '../../services/backend';
+import {ContratosMap, FornecedoresMap, OrdensServicoMap} from '../../models/TypeContext';
+import {deleteOrdemServico, emitirOrdemServicoSEI, getOrdemServico, getOrdensServico} from '../../services/backend';
 import {formataMensagemErroLoopback} from '../../services/formatacao';
 import {DialogConfirmacao} from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';
@@ -34,14 +34,22 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {
         state: appState,
-        dispatch,
+        dispatch: appDispatch,
     }: {
         state: AppContextStoreType;
         dispatch: Dispatch<AppDispatch>;
     } = useContext(AppContext);
     const fornecedores: FornecedoresMap = appState.fornecedores;
     const contratos: ContratosMap = appState.contratos;
+    const ordensServico: OrdensServicoMap = appState.ordensServico;
     const {state: osState, dispatch: osDispatch}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    //Função que para setar o state que coloca o BackDrop na frente da tela com o indicador de progresso ativo
+    const emEspera = (emEspera: boolean) => {
+        appDispatch({
+            tipo: ActionType.EM_ESPERA,
+            dados: emEspera,
+        });
+    };
 
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
@@ -53,11 +61,12 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //Busca avalia a busca sempre que selecionar um contrato
     React.useEffect(() => {
         if (idContratoSelecionado != -1) {
+            emEspera(true);
             getOrdensServico(idContratoSelecionado).then((respostaServico) => {
                 if (respostaServico.sucesso) {
                     const ordens = respostaServico.dados;
                     ordens.forEach((o) => {
-                        dispatch({
+                        appDispatch({
                             tipo: ActionType.INCLUIR,
                             entidade: ActionEntity.ORDEM_SERVICO,
                             dados: o,
@@ -70,6 +79,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     console.error(respostaServico.dados);
                     console.warn(osState.dado);
                 }
+                emEspera(false);
             });
         }
     }, [idContratoSelecionado]);
@@ -82,11 +92,13 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const abrirDialog = async (ordemServico: OrdemServicoFull) => {
         //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
+            emEspera(true);
             const respostaServico = await getOrdemServico(ordemServico.id as number);
+            emEspera(false);
             if (respostaServico.sucesso) {
                 ordemServico = respostaServico.dados;
                 //atualiza na state da aplicação os dados completos
-                dispatch({
+                appDispatch({
                     tipo: ActionType.INCLUIR,
                     entidade: ActionEntity.ORDEM_SERVICO,
                     dados: ordemServico,
@@ -111,7 +123,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const [detalhesMensagem, setDetalhesMensagem] = React.useState<Array<string>>([]);
     const [idOSExcluir, setIdOSExcluir] = React.useState<number | undefined>(undefined);
     const excluirOrdemServico = async (ordemServico: OrdemServicoFull) => {
+        emEspera(true);
         const respostaServico = await getOrdemServico(ordemServico.id as number);
+        emEspera(false);
         if (respostaServico.sucesso) {
             ordemServico = respostaServico.dados;
             if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
@@ -131,7 +145,45 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     `Projeto: ${ordemServico.idProjeto ? ordemServico.idProjeto : ''}`,
                 ]);
             } else {
-                dispatch({
+                appDispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.ORDEM_SERVICO,
+                    dados: ordemServico,
+                });
+            }
+        } else {
+            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {variant: 'error'});
+            console.error(respostaServico.dados);
+            console.warn(osState.dado);
+        }
+    };
+    //Emissão de OS no SEI enquanto rascunhos de ordem de serviço
+    const [mensagemDialogEmissao, setMensagemDialogEmissao] = React.useState<string>('');
+    const [idOSEmitir, setIdOSEmitir] = React.useState<number | undefined>(undefined);
+    const emitirOSSEI = async (ordemServico: OrdemServicoFull) => {
+        emEspera(true);
+        const respostaServico = await getOrdemServico(ordemServico.id as number);
+        emEspera(false);
+        if (respostaServico.sucesso) {
+            ordemServico = respostaServico.dados;
+            if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
+                //guarda o id da OS a se emitir no SEI
+                setIdOSEmitir(ordemServico.id);
+                //Ao setar uma mensagem, o dialog aparece
+                setMensagemDialogEmissao(`Confirma emissão da Ordem de Serviço no SEI?`);
+                //Setar detalhes da mensagem
+                setDetalhesMensagem([
+                    `Contrato: ${contratos[ordemServico.idContrato].numeroContrato}/${
+                        contratos[ordemServico.idContrato].anoContrato
+                    } - ${fornecedores[contratos[ordemServico.idContrato].idFornecedor]?.apelido}`,
+                    `Tipo da Ordem de Serviço: ${getTipoOrdemServico(ordemServico, contratos)?.descricao}`,
+                    `Requisitante: ${ordemServico.nomeRequisitante}`,
+                    `Fiscal Técnico: ${ordemServico.nomeFiscalTecnico}`,
+                    `Produto: ${ordemServico.idProduto ? ordemServico.idProduto : ''}`,
+                    `Projeto: ${ordemServico.idProjeto ? ordemServico.idProjeto : ''}`,
+                ]);
+            } else {
+                appDispatch({
                     tipo: ActionType.INCLUIR,
                     entidade: ActionEntity.ORDEM_SERVICO,
                     dados: ordemServico,
@@ -150,9 +202,11 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 detalhesMensagem={detalhesMensagem}
                 funcaoFecharCallback={async (sim: boolean) => {
                     if (sim) {
+                        emEspera(true);
                         const respostaServico = await deleteOrdemServico(idOSExcluir as number);
+                        emEspera(false);
                         if (respostaServico.sucesso) {
-                            dispatch({
+                            appDispatch({
                                 tipo: ActionType.REMOVER,
                                 entidade: ActionEntity.ORDEM_SERVICO,
                                 dados: appState.ordensServico[idOSExcluir as number],
@@ -171,6 +225,42 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     //ZERA o id da OS a se excluir
                     setIdOSExcluir(undefined);
                     setMensagemDialogExclusao('');
+                }}
+            />
+            <DialogConfirmacao
+                mensagem={mensagemDialogEmissao}
+                detalhesMensagem={detalhesMensagem}
+                funcaoFecharCallback={async (sim: boolean) => {
+                    setMensagemDialogEmissao('');
+                    if (sim) {
+                        emEspera(true);
+                        const respostaServico = await emitirOrdemServicoSEI(ordensServico[idOSEmitir as number]);
+                        emEspera(false);
+                        if (respostaServico.sucesso) {
+                            appDispatch({
+                                tipo: ActionType.INCLUIR,
+                                entidade: ActionEntity.ORDEM_SERVICO,
+                                dados: respostaServico.dados,
+                            });
+                            enqueueSnackbar(
+                                `Emissão da Ordem de Serviço ${String(respostaServico.dados.numero).padStart(
+                                    3,
+                                    '0',
+                                )} no SEI realizada com sucesso`,
+                                {
+                                    variant: 'success',
+                                },
+                            );
+                        } else {
+                            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                                variant: 'error',
+                            });
+                            console.error(respostaServico.dados);
+                            console.warn(osState.dado);
+                        }
+                    }
+                    //ZERA o id da OS a se excluir
+                    setIdOSEmitir(undefined);
                 }}
             />
             <ToolbarInterna
@@ -215,6 +305,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     idContratoSelecionado={idContratoSelecionado}
                     funcaoVisualizar={abrirDialog}
                     funcaoExcluir={excluirOrdemServico}
+                    funcaoEmitirOSSEI={emitirOSSEI}
                 />
             )}
             {osState.editando && <FormOrdemServico key="formOSs" />}

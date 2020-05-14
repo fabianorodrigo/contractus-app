@@ -1,6 +1,7 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {EtapaOrdemServico} from '../../../../models';
+import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
 import {formataDataStringLocal} from '../../../services/formatacao';
 import {DeleteIcon} from '../../lib/icons';
 
@@ -17,9 +18,10 @@ const privateUseStyles = makeStyles((theme) => ({
 export const RowEtapaOrdemServico: React.FC<{
     etapa: EtapaOrdemServico;
     order?: number;
+    statusOrdemServico: StatusOrdemServico;
     funcaoRemove: Function;
 }> = (props) => {
-    const {etapa, order, funcaoRemove} = props;
+    const {etapa, order, statusOrdemServico, funcaoRemove} = props;
     const i = `${etapa.id}${etapa.descricao}_${order}`;
     const privateClasses = privateUseStyles();
     return (
@@ -40,22 +42,24 @@ export const RowEtapaOrdemServico: React.FC<{
                 {formataDataStringLocal(etapa.dtFimReal)}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <Tooltip title="Remover Etapa">
-                    <IconButton
-                        key={`buttonRemove${i}`}
-                        aria-label="Remover Etapa"
-                        color="primary"
-                        size="small"
-                        disabled={etapa.hasOwnProperty('toDelete')}
-                    >
-                        <DeleteIcon
-                            fontSize="small"
-                            onClick={() => {
-                                funcaoRemove();
-                            }}
-                        />
-                    </IconButton>
-                </Tooltip>
+                {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                    <Tooltip title="Remover Etapa">
+                        <IconButton
+                            key={`buttonRemove${i}`}
+                            aria-label="Remover Etapa"
+                            color="primary"
+                            size="small"
+                            disabled={etapa.hasOwnProperty('toDelete')}
+                        >
+                            <DeleteIcon
+                                fontSize="small"
+                                onClick={() => {
+                                    funcaoRemove();
+                                }}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </TableCell>
         </TableRow>
     );

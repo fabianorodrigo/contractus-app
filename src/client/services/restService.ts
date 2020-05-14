@@ -43,6 +43,18 @@ export async function post<T>(url: string, dados: T, id: number | null): Promise
     }
 }
 
+export async function postAcao<T>(url: string, dados: any): Promise<RespostaServico<T>> {
+    try {
+        let response = await apiClient.post(url, dados);
+        return {sucesso: true, dados: response.data};
+    } catch (e) {
+        if (e && e.response) {
+            return {sucesso: false, dados: e.response.data};
+        }
+        throw e;
+    }
+}
+
 export async function del(url: string): Promise<RespostaServico<void>> {
     try {
         const response = await apiClient.delete(url);

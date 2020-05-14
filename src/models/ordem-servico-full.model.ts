@@ -49,6 +49,12 @@ export class OrdemServicoFull extends Model {
     idProduto?: string;
 
     @property({
+        type: 'number',
+        required: true,
+    })
+    idAreaRequisitante: number;
+
+    @property({
         type: 'string',
     })
     cpfRequisitante?: string;
@@ -73,7 +79,14 @@ export class OrdemServicoFull extends Model {
     @property({
         type: 'number',
     })
-    numeroDocumentoSEIOrdemServico?: number;
+    numeroDocumentoOrdemServicoSEI?: number;
+
+    @property({
+        type: 'string',
+        nullable: true,
+        default: null,
+    })
+    linkOrdemServicoSEI?: string;
 
     @property({
         type: 'number',

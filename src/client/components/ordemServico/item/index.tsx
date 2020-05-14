@@ -28,6 +28,7 @@ export const TabelaItensOrdensServico: React.FC<{
     const contratos: ContratosMap = appState.contratos;
 
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const statusOS = getStatusOrdemServico(osState.dado);
 
     const {funcaoAdiciona, funcaoRemove} = props;
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
@@ -86,6 +87,7 @@ export const TabelaItensOrdensServico: React.FC<{
                                     <RowItemOrdemServico
                                         item={item}
                                         key={i}
+                                        statusOrdemServico={statusOS}
                                         funcaoRemove={funcaoRemove.bind(null, i)}
                                     />
                                 );
@@ -96,7 +98,7 @@ export const TabelaItensOrdensServico: React.FC<{
             </TableContainer>
             {mostraFormItem && (
                 <FormItemOrdensServico
-                    statusOrdemServico={getStatusOrdemServico(osState.dado)}
+                    statusOrdemServico={statusOS}
                     onSubmitItem={onSubmitItem}
                     fechaFormItem={fechaFormItem}
                     inputDescricaoItemRef={refInputDescricaoItem}

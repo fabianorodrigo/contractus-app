@@ -5,6 +5,7 @@ export function novaOrdemServico(): OrdemServicoFull {
         idContrato: -1,
         emergencial: false,
         idTipoOrdemServicoContrato: -1,
+        idAreaRequisitante: -1,
         nomeRequisitante: '',
         nomeFiscalTecnico: '',
         itens: [],

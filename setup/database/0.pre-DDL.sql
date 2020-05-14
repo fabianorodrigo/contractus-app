@@ -5,7 +5,7 @@ CREATE ROLE contractusapp WITH
   LOGIN
   NOSUPERUSER
   INHERIT
-  NOCREATEDB
+  CREATEDB
   NOCREATEROLE
   NOREPLICATION
   ENCRYPTED PASSWORD 'md5c2d0400437978bd6ad3ca700ae2b91c6';
@@ -23,3 +23,10 @@ CREATE DATABASE contractusapp
     LC_CTYPE = 'en_US.utf8'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
+
+\l -- SHOW DATABASES
+
+\c contractusapp -- USE DATABASE
+
+SELECT nspname FROM pg_catalog.pg_namespace; -- SHOW SCHEMAS
+select * from information_schema.tables where table_schema = 'contractusapp'; --tables of schema

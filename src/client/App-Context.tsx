@@ -1,28 +1,38 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
-import {ContratosMap, FornecedoresMap, OrdensServicoMap} from './models/TypeContext';
+import {AreasRequisitantesMap, ContratosMap, FornecedoresMap, OrdensServicoMap} from './models/TypeContext';
 
 export type AppContextStoreType = {
+    emEspera: boolean;
     fornecedores: FornecedoresMap;
     contratos: ContratosMap;
     ordensServico: OrdensServicoMap;
+    areasRequisigantes: AreasRequisitantesMap;
 };
 export enum ActionEntity {
+    AREA_REQUISIGANTE = 'areasRequisigantes',
     FORNECEDOR = 'fornecedores',
     CONTRATO = 'contratos',
     ORDEM_SERVICO = 'ordensServico',
 }
 export enum ActionType {
+    EM_ESPERA,
     INCLUIR,
     REMOVER,
 }
 
 export interface AppDispatch {
     tipo: ActionType;
-    entidade: ActionEntity;
+    entidade?: ActionEntity;
     dados: any;
 }
 
-const initialState: AppContextStoreType = {fornecedores: {}, contratos: {}, ordensServico: {}};
+const initialState: AppContextStoreType = {
+    fornecedores: {},
+    contratos: {},
+    ordensServico: {},
+    areasRequisigantes: {},
+    emEspera: false,
+};
 export const AppContext = createContext<{
     state: AppContextStoreType;
     dispatch: React.Dispatch<AppDispatch>;
@@ -43,17 +53,23 @@ export const AppContextProvider: React.FC<{children: ReactNode}> = ({children}) 
  * @param state
  * @param acao
  */
-const reducer = (state: AppContextStoreType, acao: {tipo: ActionType; entidade: ActionEntity; dados: any}) => {
+const reducer = (state: AppContextStoreType, acao: {tipo: ActionType; entidade?: ActionEntity; dados: any}) => {
     const retorno = {...state};
     switch (acao.tipo) {
-        case ActionType.INCLUIR:
+        case ActionType.EM_ESPERA: {
+            retorno.emEspera = acao.dados;
+            return retorno;
+        }
+        case ActionType.INCLUIR: {
             //Se você retornar o mesmo valor do Hook Reducer que o valor do state atual, React irá pular a ação sem
             //renderizar os filhos ou disparar os efeitos. (React usa o algoritmo de comparação Object.is.)
-            retorno[acao.entidade][acao.dados.id] = acao.dados;
+            retorno[acao.entidade as ActionEntity][acao.dados.id] = acao.dados;
             return retorno;
-        case ActionType.REMOVER:
-            delete retorno[acao.entidade][acao.dados.id];
+        }
+        case ActionType.REMOVER: {
+            delete retorno[acao.entidade as ActionEntity][acao.dados.id];
             return retorno;
+        }
         default:
             return state;
     }

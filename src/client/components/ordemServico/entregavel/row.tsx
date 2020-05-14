@@ -1,6 +1,7 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {EntregavelOrdemServico} from '../../../../models';
+import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
 import {DeleteIcon} from '../../lib/icons';
 
 const privateUseStyles = makeStyles((theme) => ({
@@ -16,9 +17,10 @@ const privateUseStyles = makeStyles((theme) => ({
 export const RowEntregavelOrdemServico: React.FC<{
     entregavel: EntregavelOrdemServico;
     order?: number;
+    statusOrdemServico: StatusOrdemServico;
     funcaoRemove: Function;
 }> = (props) => {
-    const {entregavel, order, funcaoRemove} = props;
+    const {entregavel, order, statusOrdemServico, funcaoRemove} = props;
     const i = `${entregavel.id}${entregavel.descricao}_${order}`;
     const privateClasses = privateUseStyles();
     return (
@@ -32,22 +34,24 @@ export const RowEntregavelOrdemServico: React.FC<{
                 {entregavel.linkEvidencia}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <Tooltip title="Remover Entregável">
-                    <IconButton
-                        key={`buttonRemove${i}`}
-                        aria-label="Remover Entregável"
-                        color="primary"
-                        size="small"
-                        disabled={entregavel.hasOwnProperty('toDelete')}
-                    >
-                        <DeleteIcon
-                            fontSize="small"
-                            onClick={() => {
-                                funcaoRemove();
-                            }}
-                        />
-                    </IconButton>
-                </Tooltip>
+                {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                    <Tooltip title="Remover Entregável">
+                        <IconButton
+                            key={`buttonRemove${i}`}
+                            aria-label="Remover Entregável"
+                            color="primary"
+                            size="small"
+                            disabled={entregavel.hasOwnProperty('toDelete')}
+                        >
+                            <DeleteIcon
+                                fontSize="small"
+                                onClick={() => {
+                                    funcaoRemove();
+                                }}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </TableCell>
         </TableRow>
     );

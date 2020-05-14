@@ -13,7 +13,7 @@ enum NivelAcesso {
 
 const TIPO_DOCUMENTO_ORDEM_SERVICO = '222';
 
-export function createDocumento(
+export function criarDocumento(
     numeroProcesso: string,
     numeroDocumento: string,
     descricao: string,

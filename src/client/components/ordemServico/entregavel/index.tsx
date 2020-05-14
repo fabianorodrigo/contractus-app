@@ -26,6 +26,7 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
     const contratos: ContratosMap = appState.contratos;
 
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const statusOS = getStatusOrdemServico(osState.dado);
 
     const {funcaoAdiciona, funcaoRemove} = props;
     const classes = useStyles();
@@ -68,6 +69,7 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
                                 return (
                                     <RowEntregavelOrdemServico
                                         entregavel={entregavel}
+                                        statusOrdemServico={statusOS}
                                         key={i}
                                         funcaoRemove={funcaoRemove.bind(null, i)}
                                     />
@@ -78,7 +80,7 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
             </TableContainer>
             {mostraForm && (
                 <FormEntregavelOrdemServico
-                    statusOrdemServico={getStatusOrdemServico(osState.dado)}
+                    statusOrdemServico={statusOS}
                     onSubmitForm={onSubmit}
                     fechaForm={fechaForm}
                     inputDescricaoRef={refInputDescricao}

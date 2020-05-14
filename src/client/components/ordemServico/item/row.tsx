@@ -1,6 +1,7 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {ItemOrdemServico} from '../../../../models';
+import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
 import {formataNumeroStringLocal} from '../../../services/formatacao';
 import {DeleteIcon} from '../../lib/icons';
 
@@ -17,9 +18,10 @@ const privateUseStyles = makeStyles((theme) => ({
 export const RowItemOrdemServico: React.FC<{
     item: ItemOrdemServico;
     order?: number;
+    statusOrdemServico: StatusOrdemServico;
     funcaoRemove: Function;
 }> = (props) => {
-    const {item, order, funcaoRemove} = props;
+    const {item, order, statusOrdemServico, funcaoRemove} = props;
     const i = `${item.id}${item.descricao}_${order}`;
     const privateClasses = privateUseStyles();
     return (
@@ -45,22 +47,24 @@ export const RowItemOrdemServico: React.FC<{
                     : item.valorUnitarioReal}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
-                <Tooltip title="Remover Item">
-                    <IconButton
-                        key={`buttonRemove${i}`}
-                        aria-label="Remover Item"
-                        color="primary"
-                        size="small"
-                        disabled={item.hasOwnProperty('toDelete')}
-                    >
-                        <DeleteIcon
-                            fontSize="small"
-                            onClick={() => {
-                                funcaoRemove();
-                            }}
-                        />
-                    </IconButton>
-                </Tooltip>
+                {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                    <Tooltip title="Remover Item">
+                        <IconButton
+                            key={`buttonRemove${i}`}
+                            aria-label="Remover Item"
+                            color="primary"
+                            size="small"
+                            disabled={item.hasOwnProperty('toDelete')}
+                        >
+                            <DeleteIcon
+                                fontSize="small"
+                                onClick={() => {
+                                    funcaoRemove();
+                                }}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </TableCell>
         </TableRow>
     );

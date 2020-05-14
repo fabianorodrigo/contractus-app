@@ -1,7 +1,7 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
 import {EntregavelTipoOrdemServico} from './entregavel-tipo-ordem-servico.model';
-import {IndicadorNiveisServicoContrato} from './indicador-niveis-servico-contrato.model';
 import {EtapaTipoOrdemServico} from './etapa-tipo-ordem-servico.model';
+import {IndicadorNiveisServicoContrato} from './indicador-niveis-servico-contrato.model';
 
 @model({
     settings: {
@@ -109,8 +109,8 @@ export class TipoOrdemServicoContrato extends Entity {
     })
     indicadores: IndicadorNiveisServicoContrato[];
 
-  @hasMany(() => EtapaTipoOrdemServico, {keyTo: 'idTipoOrdemServicoContrato'})
-  etapas: EtapaTipoOrdemServico[];
+    @hasMany(() => EtapaTipoOrdemServico, {keyTo: 'idTipoOrdemServicoContrato'})
+    etapas: EtapaTipoOrdemServico[];
 
     constructor(data?: Partial<TipoOrdemServicoContrato>) {
         super(data);

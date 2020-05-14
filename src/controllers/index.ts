@@ -26,3 +26,5 @@ export * from './tipo-ordem-servico-contrato-entregavel-tipo-ordem-servico.contr
 export * from './tipo-ordem-servico-contrato-indicador-niveis-servico-contrato.controller';
 export * from './tipo-ordem-servico-contrato.controller';
 export * from './tipo-ordem-servico-contrato-etapa-tipo-ordem-servico.controller';
+export * from './ordem-servico-area-requisitante.controller';
+export * from './area-requisitante.controller';

@@ -6,6 +6,7 @@ import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
 import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {
+    AreaRequisitanteRepository,
     ContratoRepository,
     EntregavelOrdemServicoRepository,
     EtapaOrdemServicoRepository,
@@ -13,15 +14,10 @@ import {
     ItemOrdemServicoRepository,
     OrdemServicoRepository,
 } from '../repositories';
-import {
-    createDocumento,
-    createIncluirDocumentoRequest,
-    Documento,
-    incluirDocumentoResponse,
-    OPENAPI_INCLUIR_DOCUMENTO_RESPONSE,
-    SeiService,
-    SeiServiceProvider,
-} from '../services';
+import {criarDocumento, criarIncluirDocumentoRequest, Documento, SeiService, SeiServiceProvider} from '../services';
+import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
+import {getOrdemServicoSemRelacoes} from './getOrdemServicoSemRelacoes';
+import {getValidaContrato} from './getValidaContrato';
 import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
 
 export class OrdemServicoController {
@@ -38,42 +34,49 @@ export class OrdemServicoController {
         public indicadorOrdemServicoRepository: IndicadorOrdemServicoRepository,
         @repository(ContratoRepository)
         public contratoRepository: ContratoRepository,
+        @repository(AreaRequisitanteRepository)
+        public areaRequisitanteRepository: AreaRequisitanteRepository,
         @service(SeiServiceProvider)
         protected SEIService: SeiService,
     ) {}
 
     // Map to `GET /ping`
-    @post('/ordem-servico/emitirSEI', {
+    @post('/ordem-servico/emitirSEI/{id}', {
         responses: {
-            '200': OPENAPI_INCLUIR_DOCUMENTO_RESPONSE,
+            '200': {
+                description: 'OrdemServico model instance',
+                content: {'application/json': {schema: getModelSchemaRef(OrdemServicoFull)}},
+            },
         },
     })
-    async incluirOSSEI(@requestBody() osc: OrdemServicoFull): Promise<incluirDocumentoResponse> {
+    async incluirOSSEI(@param.path.number('id') id: number): Promise<OrdemServicoFull> {
         //busca a ordem de serviço com todas as suas relações
         const ordemServico = await getValidaOrdemServico(
             this.ordemServicoRepository,
-            osc.id as number,
+            id as number,
             AcaoGetOrdemServico.Emissao_SEI,
         );
-        const contrato = await this.contratoRepository.findById(ordemServico.idContrato);
-        if (!contrato.numeroProcessoOrdensServico) {
-            throw new Error(
-                `O Contrato ${contrato.numeroContrato}/${contrato.anoContrato} não possui um Número do Processo para inclusão de Ordens de Serviço`,
-            );
-        }
-        const doc: Documento = createDocumento(
-            '01416.022861/2017-86', //FIXME: contrato.numeroProcessoOrdensServico,
+        const contrato = await getValidaContrato(this.contratoRepository, ordemServico.idContrato);
+        const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
+        const tipoOS = contrato.tiposOrdemServico.find((tos) => tos.id == ordemServico.idTipoOrdemServicoContrato);
+        if (!tipoOS) throw new Error(`Tipo de Ordem de Serviço não encontrado no Contrato`);
+        const doc: Documento = criarDocumento(
+            areaRequisitante.numeroProcessoOrdensServicoSEI,
             'todo',
             `Ordem de Serviço #todo# - Contrato ${contrato.numeroContrato}/${contrato.anoContrato}`,
-            Buffer.from('teste').toString('base64'),
+            Buffer.from(<string>tipoOS.templateOrdemServico).toString('base64'),
         );
-        try {
-            const teste = await this.SEIService.incluirDocumento(createIncluirDocumentoRequest(doc));
-            console.log(teste);
-        } catch (e) {
-            console.error(e);
-        }
-        return this.SEIService.incluirDocumento(createIncluirDocumentoRequest(doc));
+        let documentoSEI = null;
+        ordemServico.numero = await this.ordemServicoRepository.getNumeroOSContrato(ordemServico);
+        ordemServico.dtEmissao = new Date().toLocaleDateString();
+        documentoSEI = tratarIncluirDocumentoResponse(
+            await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
+        );
+        ordemServico.numeroDocumentoOrdemServicoSEI = parseInt(documentoSEI.parametros.DocumentoFormatado);
+        ordemServico.linkOrdemServicoSEI = documentoSEI.parametros.LinkAcesso;
+        //para atualizar a ordem de serviço, precisa remover os atributos de relações com outras entidades
+        await this.ordemServicoRepository.replaceById(ordemServico.id, getOrdemServicoSemRelacoes(ordemServico));
+        return ordemServico;
     }
 
     @post('/ordem-servico', {
@@ -271,7 +274,7 @@ export class OrdemServicoController {
             nomeRequisitante: osc.nomeRequisitante,
             cpfFiscalTecnico: osc.cpfFiscalTecnico,
             nomeFiscalTecnico: osc.nomeFiscalTecnico,
-            numeroDocumentoSEIOrdemServico: osc.numeroDocumentoSEIOrdemServico,
+            numeroDocumentoOrdemServicoSEI: osc.numeroDocumentoOrdemServicoSEI,
             numeroDocumentoSEITermoRecebimentoDefinitivo: osc.numeroDocumentoSEITermoRecebimentoDefinitivo,
             dtCancelamento: osc.dtCancelamento,
         });

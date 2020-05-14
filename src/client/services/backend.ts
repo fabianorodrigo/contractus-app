@@ -1,8 +1,12 @@
-import {Contrato, Fornecedor, OrdemServico, OrdemServicoFull} from '../../models';
-import {del, get, post, RespostaServico} from './restService';
+import {AreaRequisitante, Contrato, Fornecedor, OrdemServico, OrdemServicoFull} from '../../models';
+import {del, get, post, postAcao, RespostaServico} from './restService';
 
 export function getFornecedores(): Promise<RespostaServico<Fornecedor[]>> {
     return get('/fornecedor');
+}
+
+export function getAreasRequisitantes(): Promise<RespostaServico<AreaRequisitante[]>> {
+    return get('/areaRequisitante');
 }
 
 export function getContratos(): Promise<RespostaServico<Contrato[]>> {
@@ -30,6 +34,10 @@ export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<Respos
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos(ordemServico);
     return post(`/ordem-servico/`, ordemToPost as OrdemServicoFull, ordemToPost.id);
+}
+
+export function emitirOrdemServicoSEI(ordemServico: OrdemServico): Promise<RespostaServico<OrdemServicoFull>> {
+    return postAcao<OrdemServicoFull>(`/ordem-servico/emitirSEI/${ordemServico.id}`, null);
 }
 
 export function deleteOrdemServico(id: number): Promise<RespostaServico<void>> {
