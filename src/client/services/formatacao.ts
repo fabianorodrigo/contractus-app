@@ -83,3 +83,10 @@ export function formataMensagemErroLoopback(error: any) {
     }
     return error.message;
 }
+
+export function formataMensagemErro(error: Error) {
+    if (error.message.toLocaleLowerCase() == 'network error') {
+        return 'Falha de comunicação entre a sua estação de trabalho e o servidor. Verifique sua conexão ou entre em contato com a área responsável pelo suporte ao usuário';
+    }
+    return error.message;
+}

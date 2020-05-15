@@ -1,14 +1,15 @@
 import {makeStyles, TextField} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {OrdemServicoFull} from '../../../models';
+import {OrdemServico, OrdemServicoFull} from '../../../models';
 import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap, OrdensServicoMap} from '../../models/TypeContext';
 import {deleteOrdemServico, emitirOrdemServicoSEI, getOrdemServico, getOrdensServico} from '../../services/backend';
-import {formataMensagemErroLoopback} from '../../services/formatacao';
+import {formataMensagemErro, formataMensagemErroLoopback} from '../../services/formatacao';
+import {RespostaServico} from '../../services/restService';
 import {DialogConfirmacao} from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';
 import {OrdemServicoContext} from './context';
@@ -58,11 +59,42 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const onChangeContrato = (event: React.ChangeEvent<{value: unknown}>) => {
         setIdContratoSelecionado(parseInt(event.target.value as string));
     };
+
+    //funcao para tratar chamadas assíncronas a serviços
+    const getRespostaServico = async function <T>(funcaoBackend: Function): Promise<RespostaServico<T>> {
+        try {
+            emEspera(true);
+            const respostaServico = await funcaoBackend();
+            if (!respostaServico.sucesso) {
+                enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
+                    variant: 'error',
+                });
+                console.error(respostaServico.dados);
+                console.warn(osState.dado);
+            }
+            return respostaServico;
+        } catch (e) {
+            enqueueSnackbar(formataMensagemErro(e), {
+                variant: 'error',
+            });
+            console.error(e);
+            return {sucesso: false, dados: {} as T};
+        } finally {
+            emEspera(false);
+        }
+    };
+
     //Busca avalia a busca sempre que selecionar um contrato
     React.useEffect(() => {
         if (idContratoSelecionado != -1) {
-            emEspera(true);
-            getOrdensServico(idContratoSelecionado).then((respostaServico) => {
+            //Para conseguir executar await dentro de useEffect, a solução é
+            //criar uma função async que tenha o await dentro dela, e depois
+            //invocá-la
+            let respostaServico: RespostaServico<OrdemServico[]>;
+            async function buscaOSs() {
+                respostaServico = await getRespostaServico<OrdemServico[]>(
+                    getOrdensServico.bind(null, idContratoSelecionado),
+                );
                 if (respostaServico.sucesso) {
                     const ordens = respostaServico.dados;
                     ordens.forEach((o) => {
@@ -72,15 +104,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                             dados: o,
                         });
                     });
-                } else {
-                    enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
-                        variant: 'error',
-                    });
-                    console.error(respostaServico.dados);
-                    console.warn(osState.dado);
                 }
-                emEspera(false);
-            });
+            }
+            buscaOSs();
         }
     }, [idContratoSelecionado]);
     //### Controle do Tipo de visualização
@@ -92,9 +118,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const abrirDialog = async (ordemServico: OrdemServicoFull) => {
         //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
-            emEspera(true);
-            const respostaServico = await getOrdemServico(ordemServico.id as number);
-            emEspera(false);
+            const respostaServico = await getRespostaServico<OrdemServicoFull>(
+                getOrdemServico.bind(null, ordemServico.id as number),
+            );
             if (respostaServico.sucesso) {
                 ordemServico = respostaServico.dados;
                 //atualiza na state da aplicação os dados completos
@@ -105,12 +131,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 });
                 //atualiza o state do contexto da ordem de serviço com a ordem sendo editada
                 osDispatch({tipo: EditionType.EDITAR, dado: ordemServico});
-            } else {
-                enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
-                    variant: 'error',
-                });
-                console.error(respostaServico.dados);
-                console.warn(osState.dado);
             }
         } else {
             //atualiza o state do contexto uma ordem de serviço em branco
@@ -123,9 +143,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const [detalhesMensagem, setDetalhesMensagem] = React.useState<Array<string>>([]);
     const [idOSExcluir, setIdOSExcluir] = React.useState<number | undefined>(undefined);
     const excluirOrdemServico = async (ordemServico: OrdemServicoFull) => {
-        emEspera(true);
-        const respostaServico = await getOrdemServico(ordemServico.id as number);
-        emEspera(false);
+        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+            getOrdemServico.bind(null, ordemServico.id as number),
+        );
         if (respostaServico.sucesso) {
             ordemServico = respostaServico.dados;
             if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
@@ -151,19 +171,15 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     dados: ordemServico,
                 });
             }
-        } else {
-            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {variant: 'error'});
-            console.error(respostaServico.dados);
-            console.warn(osState.dado);
         }
     };
     //Emissão de OS no SEI enquanto rascunhos de ordem de serviço
     const [mensagemDialogEmissao, setMensagemDialogEmissao] = React.useState<string>('');
     const [idOSEmitir, setIdOSEmitir] = React.useState<number | undefined>(undefined);
     const emitirOSSEI = async (ordemServico: OrdemServicoFull) => {
-        emEspera(true);
-        const respostaServico = await getOrdemServico(ordemServico.id as number);
-        emEspera(false);
+        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+            getOrdemServico.bind(null, ordemServico.id as number),
+        );
         if (respostaServico.sucesso) {
             ordemServico = respostaServico.dados;
             if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
@@ -189,10 +205,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     dados: ordemServico,
                 });
             }
-        } else {
-            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {variant: 'error'});
-            console.error(respostaServico.dados);
-            console.warn(osState.dado);
         }
     };
     return (
@@ -202,9 +214,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 detalhesMensagem={detalhesMensagem}
                 funcaoFecharCallback={async (sim: boolean) => {
                     if (sim) {
-                        emEspera(true);
-                        const respostaServico = await deleteOrdemServico(idOSExcluir as number);
-                        emEspera(false);
+                        const respostaServico = await getRespostaServico<void>(
+                            deleteOrdemServico.bind(null, idOSExcluir as number),
+                        );
                         if (respostaServico.sucesso) {
                             appDispatch({
                                 tipo: ActionType.REMOVER,
@@ -214,12 +226,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                             enqueueSnackbar(`Exclusão realizada com sucesso`, {
                                 variant: 'success',
                             });
-                        } else {
-                            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
-                                variant: 'error',
-                            });
-                            console.error(respostaServico.dados);
-                            console.warn(osState.dado);
                         }
                     }
                     //ZERA o id da OS a se excluir
@@ -233,9 +239,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 funcaoFecharCallback={async (sim: boolean) => {
                     setMensagemDialogEmissao('');
                     if (sim) {
-                        emEspera(true);
-                        const respostaServico = await emitirOrdemServicoSEI(ordensServico[idOSEmitir as number]);
-                        emEspera(false);
+                        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+                            emitirOrdemServicoSEI.bind(null, ordensServico[idOSEmitir as number]),
+                        );
                         if (respostaServico.sucesso) {
                             appDispatch({
                                 tipo: ActionType.INCLUIR,
@@ -251,12 +257,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                                     variant: 'success',
                                 },
                             );
-                        } else {
-                            enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
-                                variant: 'error',
-                            });
-                            console.error(respostaServico.dados);
-                            console.warn(osState.dado);
                         }
                     }
                     //ZERA o id da OS a se excluir

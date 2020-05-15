@@ -16,6 +16,7 @@ import {
 } from '../repositories';
 import {criarDocumento, criarIncluirDocumentoRequest, Documento, SeiService, SeiServiceProvider} from '../services';
 import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
+import {getHTMLOrdemServicoSEI} from './getHTMLOrdemServicoSEI';
 import {getOrdemServicoSemRelacoes} from './getOrdemServicoSemRelacoes';
 import {getValidaContrato} from './getValidaContrato';
 import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
@@ -60,15 +61,21 @@ export class OrdemServicoController {
         const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
         const tipoOS = contrato.tiposOrdemServico.find((tos) => tos.id == ordemServico.idTipoOrdemServicoContrato);
         if (!tipoOS) throw new Error(`Tipo de Ordem de Serviço não encontrado no Contrato`);
+        //reserva número da OS e atribui ao objeto
+        ordemServico.numero = await this.ordemServicoRepository.getNumeroOSContrato(ordemServico);
+        //data de emisão = HOJE
+        ordemServico.dtEmissao = new Date().toLocaleDateString();
+        //Gera documento HTML a ser enviado para o SEI
+        const htmlDocumento: string = getHTMLOrdemServicoSEI(ordemServico, contrato, tipoOS);
+
         const doc: Documento = criarDocumento(
             areaRequisitante.numeroProcessoOrdensServicoSEI,
             'todo',
             `Ordem de Serviço #todo# - Contrato ${contrato.numeroContrato}/${contrato.anoContrato}`,
-            Buffer.from(<string>tipoOS.templateOrdemServico).toString('base64'),
+            Buffer.from(htmlDocumento).toString('base64'),
         );
         let documentoSEI = null;
-        ordemServico.numero = await this.ordemServicoRepository.getNumeroOSContrato(ordemServico);
-        ordemServico.dtEmissao = new Date().toLocaleDateString();
+
         documentoSEI = tratarIncluirDocumentoResponse(
             await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
         );
