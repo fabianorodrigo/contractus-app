@@ -13,6 +13,7 @@ import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import MenuIcon from '@material-ui/icons/Menu';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import RowingIcon from '@material-ui/icons/Rowing';
 import SearchIcon from '@material-ui/icons/Search';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartTwoTone';
@@ -36,4 +37,5 @@ export {
     DoneIcon,
     HelpOutlineOutlinedIcon,
     DescriptionIcon,
+    PeopleAltIcon,
 };

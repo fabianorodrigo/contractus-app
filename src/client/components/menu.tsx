@@ -6,7 +6,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {makeStyles} from '@material-ui/core/styles';
 import React from 'react';
 import {TypeString_Void} from '../models/TypeFunctions';
-import {BusinessIcon, GavelIcon, ListAltIcon, RowingIcon} from './lib/icons';
+import {BusinessIcon, GavelIcon, ListAltIcon, PeopleAltIcon, RowingIcon} from './lib/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,6 +63,17 @@ export const Menu: React.FC<IReactComponentMenu> = ({onClickMenu}) => {
                         <GavelIcon key="menuListIconContratos" />
                     </ListItemIcon>
                     <ListItemText key="menuListTextContratos" primary="Contratos" />
+                </ListItem>
+
+                <ListItem
+                    key="menuListAreasRequisitantes"
+                    button
+                    onClick={onClickMenu.bind(null, 'areasRequisitantes')}
+                >
+                    <ListItemIcon key="menuListIconAreasRequisitantes">
+                        <PeopleAltIcon key="menuListIconAreasRequisitantes" />
+                    </ListItemIcon>
+                    <ListItemText key="menuListTextAreasRequisitantes" primary="Áreas Requisitantes" />
                 </ListItem>
 
                 <ListItem key="menuListItemFornecedores" button onClick={onClickMenu.bind(null, 'fornecedores')}>
