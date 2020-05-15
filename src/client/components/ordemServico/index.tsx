@@ -8,7 +8,7 @@ import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} 
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {ContratosMap, FornecedoresMap, OrdensServicoMap} from '../../models/TypeContext';
 import {deleteOrdemServico, emitirOrdemServicoSEI, getOrdemServico, getOrdensServico} from '../../services/backend';
-import {formataMensagemErro, formataMensagemErroLoopback} from '../../services/formatacao';
+import {formataMensagemErro, formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import {RespostaServico} from '../../services/restService';
 import {DialogConfirmacao} from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';

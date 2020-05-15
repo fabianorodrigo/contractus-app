@@ -4,6 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import moment from 'moment';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
+import {formataDataStringLocal} from '../../../commonLib/formatacao';
 import {
     EntregavelOrdemServico,
     EtapaOrdemServico,
@@ -19,7 +20,7 @@ import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {AreasRequisitantesMap, ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {postOrdemServico} from '../../services/backend';
 import {getProximoDiaUtil, LocalFeriado} from '../../services/dataHora';
-import {formataDataStringLocal, formataMensagemErroLoopback} from '../../services/formatacao';
+import {formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import useStyles from '../../services/styles';
 import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';

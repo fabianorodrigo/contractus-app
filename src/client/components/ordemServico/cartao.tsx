@@ -1,7 +1,7 @@
 import {Button, Grid, Paper, Typography} from '@material-ui/core';
 import React from 'react';
+import {encurtaNome} from '../../../commonLib/formatacao';
 import {OrdemServico} from '../../../models';
-import {encurtaNome} from '../../services/formatacao';
 import useStyles from '../../services/styles';
 import {BuildIcon, ImportantDevicesIcon, SearchIcon} from '../lib/icons';
 

@@ -1,8 +1,8 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React from 'react';
+import {formataDataStringLocal} from '../../../../commonLib/formatacao';
 import {EtapaOrdemServico} from '../../../../models';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
-import {formataDataStringLocal} from '../../../services/formatacao';
 import {DeleteIcon} from '../../lib/icons';
 
 const privateUseStyles = makeStyles((theme) => ({

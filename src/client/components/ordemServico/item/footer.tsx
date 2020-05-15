@@ -1,6 +1,6 @@
 import {TableCell, TableFooter, TableRow} from '@material-ui/core';
 import React from 'react';
-import {formataNumeroStringLocal} from '../../../services/formatacao';
+import {formataNumeroStringLocal} from '../../../../commonLib/formatacao';
 export const FooterItensOrdensServico: React.FC<{
     totalPlanejado: number;
     totalRealizado: number;

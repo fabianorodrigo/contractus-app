@@ -9,7 +9,7 @@ import {NavBar} from './components/navBar';
 import {OrdensServico} from './components/ordemServico';
 import {OrdemServicoContextProvider} from './components/ordemServico/context';
 import {getAreasRequisitantes, getContratos, getFornecedores} from './services/backend';
-import {formataMensagemErroLoopback} from './services/formatacao';
+import {formataMensagemErroLoopback} from './services/formatacaoMensagensErro';
 import useStyles from './services/styles';
 
 export const App: React.FC<{}> = ({}) => {

@@ -18,7 +18,7 @@ import {useSnackbar} from 'notistack';
 import React from 'react';
 import {Contrato} from '../../../models';
 import {getContratos} from '../../services/backend';
-import {formataMensagemErroLoopback} from '../../services/formatacao';
+import {formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import useStyles from '../../services/styles';
 
 export const ListaContratos: React.FC<{}> = ({}) => {
