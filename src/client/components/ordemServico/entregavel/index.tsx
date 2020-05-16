@@ -75,17 +75,17 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
                                     />
                                 );
                             })}
+                        {mostraForm && (
+                            <FormEntregavelOrdemServico
+                                statusOrdemServico={statusOS}
+                                onSubmitForm={onSubmit}
+                                fechaForm={fechaForm}
+                                inputDescricaoRef={refInputDescricao}
+                            />
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
-            {mostraForm && (
-                <FormEntregavelOrdemServico
-                    statusOrdemServico={statusOS}
-                    onSubmitForm={onSubmit}
-                    fechaForm={fechaForm}
-                    inputDescricaoRef={refInputDescricao}
-                />
-            )}
         </div>
     );
 };

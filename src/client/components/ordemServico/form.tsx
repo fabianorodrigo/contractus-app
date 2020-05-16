@@ -105,6 +105,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                         variant: 'error',
                     });
                     console.error(respostaServico.dados);
+                    console.log(JSON.stringify(osState.dado));
                     console.warn(osState.dado);
                 } else {
                     appDispatch({
@@ -288,23 +289,12 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                 />
                             </Grid>
                             <Grid item xs={2}></Grid>
-                            <Grid item xs={3}>
+                            <Grid item xs={6}>
                                 <CampoTexto
                                     atributo="idProjeto"
-                                    label="Código Projeto"
+                                    label="Projeto"
                                     objetoValor={inputs}
-                                    fullWidth={false}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
-                                    obrigatorio={false}
-                                    onChange={onInputChange}
-                                />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <CampoTexto
-                                    atributo="idProduto"
-                                    label="Sigla Produto"
-                                    objetoValor={inputs}
-                                    fullWidth={false}
+                                    fullWidth={true}
                                     somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
                                     obrigatorio={false}
                                     onChange={onInputChange}

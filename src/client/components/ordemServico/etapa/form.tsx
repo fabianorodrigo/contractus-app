@@ -1,5 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {Grid, IconButton, Tooltip} from '@material-ui/core';
+import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import {MuiPickersUtilsProvider} from '@material-ui/pickers';
 import 'date-fns';
 import {useSnackbar} from 'notistack';
@@ -70,94 +70,98 @@ export const FormEtapaOrdensServico: React.FC<{
         ),
     );
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container>
-                <Grid item xs={3}>
-                    <CampoTexto
-                        fullWidth={true}
-                        atributo="descricao"
-                        label="Etapa"
-                        objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
-                        obrigatorio={true}
-                        onChange={onInputChange}
-                        error={errosInput.descricao != ''}
-                        inputRef={inputDescricaoEtapaRef}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <CampoData
-                        fullWidth={true}
-                        atributo="dtInicioPlanejada"
-                        label="Início"
-                        objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
-                        obrigatorio={true}
-                        onChange={onInputChange}
-                        error={errosInput.dtInicioPlanejada != ''}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <CampoData
-                        fullWidth={true}
-                        atributo="dtFimPlanejada"
-                        label="Conclusão"
-                        objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
-                        obrigatorio={true}
-                        onChange={onInputChange}
-                        error={errosInput.dtFimPlanejada != ''}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <CampoData
-                        fullWidth={true}
-                        atributo="dtInicioReal"
-                        label="Início"
-                        objetoValor={inputs}
-                        somenteLeitura={
-                            statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                            statusOrdemServico > StatusOrdemServico.RECEBIDA
-                        }
-                        obrigatorio={true}
-                        onChange={onInputChange}
-                        error={errosInput.dtInicioReal != ''}
-                    />
-                </Grid>
-                <Grid item xs={2}>
-                    <CampoData
-                        fullWidth={true}
-                        atributo="dtFimReal"
-                        label="Conclusão"
-                        objetoValor={inputs}
-                        somenteLeitura={
-                            statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                            statusOrdemServico > StatusOrdemServico.RECEBIDA
-                        }
-                        obrigatorio={true}
-                        onChange={onInputChange}
-                        error={errosInput.dtFimReal != ''}
-                    />
-                </Grid>
-                <Grid item xs={1}>
-                    <Tooltip title="Confirmar">
-                        <IconButton key={`buttonAddEtapa`} size="small" onClick={onSubmit}>
-                            <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Cancelar">
-                        <IconButton
-                            key={`buttonClearEtapa`}
-                            size="small"
-                            onClick={() => {
-                                fechaForm();
-                            }}
-                        >
-                            <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
-            </Grid>
-        </MuiPickersUtilsProvider>
+        <TableRow>
+            <TableCell colSpan={6} scope="row" style={{margin: '0px', padding: '0px'}}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <CampoTexto
+                                fullWidth={true}
+                                atributo="descricao"
+                                label="Etapa"
+                                objetoValor={inputs}
+                                somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                                obrigatorio={true}
+                                onChange={onInputChange}
+                                error={errosInput.descricao != ''}
+                                inputRef={inputDescricaoEtapaRef}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <CampoData
+                                fullWidth={true}
+                                atributo="dtInicioPlanejada"
+                                label="Início"
+                                objetoValor={inputs}
+                                somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                                obrigatorio={true}
+                                onChange={onInputChange}
+                                error={errosInput.dtInicioPlanejada != ''}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <CampoData
+                                fullWidth={true}
+                                atributo="dtFimPlanejada"
+                                label="Conclusão"
+                                objetoValor={inputs}
+                                somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                                obrigatorio={true}
+                                onChange={onInputChange}
+                                error={errosInput.dtFimPlanejada != ''}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <CampoData
+                                fullWidth={true}
+                                atributo="dtInicioReal"
+                                label="Início"
+                                objetoValor={inputs}
+                                somenteLeitura={
+                                    statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                                    statusOrdemServico > StatusOrdemServico.RECEBIDA
+                                }
+                                obrigatorio={true}
+                                onChange={onInputChange}
+                                error={errosInput.dtInicioReal != ''}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <CampoData
+                                fullWidth={true}
+                                atributo="dtFimReal"
+                                label="Conclusão"
+                                objetoValor={inputs}
+                                somenteLeitura={
+                                    statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                                    statusOrdemServico > StatusOrdemServico.RECEBIDA
+                                }
+                                obrigatorio={true}
+                                onChange={onInputChange}
+                                error={errosInput.dtFimReal != ''}
+                            />
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Tooltip title="Confirmar">
+                                <IconButton key={`buttonAddEtapa`} size="small" onClick={onSubmit}>
+                                    <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Cancelar">
+                                <IconButton
+                                    key={`buttonClearEtapa`}
+                                    size="small"
+                                    onClick={() => {
+                                        fechaForm();
+                                    }}
+                                >
+                                    <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+                </MuiPickersUtilsProvider>
+            </TableCell>
+        </TableRow>
     );
 };

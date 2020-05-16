@@ -1,4 +1,4 @@
-import {Grid, IconButton, Tooltip} from '@material-ui/core';
+import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
@@ -7,17 +7,20 @@ import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
+import useStyles from '../../../services/styles';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 import {novoItemOrdemServico} from './new';
+
 export const FormItemOrdensServico: React.FC<{
     statusOrdemServico: StatusOrdemServico;
     onSubmitItem: Function;
     fechaFormItem: Function;
     inputDescricaoItemRef?: React.RefObject<HTMLInputElement>;
 }> = (props) => {
+    const classes = useStyles();
     const {statusOrdemServico, onSubmitItem, fechaFormItem, inputDescricaoItemRef} = props;
     const [errosInput, setErrosInput] = React.useState({
         descricao: '',
@@ -68,117 +71,133 @@ export const FormItemOrdensServico: React.FC<{
         inputs.valorUnitarioEstimado = '';
     };
     return (
-        <Grid container>
-            <Grid item xs={4}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="descricao"
-                    label="Descrição"
-                    objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico > statusOrdemServico}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    error={errosInput.descricao != ''}
-                    inputRef={inputDescricaoItemRef}
-                />
-            </Grid>
-            <Grid item xs={1}>
-                <CampoLista
-                    atributo="siglaMetrica"
-                    label="Unidade"
-                    objetoValor={inputs}
-                    somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    defaultValue={
-                        contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas.length > 0
-                            ? contratos[osState.dado.idContrato].metricas[0].sigla
-                            : ''
-                    }
-                    error={errosInput.siglaMetrica != ''}
-                    opcoes={
-                        contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas
-                            ? contratos[osState.dado.idContrato].metricas.map((metrica) => {
-                                  return {
-                                      valor: metrica.sigla,
-                                      label: metrica.sigla,
-                                  };
-                              })
-                            : []
-                    }
-                ></CampoLista>
-            </Grid>
-            <Grid item xs={1}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="quantidadeEstimada"
-                    label="Quantidade"
-                    objetoValor={inputs}
-                    somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    type="number"
-                    error={errosInput.quantidadeEstimada != ''}
-                />
-            </Grid>
-            <Grid item xs={2}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="valorUnitarioEstimado"
-                    label="Valor Unitário"
-                    objetoValor={inputs}
-                    somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    type="number"
-                    error={errosInput.valorUnitarioEstimado != ''}
-                />
-            </Grid>
-            <Grid item xs={1}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="quantidadeReal"
-                    label="Qtd Real"
-                    objetoValor={inputs}
-                    somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    type="number"
-                    error={errosInput.quantidadeReal != ''}
-                />
-            </Grid>
-            <Grid item xs={2}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="valorUnitarioReal"
-                    label="Valor Unitário Real"
-                    objetoValor={inputs}
-                    somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    type="number"
-                    error={errosInput.valorUnitarioReal != ''}
-                />
-            </Grid>
-            <Grid item xs={1}>
-                <Tooltip title="Confirmar">
-                    <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
-                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Cancelar">
-                    <IconButton
-                        key={`buttonClearItem`}
-                        size="small"
-                        onClick={() => {
-                            limpaForm();
-                            fechaFormItem();
-                        }}
-                    >
-                        <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                    </IconButton>
-                </Tooltip>
-            </Grid>
-        </Grid>
+        <TableRow>
+            <TableCell colSpan={7} scope="row" style={{margin: '0px', padding: '0px'}}>
+                <Grid container>
+                    <Grid item xs={12}>
+                        <CampoTexto
+                            className={classes.innerTableFullWidth}
+                            atributo="descricao"
+                            label="Descrição"
+                            objetoValor={inputs}
+                            somenteLeitura={statusOrdemServico > statusOrdemServico}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            error={errosInput.descricao != ''}
+                            inputRef={inputDescricaoItemRef}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <CampoTexto
+                            atributo="idProduto"
+                            label="Produto"
+                            objetoValor={inputs}
+                            fullWidth={true}
+                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                            obrigatorio={false}
+                            onChange={onInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <CampoLista
+                            atributo="siglaMetrica"
+                            label="Unidade"
+                            objetoValor={inputs}
+                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            defaultValue={
+                                contratos[osState.dado.idContrato] &&
+                                contratos[osState.dado.idContrato].metricas.length > 0
+                                    ? contratos[osState.dado.idContrato].metricas[0].sigla
+                                    : ''
+                            }
+                            error={errosInput.siglaMetrica != ''}
+                            opcoes={
+                                contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas
+                                    ? contratos[osState.dado.idContrato].metricas.map((metrica) => {
+                                          return {
+                                              valor: metrica.sigla,
+                                              label: metrica.sigla,
+                                          };
+                                      })
+                                    : []
+                            }
+                        ></CampoLista>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="quantidadeEstimada"
+                            label="Quantidade"
+                            objetoValor={inputs}
+                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            type="number"
+                            error={errosInput.quantidadeEstimada != ''}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="valorUnitarioEstimado"
+                            label="Valor Unitário"
+                            objetoValor={inputs}
+                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            type="number"
+                            error={errosInput.valorUnitarioEstimado != ''}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="quantidadeReal"
+                            label="Qtd Real"
+                            objetoValor={inputs}
+                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            type="number"
+                            error={errosInput.quantidadeReal != ''}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="valorUnitarioReal"
+                            label="Valor Unitário Real"
+                            objetoValor={inputs}
+                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            type="number"
+                            error={errosInput.valorUnitarioReal != ''}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title="Confirmar">
+                            <IconButton key={`buttonAddItem`} size="small" onClick={onSubmit}>
+                                <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Cancelar">
+                            <IconButton
+                                key={`buttonClearItem`}
+                                size="small"
+                                onClick={() => {
+                                    limpaForm();
+                                    fechaFormItem();
+                                }}
+                            >
+                                <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                            </IconButton>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
+            </TableCell>
+        </TableRow>
     );
 };

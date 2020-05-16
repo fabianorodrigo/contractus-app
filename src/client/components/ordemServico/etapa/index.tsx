@@ -75,17 +75,17 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                     />
                                 );
                             })}
+                        {mostraFormEtapa && (
+                            <FormEtapaOrdensServico
+                                statusOrdemServico={statusOS}
+                                onSubmitForm={onSubmit}
+                                fechaForm={fechaForm}
+                                inputDescricaoEtapaRef={refInputDescricaoEtapa}
+                            />
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
-            {mostraFormEtapa && (
-                <FormEtapaOrdensServico
-                    statusOrdemServico={statusOS}
-                    onSubmitForm={onSubmit}
-                    fechaForm={fechaForm}
-                    inputDescricaoEtapaRef={refInputDescricaoEtapa}
-                />
-            )}
         </div>
     );
 };

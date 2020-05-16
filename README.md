@@ -10,6 +10,8 @@
 
     -   psql -U postgres
         -   \<Executar comandos em setup\/database\/0\.pre-DDL\.sql\>
+        -   \<Executar comandos em setup \/databases\/1.DDL_contractusapp\.sql\>
+        -   \<Executar comandos em setup\/database\/2\.DCL\.sql\>
         -   exit
     -   exit
 
@@ -18,16 +20,6 @@
 -   export POSTGRES_DATABASE=contractusapp;
 -   export POSTGRES_USER=postgres;
 -   export POSTGRES_PASSWORD=contractusapp;
-
--   npm run build
--   npm run migrate
-
--   docker exec -it contractusapp-postgres bash
-
-    -   psql -U postgres
-        -   \<Executar comandos em setup\/database\/2\.DCL\.sql\>
-        -   exit
-    -   exit
 
 -   npm start
 

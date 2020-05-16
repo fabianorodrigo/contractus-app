@@ -32,9 +32,6 @@ export const HeaderEntregaveisOrdensServico: React.FC<{
                 <TableCell valign="bottom" component="th" scope="row" key={`thDescricao`}>
                     Descrição Entregável
                 </TableCell>
-                <TableCell align="center" valign="bottom" component="th" scope="row" key={`thInicioPlan`}>
-                    Link Evidência
-                </TableCell>
                 <TableCell valign="bottom" component="th" scope="row" key={`thAcoes`} align="right">
                     Ações
                 </TableCell>

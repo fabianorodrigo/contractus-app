@@ -12,6 +12,11 @@ export default makeStyles((theme) => ({
         display: 'flex',
         flexWrap: 'wrap',
     },
+    //paga nao criar scrollbar, atribuímos
+    //essa classe para elementos fullWidth que estejam dentro de tabela
+    innerTableFullWidth: {
+        width: '98%',
+    },
     content: {
         flexGrow: 1,
         height: '100vh',

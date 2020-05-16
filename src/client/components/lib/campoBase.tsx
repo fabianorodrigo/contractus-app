@@ -6,6 +6,8 @@ export const CampoBase: React.FC<{
     label: string;
     objetoValor: {[atributo: string]: any};
     fullWidth?: boolean;
+    margin?: number;
+    className?: string;
     somenteLeitura?: boolean;
     obrigatorio?: boolean;
     onChange?: any;
@@ -13,7 +15,7 @@ export const CampoBase: React.FC<{
     defaultValue?: any;
     funcaoFormatacao?: Function;
     type?: string;
-    margin?: number;
+
     helperText?: string;
     error?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
@@ -24,6 +26,8 @@ export const CampoBase: React.FC<{
         label,
         objetoValor,
         fullWidth,
+        margin,
+        className,
         somenteLeitura,
         obrigatorio,
         onChange,
@@ -31,7 +35,6 @@ export const CampoBase: React.FC<{
         defaultValue,
         funcaoFormatacao,
         type,
-        margin,
         helperText,
         error,
         inputRef,
@@ -45,6 +48,7 @@ export const CampoBase: React.FC<{
             label={label}
             style={{margin: margin != undefined ? margin : 8}}
             fullWidth={fullWidth}
+            className={className}
             select={select}
             defaultValue={defaultValue !== null ? defaultValue : valor}
             margin="normal"

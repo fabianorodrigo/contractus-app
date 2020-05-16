@@ -23,5 +23,6 @@ export function novaEtapaOrdemServico(ordemServico: OrdemServicoFull, numeroDias
         descricao: '',
         dtInicioPlanejada: dataInicio.toDate(),
         dtFimPlanejada: dataFim.toDate(),
+        valorAdiantamentoPlanejado: 0,
     };
 }

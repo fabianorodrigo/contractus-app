@@ -92,18 +92,18 @@ export const TabelaItensOrdensServico: React.FC<{
                                     />
                                 );
                             })}
+                        {mostraFormItem && (
+                            <FormItemOrdensServico
+                                statusOrdemServico={statusOS}
+                                onSubmitItem={onSubmitItem}
+                                fechaFormItem={fechaFormItem}
+                                inputDescricaoItemRef={refInputDescricaoItem}
+                            />
+                        )}
                     </TableBody>
                     <FooterItensOrdensServico totalPlanejado={totalPlanejado} totalRealizado={totalRealizado} />
                 </Table>
             </TableContainer>
-            {mostraFormItem && (
-                <FormItemOrdensServico
-                    statusOrdemServico={statusOS}
-                    onSubmitItem={onSubmitItem}
-                    fechaFormItem={fechaFormItem}
-                    inputDescricaoItemRef={refInputDescricaoItem}
-                />
-            )}
         </div>
     );
 };

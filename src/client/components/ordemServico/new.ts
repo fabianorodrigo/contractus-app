@@ -8,6 +8,7 @@ export function novaOrdemServico(): OrdemServicoFull {
         idAreaRequisitante: -1,
         nomeRequisitante: '',
         nomeFiscalTecnico: '',
+        idProjeto: '',
         itens: [],
         entregaveis: [],
         etapas: [],

@@ -1,4 +1,4 @@
-import {Grid, IconButton, Tooltip} from '@material-ui/core';
+import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import 'date-fns';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
@@ -46,53 +46,57 @@ export const FormEntregavelOrdemServico: React.FC<{
     };
     const {inputs, onInputChange, onSubmit} = useFormHook(valida, novoEntregavelOrdemServico(osState.dado));
     return (
-        <Grid container>
-            <Grid item xs={3}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="descricao"
-                    label="Entregável"
-                    objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    error={errosInput.descricao != ''}
-                    inputRef={inputDescricaoRef}
-                />
-            </Grid>
-            <Grid item xs={8}>
-                <CampoTexto
-                    fullWidth={true}
-                    atributo="linkEvidencia"
-                    label="Link Evidência"
-                    objetoValor={inputs}
-                    somenteLeitura={
-                        statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                        statusOrdemServico > StatusOrdemServico.RECEBIDA
-                    }
-                    obrigatorio={true}
-                    onChange={onInputChange}
-                    error={errosInput.descricao != ''}
-                />
-            </Grid>
-            <Grid item xs={1}>
-                <Tooltip title="Confirmar">
-                    <IconButton key={`buttonAdd`} size="small" onClick={onSubmit}>
-                        <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Cancelar">
-                    <IconButton
-                        key={`buttonClear`}
-                        size="small"
-                        onClick={() => {
-                            fechaForm();
-                        }}
-                    >
-                        <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
-                    </IconButton>
-                </Tooltip>
-            </Grid>
-        </Grid>
+        <TableRow>
+            <TableCell colSpan={3} scope="row" style={{margin: '0px', padding: '0px'}}>
+                <Grid container>
+                    <Grid item xs={3}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="descricao"
+                            label="Entregável"
+                            objetoValor={inputs}
+                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            error={errosInput.descricao != ''}
+                            inputRef={inputDescricaoRef}
+                        />
+                    </Grid>
+                    <Grid item xs={8}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="linkEvidencia"
+                            label="Link Evidência"
+                            objetoValor={inputs}
+                            somenteLeitura={
+                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                                statusOrdemServico > StatusOrdemServico.RECEBIDA
+                            }
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            error={errosInput.descricao != ''}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title="Confirmar">
+                            <IconButton key={`buttonAdd`} size="small" onClick={onSubmit}>
+                                <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Cancelar">
+                            <IconButton
+                                key={`buttonClear`}
+                                size="small"
+                                onClick={() => {
+                                    fechaForm();
+                                }}
+                            >
+                                <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
+                            </IconButton>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
+            </TableCell>
+        </TableRow>
     );
 };

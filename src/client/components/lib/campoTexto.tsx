@@ -6,6 +6,8 @@ export const CampoTexto: React.FC<{
     label: string;
     objetoValor: {[atributo: string]: any};
     fullWidth?: boolean;
+    margin?: number;
+    className?: string;
     somenteLeitura?: boolean;
     obrigatorio?: boolean;
     onChange?: Function;
@@ -20,6 +22,8 @@ export const CampoTexto: React.FC<{
     label,
     objetoValor,
     fullWidth,
+    margin,
+    className,
     somenteLeitura,
     obrigatorio,
     onChange,
@@ -35,6 +39,8 @@ export const CampoTexto: React.FC<{
             atributo={atributo}
             label={label}
             fullWidth={fullWidth}
+            className={className}
+            margin={margin}
             somenteLeitura={somenteLeitura}
             obrigatorio={obrigatorio}
             onChange={onChange}

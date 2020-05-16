@@ -9,6 +9,7 @@ export function novoItemOrdemServico(ordemServico: OrdemServicoFull) {
     return {
         idOrdemServico: ordemServico.id,
         descricao: '',
+        idProduto: '',
         siglaMetrica:
             contratos[ordemServico.idContrato] && contratos[ordemServico.idContrato].metricas.length > 0
                 ? contratos[ordemServico.idContrato].metricas[0].sigla

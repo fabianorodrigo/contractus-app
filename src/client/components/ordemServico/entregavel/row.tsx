@@ -30,9 +30,6 @@ export const RowEntregavelOrdemServico: React.FC<{
             <TableCell colSpan={2} scope="row" key={`tdDescricao${i}`} style={{paddingBottom: '0px'}}>
                 {entregavel.descricao}
             </TableCell>
-            <TableCell align="center" scope="row" key={`tdIniPlan${i}`}>
-                {entregavel.linkEvidencia}
-            </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
                 {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
                     <Tooltip title="Remover Entregável">
