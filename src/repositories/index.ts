@@ -14,3 +14,4 @@ export * from './sancao-indicador-niveis-servico-contrato.repository';
 export * from './tipo-ordem-servico-contrato.repository';
 export * from './etapa-tipo-ordem-servico.repository';
 export * from './area-requisitante.repository';
+export * from './recebimento-ordem-servico.repository';

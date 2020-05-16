@@ -22,7 +22,6 @@ export function getHTMLOrdemServicoSEI(
         fornecedor,
         areaRequisitante,
         projeto: {nome: ordemServico.idProjeto},
-        produto: {nome: ordemServico.idProduto},
     };
 
     let htmlFinal = tipoOrdemServico.templateOrdemServico;

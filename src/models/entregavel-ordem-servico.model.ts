@@ -29,14 +29,6 @@ export class EntregavelOrdemServico extends Entity {
     descricao: string;
 
     @property({
-        type: 'string',
-        postgresql: {
-            columnName: 'DE_LINK_EVIDENCIA',
-        },
-    })
-    linkEvidencia?: string;
-
-    @property({
         type: 'number',
         postgresql: {
             columnName: 'NR_ORDEM',

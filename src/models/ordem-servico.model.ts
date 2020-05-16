@@ -77,14 +77,6 @@ export class OrdemServico extends Entity {
     idProjeto?: string;
 
     @property({
-        type: 'string',
-        postgresql: {
-            columnName: 'ID_PRODUTO',
-        },
-    })
-    idProduto?: string;
-
-    @property({
         type: 'number',
         required: true,
         postgresql: {
@@ -148,16 +140,6 @@ export class OrdemServico extends Entity {
         },
     })
     linkOrdemServicoSEI?: string;
-
-    @property({
-        type: 'number',
-        nullable: true,
-        default: null,
-        postgresql: {
-            columnName: 'NR_TERMO_RECEBIMENTO_DEFINITIVO_SEI',
-        },
-    })
-    numeroDocumentoSEITermoRecebimentoDefinitivo?: number;
 
     @property({
         type: 'date',

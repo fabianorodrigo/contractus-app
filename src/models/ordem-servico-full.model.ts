@@ -44,11 +44,6 @@ export class OrdemServicoFull extends Model {
     idProjeto?: string;
 
     @property({
-        type: 'string',
-    })
-    idProduto?: string;
-
-    @property({
         type: 'number',
         required: true,
     })
@@ -87,11 +82,6 @@ export class OrdemServicoFull extends Model {
         default: null,
     })
     linkOrdemServicoSEI?: string;
-
-    @property({
-        type: 'number',
-    })
-    numeroDocumentoSEITermoRecebimentoDefinitivo?: number;
 
     @property({
         type: 'date',

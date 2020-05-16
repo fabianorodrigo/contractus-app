@@ -47,6 +47,16 @@ export class EtapaOrdemServico extends Entity {
     dtFimPlanejada: string;
 
     @property({
+        type: 'number',
+        required: true,
+        postgresql: {
+            columnName: 'VL_ADIANTAMENTO_PLANEJADO',
+            dataType: 'NUMERIC(10,2)',
+        },
+    })
+    valorAdiantamentoPlanejado?: number;
+
+    @property({
         type: 'date',
         postgresql: {
             columnName: 'DT_INICIO_REAL',
@@ -64,11 +74,39 @@ export class EtapaOrdemServico extends Entity {
 
     @property({
         type: 'number',
+        required: true,
+        postgresql: {
+            columnName: 'VL_ADIANTAMENTO_REAL',
+            dataType: 'NUMERIC(10,2)',
+        },
+    })
+    valorAdiantamentoReal?: number;
+
+    @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'IN_RESULTADO_ETAPA',
+        },
+    })
+    idResultadoEtapa?: string;
+
+    @property({
+        type: 'number',
         postgresql: {
             columnName: 'ID_ORDEM_SERVICO',
         },
     })
     idOrdemServico?: number;
+
+    @property({
+        type: 'date',
+        nullable: true,
+        default: null,
+        postgresql: {
+            columnName: 'DT_CANCELAMENTO',
+        },
+    })
+    dtCancelamento?: string;
 
     constructor(data?: Partial<EtapaOrdemServico>) {
         super(data);

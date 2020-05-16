@@ -17,7 +17,7 @@ export const CartaoOrdemServico: React.FC<{
                 <Grid container spacing={1} direction="column">
                     <Grid item>
                         <Typography color="primary" variant="h6">
-                            {String(ordemServico.numero).padStart(3, '0')} - {ordemServico.idProduto}
+                            {String(ordemServico.numero).padStart(3, '0')}
                         </Typography>
                     </Grid>
                     <Grid item>

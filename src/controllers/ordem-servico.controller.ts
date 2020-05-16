@@ -10,18 +10,30 @@ import {
     ContratoRepository,
     EntregavelOrdemServicoRepository,
     EtapaOrdemServicoRepository,
+    FornecedorRepository,
     IndicadorOrdemServicoRepository,
     ItemOrdemServicoRepository,
     OrdemServicoRepository,
 } from '../repositories';
 import {criarDocumento, criarIncluirDocumentoRequest, Documento, SeiService, SeiServiceProvider} from '../services';
 import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
+import {converteOrdemServicoFullToOrdemServico} from './converteOrdemServicoFullToOrdemServico';
 import {getHTMLOrdemServicoSEI} from './getHTMLOrdemServicoSEI';
 import {getOrdemServicoSemRelacoes} from './getOrdemServicoSemRelacoes';
 import {getValidaContrato} from './getValidaContrato';
-import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
+import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico'; // `log` is an interceptor function
 
-export class OrdemServicoController {
+/*const log: Interceptor = async (invocationCtx, next) => {
+    console.log('log: before-' + invocationCtx.methodName);
+    console.log(invocationCtx.args);
+    // Wait until the interceptor/method chain returns
+    const result = await next();
+    console.log('log: after-' + invocationCtx.methodName);
+    console.log(invocationCtx.args);
+    return result;
+};
+
+@intercept(log)*/ export class OrdemServicoController {
     constructor(
         @repository(OrdemServicoRepository)
         public ordemServicoRepository: OrdemServicoRepository,
@@ -37,6 +49,8 @@ export class OrdemServicoController {
         public contratoRepository: ContratoRepository,
         @repository(AreaRequisitanteRepository)
         public areaRequisitanteRepository: AreaRequisitanteRepository,
+        @repository(FornecedorRepository)
+        public fornecedorRepository: FornecedorRepository,
         @service(SeiServiceProvider)
         protected SEIService: SeiService,
     ) {}
@@ -59,14 +73,21 @@ export class OrdemServicoController {
         );
         const contrato = await getValidaContrato(this.contratoRepository, ordemServico.idContrato);
         const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
+        const fornecedor = await this.fornecedorRepository.findById(contrato.idFornecedor);
         const tipoOS = contrato.tiposOrdemServico.find((tos) => tos.id == ordemServico.idTipoOrdemServicoContrato);
         if (!tipoOS) throw new Error(`Tipo de Ordem de Serviço não encontrado no Contrato`);
         //reserva número da OS e atribui ao objeto
         ordemServico.numero = await this.ordemServicoRepository.getNumeroOSContrato(ordemServico);
         //data de emisão = HOJE
-        ordemServico.dtEmissao = new Date().toLocaleDateString();
+        ordemServico.dtEmissao = new Date().toISOString();
         //Gera documento HTML a ser enviado para o SEI
-        const htmlDocumento: string = getHTMLOrdemServicoSEI(ordemServico, contrato, tipoOS);
+        const htmlDocumento: string = getHTMLOrdemServicoSEI(
+            ordemServico,
+            contrato,
+            tipoOS,
+            fornecedor,
+            areaRequisitante,
+        );
 
         const doc: Documento = criarDocumento(
             areaRequisitante.numeroProcessoOrdensServicoSEI,
@@ -108,14 +129,14 @@ export class OrdemServicoController {
         osc: Omit<OrdemServicoFull, 'id'>,
     ): Promise<OrdemServicoFull> {
         const osRetorno: OrdemServicoFull = JSON.parse(JSON.stringify(osc));
-        osRetorno.itens = []; //limpa os itens pois serão inseridos os com id retornados da criação via repositório de itens
+        //limpa os itens pois serão inseridos os com id retornados da criação via repositório de itens
+        osRetorno.itens = [];
+        osRetorno.entregaveis = [];
+        osRetorno.etapas = [];
+        osRetorno.indicadores = [];
 
-        const ordemServico: OrdemServico = JSON.parse(JSON.stringify(osc)); //clone OS
-        //remove atributos de relações pois o repository não aceita
-        delete ordemServico.itens;
-        delete ordemServico.entregaveis;
-        delete ordemServico.etapas;
-        delete ordemServico.indicadores;
+        //clona OS e remove atributos de relações pois o repository não aceita
+        const ordemServico: OrdemServico = converteOrdemServicoFullToOrdemServico(osc);
 
         const transacao = await this.ordemServicoRepository.beginTransaction();
         try {
@@ -268,34 +289,27 @@ export class OrdemServicoController {
         },
     })
     async replaceById(@param.path.number('id') id: number, @requestBody() osc: OrdemServicoFull): Promise<void> {
-        const ordemServico: OrdemServico = new OrdemServico({
-            id: osc.id,
-            idContrato: osc.idContrato,
-            numero: osc.numero,
-            emergencial: osc.emergencial,
-            idTipoOrdemServicoContrato: osc.idTipoOrdemServicoContrato,
-            dtEmissao: osc.dtEmissao,
-            idProjeto: osc.idProjeto,
-            idProduto: osc.idProduto,
-            cpfRequisitante: osc.cpfRequisitante,
-            nomeRequisitante: osc.nomeRequisitante,
-            cpfFiscalTecnico: osc.cpfFiscalTecnico,
-            nomeFiscalTecnico: osc.nomeFiscalTecnico,
-            numeroDocumentoOrdemServicoSEI: osc.numeroDocumentoOrdemServicoSEI,
-            numeroDocumentoSEITermoRecebimentoDefinitivo: osc.numeroDocumentoSEITermoRecebimentoDefinitivo,
-            dtCancelamento: osc.dtCancelamento,
-        });
+        //clona OS e remove atributos de relações pois o repository não aceita
+        const ordemServico: OrdemServico = converteOrdemServicoFullToOrdemServico(osc);
         const transacao = await this.ordemServicoRepository.beginTransaction();
         try {
-            await this.ordemServicoRepository.replaceById(id, ordemServico, {transaction: transacao});
+            await this.ordemServicoRepository.replaceById(id, ordemServico, {
+                transaction: transacao,
+            });
             for await (let i of osc.itens) {
                 const item: ItemOrdemServico = i as ItemOrdemServico;
                 if (item.hasOwnProperty('toDelete')) {
-                    await this.itemOrdemServicoRepository.deleteById(item.id, {transaction: transacao});
+                    await this.itemOrdemServicoRepository.deleteById(item.id, {
+                        transaction: transacao,
+                    });
                 } else if (item.id) {
-                    await this.itemOrdemServicoRepository.updateById(item.id, item, {transaction: transacao});
+                    await this.itemOrdemServicoRepository.updateById(item.id, item, {
+                        transaction: transacao,
+                    });
                 } else {
-                    await this.itemOrdemServicoRepository.create(item, {transaction: transacao});
+                    await this.itemOrdemServicoRepository.create(item, {
+                        transaction: transacao,
+                    });
                 }
             }
             for await (let i of osc.etapas) {
@@ -332,7 +346,9 @@ export class OrdemServicoController {
                         transaction: transacao,
                     });
                 } else {
-                    await this.entregavelOrdemServicoRepository.create(entregavel, {transaction: transacao});
+                    await this.entregavelOrdemServicoRepository.create(entregavel, {
+                        transaction: transacao,
+                    });
                 }
             }
             await transacao.commit();

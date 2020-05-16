@@ -161,7 +161,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     `Tipo da Ordem de Serviço: ${getTipoOrdemServico(ordemServico, contratos)?.descricao}`,
                     `Requisitante: ${ordemServico.nomeRequisitante}`,
                     `Fiscal Técnico: ${ordemServico.nomeFiscalTecnico}`,
-                    `Produto: ${ordemServico.idProduto ? ordemServico.idProduto : ''}`,
                     `Projeto: ${ordemServico.idProjeto ? ordemServico.idProjeto : ''}`,
                 ]);
             } else {
@@ -195,7 +194,6 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                     `Tipo da Ordem de Serviço: ${getTipoOrdemServico(ordemServico, contratos)?.descricao}`,
                     `Requisitante: ${ordemServico.nomeRequisitante}`,
                     `Fiscal Técnico: ${ordemServico.nomeFiscalTecnico}`,
-                    `Produto: ${ordemServico.idProduto ? ordemServico.idProduto : ''}`,
                     `Projeto: ${ordemServico.idProjeto ? ordemServico.idProjeto : ''}`,
                 ]);
             } else {

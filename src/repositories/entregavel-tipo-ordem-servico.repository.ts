@@ -1,9 +1,9 @@
 import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {DefaultTransactionalRepository} from '@loopback/repository';
 import {ContractusDataSource} from '../datasources';
 import {EntregaveisTipoOrdemServicoRelations, EntregavelTipoOrdemServico} from '../models';
 
-export class EntregavelTipoOrdemServicoRepository extends DefaultCrudRepository<
+export class EntregavelTipoOrdemServicoRepository extends DefaultTransactionalRepository<
     EntregavelTipoOrdemServico,
     typeof EntregavelTipoOrdemServico.prototype.id,
     EntregaveisTipoOrdemServicoRelations

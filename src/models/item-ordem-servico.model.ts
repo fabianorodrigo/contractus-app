@@ -39,6 +39,14 @@ export class ItemOrdemServico extends Entity {
 
     @property({
         type: 'string',
+        postgresql: {
+            columnName: 'ID_PRODUTO',
+        },
+    })
+    idProduto?: string;
+
+    @property({
+        type: 'string',
         required: true,
         postgresql: {
             columnName: 'SG_METRICA',
