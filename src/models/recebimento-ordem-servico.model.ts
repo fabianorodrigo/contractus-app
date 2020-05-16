@@ -1,11 +1,13 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({ settings: {
+@model({
+    settings: {
         postgresql: {
             schema: 'contractusapp',
             table: 'TB_RECEBIMENTO_ORDEM_SERVICO',
         },
-    },)
+    },
+})
 export class RecebimentoOrdemServico extends Entity {
     @property({
         type: 'number',

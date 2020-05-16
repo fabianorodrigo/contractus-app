@@ -48,7 +48,6 @@ export class EtapaOrdemServico extends Entity {
 
     @property({
         type: 'number',
-        required: true,
         postgresql: {
             columnName: 'VL_ADIANTAMENTO_PLANEJADO',
             dataType: 'NUMERIC(10,2)',
@@ -74,7 +73,6 @@ export class EtapaOrdemServico extends Entity {
 
     @property({
         type: 'number',
-        required: true,
         postgresql: {
             columnName: 'VL_ADIANTAMENTO_REAL',
             dataType: 'NUMERIC(10,2)',
