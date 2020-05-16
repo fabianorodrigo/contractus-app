@@ -12,17 +12,20 @@ export function formataNumeroStringLocal(numero: number | string, financeiro: bo
         v = parseFloat(v);
     }
     if (financeiro) {
-        return v.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+        //como o Nodejs não vem por default com todos os locales, formatava errado no server side
+        //foi melhor então testar essa função customizada ao invés do toLocaleString (que funciona certinho no front)
+        return (
+            'R$ ' +
+            v
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+\,)/g, '$1.')
+        );
     } else {
-        return v.toLocaleString('pt-BR', {
-            minimumFractionDigits: casosDecimais,
-            maximumFractionDigits: casosDecimais,
-        });
+        return v
+            .toFixed(casosDecimais)
+            .replace('.', ',')
+            .replace(/(\d)(?=(\d{3})+\,)/g, '$1.');
     }
 }
 
