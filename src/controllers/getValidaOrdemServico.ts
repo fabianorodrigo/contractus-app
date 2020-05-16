@@ -1,3 +1,4 @@
+import {OrdemServico} from '../models';
 import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {OrdemServicoRepository} from '../repositories';
@@ -19,7 +20,7 @@ export async function getValidaOrdemServico(
     ordemServicoRepository: OrdemServicoRepository,
     id: number,
     proposito: AcaoGetOrdemServico,
-) {
+): Promise<OrdemServico> {
     //busca a ordem de serviço com todas as suas relações necessárias ao propósito
     const include =
         proposito == AcaoGetOrdemServico.Excluir
