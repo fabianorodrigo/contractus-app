@@ -28,6 +28,11 @@ const appTheme = createMuiTheme({
         },
     },
     overrides: {
+        MuiContainer: {
+            root: {
+                marginLeft: 0,
+            },
+        },
         MuiOutlinedInput: {
             input: {
                 padding: theme.spacing(1),
