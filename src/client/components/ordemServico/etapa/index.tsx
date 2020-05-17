@@ -1,20 +1,22 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
-import {useSnackbar} from 'notistack';
-import React, {Dispatch, useContext, useEffect} from 'react';
-import {EtapaOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
+import React, {Dispatch, useContext} from 'react';
+import {EtapaOrdemServico, OrdemServicoFull} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
+import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
+import {getTipoOrdemServico} from '../getTipoOrdemServico';
 import {FormEtapaOrdensServico} from './form';
 import {HeaderEtapasOrdensServico} from './header';
+import {novaEtapaOrdemServico} from './new';
 import {RowEtapaOrdemServico} from './row';
 
 export const TabelaEtapasOrdensServico: React.FC<{
-    funcaoAdiciona: Function;
-    funcaoRemove: Function;
+    funcaoAdicionar: (etapa: EtapaOrdemServico) => void;
+    funcaoAtualizar: (etapa: EtapaOrdemServico, indice: number) => void;
+    funcaoRemover: (indice: number) => void;
 }> = (props) => {
     const refInputDescricaoEtapa = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaEtapa = React.useRef<HTMLInputElement>(null);
@@ -26,29 +28,15 @@ export const TabelaEtapasOrdensServico: React.FC<{
     const contratos: ContratosMap = appState.contratos;
 
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
-    const statusOS = getStatusOrdemServico(osState.dado);
+    const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
 
-    const {funcaoAdiciona, funcaoRemove} = props;
+    const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
     const classes = useStyles();
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
-    const fechaForm = () => {
-        setMostraFormEtapa(false);
-    };
-    const onSubmit = (item: ItemOrdemServico) => {
-        funcaoAdiciona(item);
-        fechaForm();
-    };
 
-    const [mostraFormEtapa, setMostraFormEtapa] = React.useState(false);
-    //quando mudar o valor de mostra item, se for para TRUE, foca no campo descrição
-    //Se for FALSE e o contrato já estiver selecionado, foca no botão adicionar
-    useEffect(() => {
-        if (mostraFormEtapa && refInputDescricaoEtapa.current != null) {
-            refInputDescricaoEtapa.current.focus();
-        } else if (contratos[osState.dado.idContrato] && !mostraFormEtapa && refButtonAdicionaEtapa.current != null) {
-            refButtonAdicionaEtapa.current.focus();
-        }
-    }, [mostraFormEtapa]);
+    //Custom Hook para controle dos elementos visuais durante a edição
+    const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
+        EtapaOrdemServico
+    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoEtapa, refButtonAdicionaEtapa);
 
     return (
         <div style={{marginLeft: 8, marginTop: 8}}>
@@ -56,10 +44,16 @@ export const TabelaEtapasOrdensServico: React.FC<{
             <TableContainer component={Paper}>
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderEtapasOrdensServico
-                        mostraFormEtapa={mostraFormEtapa}
-                        funcaoMostraForm={() => {
-                            setMostraFormEtapa(true);
-                        }}
+                        mostraFormEtapa={mostraForm}
+                        funcaoAdicionar={criar.bind(
+                            null,
+                            novaEtapaOrdemServico(
+                                osState.dado,
+                                tipoOrdemServico?.etapas && tipoOrdemServico.etapas.length > 0
+                                    ? tipoOrdemServico.etapas[0].numeroDiasUteisDuracao
+                                    : 10,
+                            ),
+                        )}
                         buttonAdicionaEtapaRef={refButtonAdicionaEtapa}
                     />
                     <TableBody>
@@ -69,17 +63,17 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                 return (
                                     <RowEtapaOrdemServico
                                         etapa={etapa}
-                                        statusOrdemServico={statusOS}
                                         key={i}
-                                        funcaoRemove={funcaoRemove.bind(null, i)}
+                                        funcaoEditar={editar.bind(null, etapa, i)}
+                                        funcaoRemover={remover.bind(null, i)}
                                     />
                                 );
                             })}
-                        {mostraFormEtapa && (
+                        {mostraForm && (
                             <FormEtapaOrdensServico
-                                statusOrdemServico={statusOS}
-                                onSubmitForm={onSubmit}
-                                fechaForm={fechaForm}
+                                etapaEditada={instancia}
+                                onSubmitForm={confirmar}
+                                fechaForm={fecharForm}
                                 inputDescricaoEtapaRef={refInputDescricaoEtapa}
                             />
                         )}

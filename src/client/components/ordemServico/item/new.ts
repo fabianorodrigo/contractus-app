@@ -7,6 +7,7 @@ export function novoItemOrdemServico(ordemServico: OrdemServicoFull) {
     const {state: appState}: {state: AppContextStoreType} = useContext(AppContext);
     const contratos: ContratosMap = appState.contratos;
     return {
+        id: undefined,
         idOrdemServico: ordemServico.id,
         descricao: '',
         idProduto: '',

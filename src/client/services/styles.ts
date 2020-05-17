@@ -17,6 +17,9 @@ export default makeStyles((theme) => ({
     innerTableFullWidth: {
         width: '98%',
     },
+    gridActionColumn: {
+        textAlign: 'right',
+    },
     content: {
         flexGrow: 1,
         height: '100vh',

@@ -131,11 +131,9 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
             });
         }
     };
-    const {inputs, onInputChange, addItemArray, markToRemoveItemArray, onSubmit} = useFormHook<OrdemServicoFull>(
-        onSubmitOS,
-        osState.dado as OrdemServicoFull,
-        ordemServicoContexto,
-    );
+    const {inputs, onInputChange, addItemArray, updateItemArray, markToRemoveItemArray, onSubmit} = useFormHook<
+        OrdemServicoFull
+    >(onSubmitOS, osState.dado as OrdemServicoFull, ordemServicoContexto);
     const [aberto, setAberto] = React.useState(true);
 
     const onClickClose = () => {
@@ -358,10 +356,13 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaEtapasOrdensServico
-                                    funcaoAdiciona={(etapa: EtapaOrdemServico) => {
+                                    funcaoAdicionar={(etapa: EtapaOrdemServico) => {
                                         addItemArray('etapas', etapa);
                                     }}
-                                    funcaoRemove={(indice: number) => {
+                                    funcaoAtualizar={(etapa: EtapaOrdemServico, indice: number) => {
+                                        updateItemArray('etapas', indice, etapa);
+                                    }}
+                                    funcaoRemover={(indice: number) => {
                                         markToRemoveItemArray('etapas', indice);
                                     }}
                                 />

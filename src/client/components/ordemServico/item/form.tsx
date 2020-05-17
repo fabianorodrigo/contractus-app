@@ -131,7 +131,7 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="quantidadeEstimada"
                             label="Quantidade"
                             objetoValor={inputs}
-                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
@@ -144,7 +144,7 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="valorUnitarioEstimado"
                             label="Valor Unitário"
                             objetoValor={inputs}
-                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
@@ -157,7 +157,10 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="quantidadeReal"
                             label="Qtd Real"
                             objetoValor={inputs}
-                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
+                            somenteLeitura={
+                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                                statusOrdemServico > StatusOrdemServico.RECEBIDA
+                            }
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
@@ -170,7 +173,10 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="valorUnitarioReal"
                             label="Valor Unitário Real"
                             objetoValor={inputs}
-                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI == null}
+                            somenteLeitura={
+                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
+                                statusOrdemServico > StatusOrdemServico.RECEBIDA
+                            }
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"

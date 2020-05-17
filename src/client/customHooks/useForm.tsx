@@ -72,6 +72,27 @@ export const useFormHook = <T extends {}>(
         }));
         */
     };
+    //trata atualização de itens em propriedades arrays
+    const updateItemArray = (nomepropriedadeArray: string, index: number, item: object) => {
+        if (entidadeContexto) {
+            const entidade = entidadeContexto.state;
+            const cloneItem = JSON.parse(JSON.stringify(item));
+            if (
+                (entidade.dado as any)[nomepropriedadeArray] == null ||
+                (entidade.dado as any)[nomepropriedadeArray][index] == null
+            ) {
+                throw new Error(`Item a se atualizar inexistente`);
+            } else {
+                (entidade.dado as any)[nomepropriedadeArray][index] = cloneItem;
+            }
+            entidadeContexto.dispatch({
+                tipo: EditionType.ATUALIZAR_CONTEXTO,
+                dado: {...entidade.dado} as T,
+            });
+        } else {
+            console.warn('addItemArray: entidadeContexto não setada');
+        }
+    };
     //trata inclusão de itens em propriedades arrays
     const markToRemoveItemArray = (nomepropriedadeArray: string, indice: number) => {
         if (entidadeContexto) {
@@ -105,12 +126,14 @@ export const useFormHook = <T extends {}>(
         onSubmit,
         onInputChange,
         addItemArray,
+        updateItemArray,
         markToRemoveItemArray,
         inputs,
     };
 };
 
 function typeOfAtributos(obj: {[atributo: string]: any}) {
+    //TODO: Acessar informação do decorator @property
     const retorno: {[atributo: string]: any} = {};
     Object.keys(obj).forEach((k) => {
         retorno[k] = typeof obj[k];

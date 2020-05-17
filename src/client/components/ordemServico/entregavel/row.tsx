@@ -39,13 +39,11 @@ export const RowEntregavelOrdemServico: React.FC<{
                             color="primary"
                             size="small"
                             disabled={entregavel.hasOwnProperty('toDelete')}
+                            onClick={() => {
+                                funcaoRemove();
+                            }}
                         >
-                            <DeleteIcon
-                                fontSize="small"
-                                onClick={() => {
-                                    funcaoRemove();
-                                }}
-                            />
+                            <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 )}

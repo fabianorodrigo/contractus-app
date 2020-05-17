@@ -1,12 +1,25 @@
 import {IconButton, TableCell, TableHead, TableRow, Tooltip} from '@material-ui/core';
-import React from 'react';
+import React, {Dispatch, useContext} from 'react';
+import {OrdemServicoFull} from '../../../../models';
+import {AppContext, AppContextStoreType} from '../../../App-Context';
+import {IEntidadeContexto} from '../../../models/EntidadeContext';
+import {ContratosMap} from '../../../models/TypeContext';
 import {AddIcon} from '../../lib/icons';
+import {OrdemServicoContext} from '../context';
+import {getTipoOrdemServico} from '../getTipoOrdemServico';
 export const HeaderEtapasOrdensServico: React.FC<{
     mostraFormEtapa: boolean;
-    funcaoMostraForm: Function;
+    funcaoAdicionar: () => void;
     buttonAdicionaEtapaRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraFormEtapa, funcaoMostraForm, buttonAdicionaEtapaRef} = props;
+    const {mostraFormEtapa, funcaoAdicionar: funcaoMostraForm, buttonAdicionaEtapaRef} = props;
+
+    const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
+        AppContext,
+    );
+    const contratos: ContratosMap = appState.contratos;
+    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
 
     return (
         <TableHead>
@@ -29,10 +42,22 @@ export const HeaderEtapasOrdensServico: React.FC<{
                         </Tooltip>
                     )}
                 </TableCell>
-                <TableCell component="th" align="center" scope="row" key={`thPlanejamento`} colSpan={2}>
+                <TableCell
+                    component="th"
+                    align="center"
+                    scope="row"
+                    key={`thPlanejamento`}
+                    colSpan={tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa ? 3 : 2}
+                >
                     Planejamento
                 </TableCell>
-                <TableCell component="th" align="center" scope="row" key={`thRealizado`} colSpan={2}>
+                <TableCell
+                    component="th"
+                    align="center"
+                    scope="row"
+                    key={`thRealizado`}
+                    colSpan={tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa ? 3 : 2}
+                >
                     Realizado
                 </TableCell>
                 <TableCell></TableCell>
@@ -47,12 +72,22 @@ export const HeaderEtapasOrdensServico: React.FC<{
                 <TableCell align="center" component="th" scope="row" key={`thFimPlan`}>
                     Fim
                 </TableCell>
+                {tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa && (
+                    <TableCell align="center" component="th" scope="row" key={`thVlAdiantamentoPlan`}>
+                        Valor
+                    </TableCell>
+                )}
                 <TableCell align="center" component="th" scope="row" key={`thInicioReal`}>
                     Início
                 </TableCell>
                 <TableCell align="center" component="th" scope="row" key={`thFimReal`}>
                     Fim
                 </TableCell>
+                {tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa && (
+                    <TableCell align="center" component="th" scope="row" key={`thVlAdiantamentoReal`}>
+                        Valor
+                    </TableCell>
+                )}
                 <TableCell valign="bottom" component="th" scope="row" key={`thAcoes`} align="right">
                     Ações
                 </TableCell>

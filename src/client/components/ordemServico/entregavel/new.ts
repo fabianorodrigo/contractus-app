@@ -2,7 +2,8 @@ import {OrdemServicoFull} from '../../../../models';
 
 export function novoEntregavelOrdemServico(ordemServico: OrdemServicoFull) {
     return {
-        idOrdemServico: ordemServico.id,
+        id: undefined,
+        idOrdemServico: <number>ordemServico.id,
         descricao: '',
         ordem: ordemServico.entregaveis ? ordemServico.entregaveis.length : 0,
     };

@@ -55,13 +55,11 @@ export const RowItemOrdemServico: React.FC<{
                             color="primary"
                             size="small"
                             disabled={item.hasOwnProperty('toDelete')}
+                            onClick={() => {
+                                funcaoRemove();
+                            }}
                         >
-                            <DeleteIcon
-                                fontSize="small"
-                                onClick={() => {
-                                    funcaoRemove();
-                                }}
-                            />
+                            <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 )}

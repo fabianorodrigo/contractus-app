@@ -1,4 +1,5 @@
 import {KeyboardDatePicker} from '@material-ui/pickers';
+import {ParsableDate} from '@material-ui/pickers/constants/prop-types';
 import React from 'react';
 
 export const CampoData: React.FC<{
@@ -15,6 +16,10 @@ export const CampoData: React.FC<{
     error?: boolean;
     inputRef?: React.RefObject<HTMLInputElement>;
     autoFocus?: boolean;
+    dataMinima?: ParsableDate;
+    dataMaxima?: ParsableDate;
+    desabilitaDatasPassadas?: boolean;
+    desabilitaDatasFuturas?: boolean;
 }> = ({
     atributo,
     label,
@@ -28,6 +33,10 @@ export const CampoData: React.FC<{
     error,
     inputRef,
     autoFocus,
+    dataMinima,
+    dataMaxima,
+    desabilitaDatasPassadas,
+    desabilitaDatasFuturas,
 }) => {
     return (
         <KeyboardDatePicker
@@ -47,14 +56,18 @@ export const CampoData: React.FC<{
             InputLabelProps={{
                 shrink: true,
             }}
-            InputProps={{
-                readOnly: somenteLeitura,
-            }}
+            readOnly={somenteLeitura}
             required={obrigatorio}
             helperText={helperText}
             error={error}
             inputRef={inputRef}
             autoFocus={autoFocus}
+            minDate={dataMinima}
+            minDateMessage={`A data não pode ser menor que ${dataMinima?.toString}`}
+            maxDate={dataMaxima}
+            maxDateMessage={`A data não pode ser posterior a ${dataMaxima?.toString}`}
+            disablePast={desabilitaDatasPassadas}
+            disableFuture={desabilitaDatasFuturas}
         />
     );
 };

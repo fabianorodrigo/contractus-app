@@ -21,8 +21,8 @@ export function novaEtapaOrdemServico(ordemServico: OrdemServicoFull, numeroDias
     return {
         idOrdemServico: ordemServico.id,
         descricao: '',
-        dtInicioPlanejada: dataInicio.toDate(),
-        dtFimPlanejada: dataFim.toDate(),
+        dtInicioPlanejada: dataInicio.toDate().toISOString(), //TODO: Ver como se comporta o componente datepicker. Estávamos retornando Date
+        dtFimPlanejada: dataFim.toDate().toISOString(),
         valorAdiantamentoPlanejado: 0,
     };
 }
