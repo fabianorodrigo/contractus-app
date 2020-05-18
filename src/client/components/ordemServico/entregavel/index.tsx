@@ -1,21 +1,29 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
-import {EntregavelOrdemServico, ItemOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
+import {EntregavelOrdemServico, OrdemServicoFull} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
+import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
+import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
 import {FormEntregavelOrdemServico} from './form';
 import {HeaderEntregaveisOrdensServico} from './header';
+import {novoEntregavelOrdemServico} from './new';
 import {RowEntregavelOrdemServico} from './row';
+import {valida} from './valida';
 
 export const TabelaEntregaveisOrdensServico: React.FC<{
-    funcaoAdiciona: Function;
-    funcaoRemove: Function;
+    funcaoAdicionar: (etapa: EntregavelOrdemServico) => void;
+    funcaoAtualizar: (etapa: EntregavelOrdemServico, indice: number) => void;
+    funcaoRemover: (indice: number) => void;
 }> = (props) => {
+    const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
+    const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+
     const refInputDescricao = React.useRef<HTMLInputElement>(null);
     const refButtonAdiciona = React.useRef<HTMLInputElement>(null);
 
@@ -24,31 +32,38 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
-    const statusOS = getStatusOrdemServico(osState.dado);
 
-    const {funcaoAdiciona, funcaoRemove} = props;
-    const classes = useStyles();
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
-    const fechaForm = () => {
-        setMostraForm(false);
-    };
-    const onSubmit = (item: ItemOrdemServico) => {
-        funcaoAdiciona(item);
-        fechaForm();
-    };
+    //Custom Hook para controle dos elementos visuais durante a edição
+    const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
+        EntregavelOrdemServico
+    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricao, refButtonAdiciona);
+    //custom hook para controle de estado dos atributos da entidade
+    let [errosInput, setErrosInput] = React.useState({
+        descricao: '',
+    });
+    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
+        (entregavel: EntregavelOrdemServico, indice?: number) => {
+            errosInput = valida(entregavel);
+            if (Object.values(errosInput).every((v) => v == '')) {
+                confirmar(entregavel);
+            } else {
+                setErrosInput({...errosInput});
+                Object.values(errosInput).forEach((msg) => {
+                    if (msg != '') {
+                        enqueueSnackbar(msg, {variant: 'warning'});
+                    }
+                });
+            }
+        },
+        instancia,
+    );
 
-    const [mostraForm, setMostraForm] = React.useState(false);
-    //quando mudar o valor de mostra item, se for para TRUE, foca no campo descrição
-    //Se for FALSE e o contrato já estiver selecionado, foca no botão adicionar
+    //quando mudar a instancia em edição, é preciso atualizar a variável 'inputs',
+    //que é passada para o componente do Form. Se não for feito, ficará null
     useEffect(() => {
-        if (mostraForm && refInputDescricao.current != null) {
-            refInputDescricao.current.focus();
-        } else if (contratos[osState.dado.idContrato] && !mostraForm && refButtonAdiciona.current != null) {
-            refButtonAdiciona.current.focus();
-        }
-    }, [mostraForm]);
+        updateInputs(instancia);
+    }, [instancia]);
 
     return (
         <div style={{marginLeft: 8, marginTop: 8}}>
@@ -57,9 +72,7 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderEntregaveisOrdensServico
                         mostraForm={mostraForm}
-                        funcaoMostraForm={() => {
-                            setMostraForm(true);
-                        }}
+                        funcaoAdicionar={criar.bind(null, novoEntregavelOrdemServico(osState.dado), inputs)}
                         buttonAdicionaRef={refButtonAdiciona}
                     />
                     <TableBody>
@@ -69,18 +82,20 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
                                 return (
                                     <RowEntregavelOrdemServico
                                         entregavel={entregavel}
-                                        statusOrdemServico={statusOS}
                                         key={i}
-                                        funcaoRemove={funcaoRemove.bind(null, i)}
+                                        funcaoEditar={editar.bind(null, entregavel, hasChanged, i)}
+                                        funcaoRemover={remover.bind(null, hasChanged, i)}
                                     />
                                 );
                             })}
                         {mostraForm && (
                             <FormEntregavelOrdemServico
-                                statusOrdemServico={statusOS}
+                                entregavelEditado={inputs}
+                                onInputChange={onInputChange}
                                 onSubmitForm={onSubmit}
-                                fechaForm={fechaForm}
+                                fechaForm={fecharForm}
                                 inputDescricaoRef={refInputDescricao}
+                                errosInput={errosInput}
                             />
                         )}
                     </TableBody>

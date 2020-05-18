@@ -2,27 +2,25 @@ import {IconButton, TableCell, TableHead, TableRow, Tooltip} from '@material-ui/
 import React from 'react';
 import {AddIcon} from '../../lib/icons';
 export const HeaderItensOrdensServico: React.FC<{
-    mostraFormItem: boolean;
-    funcaoMostraForm: Function;
-    buttonAdicionaItemRef?: React.RefObject<any>;
+    mostraForm: boolean;
+    funcaoAdicionar: () => void;
+    buttonAdicionaRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraFormItem, funcaoMostraForm, buttonAdicionaItemRef} = props;
+    const {mostraForm, funcaoAdicionar, buttonAdicionaRef} = props;
 
     return (
         <TableHead>
             <TableRow>
                 <TableCell>
-                    {!mostraFormItem && (
+                    {!mostraForm && (
                         <Tooltip title="Adicionar Item de Serviço">
                             <IconButton
-                                ref={buttonAdicionaItemRef}
+                                ref={buttonAdicionaRef}
                                 key={`buttonMostraFormItem`}
                                 aria-label="Adicionar Item"
                                 color="primary"
                                 size="small"
-                                onClick={() => {
-                                    funcaoMostraForm();
-                                }}
+                                onClick={funcaoAdicionar}
                             >
                                 <AddIcon fontSize="small" />
                             </IconButton>

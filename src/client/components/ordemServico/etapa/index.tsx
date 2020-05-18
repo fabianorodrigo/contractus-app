@@ -21,6 +21,10 @@ export const TabelaEtapasOrdensServico: React.FC<{
     funcaoAtualizar: (etapa: EtapaOrdemServico, indice: number) => void;
     funcaoRemover: (indice: number) => void;
 }> = (props) => {
+    const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
+    const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+
     const refInputDescricaoEtapa = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaEtapa = React.useRef<HTMLInputElement>(null);
 
@@ -29,13 +33,8 @@ export const TabelaEtapasOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
     const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
-
-    const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
-    const classes = useStyles();
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
@@ -80,7 +79,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
             <TableContainer component={Paper}>
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderEtapasOrdensServico
-                        mostraFormEtapa={mostraForm}
+                        mostraForm={mostraForm}
                         funcaoAdicionar={criar.bind(
                             null,
                             novaEtapaOrdemServico(

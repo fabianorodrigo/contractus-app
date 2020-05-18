@@ -4,6 +4,8 @@ import React, {Dispatch, useContext, useEffect} from 'react';
 import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
 import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
+import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
+import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
@@ -11,13 +13,19 @@ import {OrdemServicoContext} from '../context';
 import {FooterItensOrdensServico} from './footer';
 import {FormItemOrdensServico} from './form';
 import {HeaderItensOrdensServico} from './header';
+import {novoItemOrdemServico} from './new';
 import {RowItemOrdemServico} from './row';
+import {valida} from './valida';
 
 export const TabelaItensOrdensServico: React.FC<{
-    funcaoAdiciona: Function;
-    funcaoRemove: Function;
+    funcaoAdicionar: (item: ItemOrdemServico) => void;
+    funcaoAtualizar: (item: ItemOrdemServico, indice: number) => void;
+    funcaoRemover: (indice: number) => void;
 }> = (props) => {
+    const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+
     const refInputDescricaoItem = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaItem = React.useRef<HTMLInputElement>(null);
 
@@ -26,30 +34,45 @@ export const TabelaItensOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
-    const statusOS = getStatusOrdemServico(osState.dado);
+    const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
-    const {funcaoAdiciona, funcaoRemove} = props;
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
-    const fechaFormItem = () => {
-        setMostraFormItem(false);
-    };
-    const onSubmitItem = (item: ItemOrdemServico) => {
-        funcaoAdiciona(item);
-        fechaFormItem();
-    };
+    //Custom Hook para controle dos elementos visuais durante a edição
+    const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
+        ItemOrdemServico
+    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoItem, refButtonAdicionaItem);
+    //custom hook para controle de estado dos atributos da entidade
+    let [errosInput, setErrosInput] = React.useState({
+        descricao: '',
+        siglaMetrica: '',
+        quantidadeEstimada: '',
+        valorUnitarioEstimado: '',
+        quantidadeReal: '',
+        valorUnitarioReal: '',
+    });
+    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
+        (item: ItemOrdemServico, indice?: number) => {
+            errosInput = valida(item, statusOrdemServico);
+            if (Object.values(errosInput).every((v) => v == '')) {
+                confirmar(item);
+            } else {
+                setErrosInput({...errosInput});
+                Object.values(errosInput).forEach((msg) => {
+                    if (msg != '') {
+                        enqueueSnackbar(msg, {variant: 'warning'});
+                    }
+                });
+            }
+        },
+        instancia,
+    );
 
-    const [mostraFormItem, setMostraFormItem] = React.useState(false);
-    //quando mudar o valor de mostra item, se for para TRUE, foca no campo descrição
-    //Se for FALSE e o contrato já estiver selecionado, foca no botão adicionar
+    //quando mudar a instancia em edição, é preciso atualizar a variável 'inputs',
+    //que é passada para o componente do Form. Se não for feito, ficará null
     useEffect(() => {
-        if (mostraFormItem && refInputDescricaoItem.current != null) {
-            refInputDescricaoItem.current.focus();
-        } else if (contratos[osState.dado.idContrato] && !mostraFormItem && refButtonAdicionaItem.current != null) {
-            refButtonAdicionaItem.current.focus();
-        }
-    }, [mostraFormItem]);
+        updateInputs(instancia);
+    }, [instancia]);
+
     let totalPlanejado = 0;
     let totalRealizado = 0;
 
@@ -59,8 +82,8 @@ export const TabelaItensOrdensServico: React.FC<{
             <TableContainer component={Paper}>
                 <Table size="small" className={classes.tableInForm}>
                     <HeaderItensOrdensServico
-                        mostraFormItem={mostraFormItem}
-                        funcaoMostraForm={() => {
+                        mostraForm={mostraForm}
+                        funcaoAdicionar={() => {
                             let msg = null;
                             if (!osState.dado.idContrato || osState.dado.idContrato == -1) {
                                 msg = `O contrato para o qual a Ordem de Serviço de serviço está sendo emitida deve ser informado`;
@@ -70,9 +93,11 @@ export const TabelaItensOrdensServico: React.FC<{
                             ) {
                                 msg = `O contrato para o qual a Ordem de Serviço está sendo emitida não possui unidades de medidas vigentes`;
                             }
-                            msg ? enqueueSnackbar(msg, {variant: 'warning'}) : setMostraFormItem(true);
+                            msg
+                                ? enqueueSnackbar(msg, {variant: 'warning'})
+                                : criar(novoItemOrdemServico(osState.dado, contratos[osState.dado.idContrato]), inputs);
                         }}
-                        buttonAdicionaItemRef={refButtonAdicionaItem}
+                        buttonAdicionaRef={refButtonAdicionaItem}
                     />
                     <TableBody>
                         {osState.dado.itens &&
@@ -87,17 +112,19 @@ export const TabelaItensOrdensServico: React.FC<{
                                     <RowItemOrdemServico
                                         item={item}
                                         key={i}
-                                        statusOrdemServico={statusOS}
-                                        funcaoRemove={funcaoRemove.bind(null, i)}
+                                        funcaoEditar={editar.bind(null, item, hasChanged, i)}
+                                        funcaoRemover={remover.bind(null, hasChanged, i)}
                                     />
                                 );
                             })}
-                        {mostraFormItem && (
+                        {mostraForm && (
                             <FormItemOrdensServico
-                                statusOrdemServico={statusOS}
-                                onSubmitItem={onSubmitItem}
-                                fechaFormItem={fechaFormItem}
+                                itemEditado={inputs}
+                                onInputChange={onInputChange}
+                                onSubmitForm={onSubmit}
+                                fechaForm={fecharForm}
                                 inputDescricaoItemRef={refInputDescricaoItem}
+                                errosInput={errosInput}
                             />
                         )}
                     </TableBody>

@@ -3,10 +3,10 @@ import React from 'react';
 import {AddIcon} from '../../lib/icons';
 export const HeaderEntregaveisOrdensServico: React.FC<{
     mostraForm: boolean;
-    funcaoMostraForm: Function;
+    funcaoAdicionar: () => void;
     buttonAdicionaRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraForm, funcaoMostraForm, buttonAdicionaRef} = props;
+    const {mostraForm, funcaoAdicionar, buttonAdicionaRef} = props;
 
     return (
         <TableHead>
@@ -20,9 +20,7 @@ export const HeaderEntregaveisOrdensServico: React.FC<{
                                 aria-label="Adicionar Entregável"
                                 color="primary"
                                 size="small"
-                                onClick={() => {
-                                    funcaoMostraForm();
-                                }}
+                                onClick={funcaoAdicionar}
                             >
                                 <AddIcon fontSize="small" />
                             </IconButton>

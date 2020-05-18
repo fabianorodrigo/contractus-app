@@ -1,24 +1,13 @@
-import {useContext} from 'react';
-import {OrdemServicoFull} from '../../../../models';
-import {AppContext, AppContextStoreType} from '../../../App-Context';
-import {ContratosMap} from '../../../models/TypeContext';
+import {Contrato, OrdemServicoFull} from '../../../../models';
 
-export function novoItemOrdemServico(ordemServico: OrdemServicoFull) {
-    const {state: appState}: {state: AppContextStoreType} = useContext(AppContext);
-    const contratos: ContratosMap = appState.contratos;
+export function novoItemOrdemServico(ordemServico: OrdemServicoFull, contrato: Contrato) {
     return {
         id: undefined,
         idOrdemServico: ordemServico.id,
         descricao: '',
         idProduto: '',
-        siglaMetrica:
-            contratos[ordemServico.idContrato] && contratos[ordemServico.idContrato].metricas.length > 0
-                ? contratos[ordemServico.idContrato].metricas[0].sigla
-                : '',
-        quantidadeEstimada: '',
-        valorUnitarioEstimado:
-            contratos[ordemServico.idContrato] && contratos[ordemServico.idContrato].metricas.length > 0
-                ? contratos[ordemServico.idContrato].metricas[0].valorUnitario
-                : '',
+        siglaMetrica: contrato && contrato.metricas.length > 0 ? contrato.metricas[0].sigla : '',
+        quantidadeEstimada: 1,
+        valorUnitarioEstimado: contrato && contrato.metricas.length > 0 ? contrato.metricas[0].valorUnitario : 1,
     };
 }

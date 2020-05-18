@@ -346,10 +346,13 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaItensOrdensServico
-                                    funcaoAdiciona={(item: ItemOrdemServico) => {
+                                    funcaoAdicionar={(item: ItemOrdemServico) => {
                                         addItemArray('itens', item);
                                     }}
-                                    funcaoRemove={(indice: number) => {
+                                    funcaoAtualizar={(etapa: ItemOrdemServico, indice: number) => {
+                                        updateItemArray('itens', indice, etapa);
+                                    }}
+                                    funcaoRemover={(indice: number) => {
                                         markToRemoveItemArray('itens', indice);
                                     }}
                                 />
@@ -369,10 +372,13 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaEntregaveisOrdensServico
-                                    funcaoAdiciona={(entregavel: EntregavelOrdemServico) => {
+                                    funcaoAdicionar={(entregavel: EntregavelOrdemServico) => {
                                         addItemArray('entregaveis', entregavel);
                                     }}
-                                    funcaoRemove={(indice: number) => {
+                                    funcaoAtualizar={(entregavel: EntregavelOrdemServico, indice: number) => {
+                                        updateItemArray('entregaveis', indice, entregavel);
+                                    }}
+                                    funcaoRemover={(indice: number) => {
                                         markToRemoveItemArray('entregaveis', indice);
                                     }}
                                 />

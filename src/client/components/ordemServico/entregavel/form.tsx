@@ -1,60 +1,43 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import 'date-fns';
-import {useSnackbar} from 'notistack';
-import React, {Dispatch, useContext} from 'react';
+import React, {Dispatch, FormEvent, useContext} from 'react';
 import {EntregavelOrdemServico, OrdemServicoFull} from '../../../../models';
+import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
-import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
+import {ContratosMap} from '../../../models/TypeContext';
 import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
-import {novoEntregavelOrdemServico} from './new';
 export const FormEntregavelOrdemServico: React.FC<{
-    statusOrdemServico: StatusOrdemServico;
-    onSubmitForm: Function;
-    fechaForm: Function;
+    entregavelEditado: EntregavelOrdemServico;
+    onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
+    fechaForm: () => void;
     inputDescricaoRef?: React.RefObject<HTMLInputElement>;
+    errosInput: any;
 }> = (props) => {
-    const {statusOrdemServico, onSubmitForm, fechaForm, inputDescricaoRef} = props;
-    const [errosInput, setErrosInput] = React.useState({
-        descricao: '',
-        linkEvidencia: '',
-    });
+    const {entregavelEditado, onInputChange, onSubmitForm, fechaForm, inputDescricaoRef, errosInput} = props;
+
+    if (entregavelEditado == null) return null;
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state: appState}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
+    const contratos: ContratosMap = appState.contratos;
+
     const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
-    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
-    const valida = (entregavel: EntregavelOrdemServico) => {
-        errosInput.descricao =
-            entregavel.descricao == null || entregavel.descricao.trim() == ''
-                ? 'Uma descrição para o entregável da Ordem de Serviço deve ser informada'
-                : '';
-
-        if (Object.values(errosInput).every((v) => v == '')) {
-            onSubmitForm(entregavel);
-        } else {
-            setErrosInput({...errosInput});
-            Object.values(errosInput).forEach((msg) => {
-                if (msg != '') {
-                    enqueueSnackbar(msg, {variant: 'warning'});
-                }
-            });
-        }
-    };
-    const {inputs, onInputChange, onSubmit} = useFormHook(valida, novoEntregavelOrdemServico(osState.dado));
     return (
         <TableRow>
             <TableCell colSpan={3} scope="row" style={{margin: '0px', padding: '0px'}}>
                 <Grid container>
-                    <Grid item xs={3}>
+                    <Grid item xs={11}>
                         <CampoTexto
                             fullWidth={true}
                             atributo="descricao"
                             label="Entregável"
-                            objetoValor={inputs}
+                            objetoValor={entregavelEditado}
                             somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                             obrigatorio={true}
                             onChange={onInputChange}
@@ -62,35 +45,14 @@ export const FormEntregavelOrdemServico: React.FC<{
                             inputRef={inputDescricaoRef}
                         />
                     </Grid>
-                    <Grid item xs={8}>
-                        <CampoTexto
-                            fullWidth={true}
-                            atributo="linkEvidencia"
-                            label="Link Evidência"
-                            objetoValor={inputs}
-                            somenteLeitura={
-                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                                statusOrdemServico > StatusOrdemServico.RECEBIDA
-                            }
-                            obrigatorio={true}
-                            onChange={onInputChange}
-                            error={errosInput.descricao != ''}
-                        />
-                    </Grid>
                     <Grid item xs={1}>
                         <Tooltip title="Confirmar">
-                            <IconButton key={`buttonAdd`} size="small" onClick={onSubmit}>
+                            <IconButton key={`buttonAdd`} size="small" onClick={onSubmitForm}>
                                 <DoneIcon aria-label="Confirmar" color="primary" fontSize="small" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Cancelar">
-                            <IconButton
-                                key={`buttonClear`}
-                                size="small"
-                                onClick={() => {
-                                    fechaForm();
-                                }}
-                            >
+                            <IconButton key={`buttonClear`} size="small" onClick={fechaForm}>
                                 <ClearIcon aria-label="Cancelar" fontSize="small" color="error" />
                             </IconButton>
                         </Tooltip>

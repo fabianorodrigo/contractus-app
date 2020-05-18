@@ -8,11 +8,11 @@ import {AddIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 import {getTipoOrdemServico} from '../getTipoOrdemServico';
 export const HeaderEtapasOrdensServico: React.FC<{
-    mostraFormEtapa: boolean;
+    mostraForm: boolean;
     funcaoAdicionar: () => void;
     buttonAdicionaEtapaRef?: React.RefObject<any>;
 }> = (props) => {
-    const {mostraFormEtapa, funcaoAdicionar: funcaoMostraForm, buttonAdicionaEtapaRef} = props;
+    const {mostraForm, funcaoAdicionar, buttonAdicionaEtapaRef} = props;
 
     const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
         AppContext,
@@ -25,7 +25,7 @@ export const HeaderEtapasOrdensServico: React.FC<{
         <TableHead>
             <TableRow>
                 <TableCell>
-                    {!mostraFormEtapa && (
+                    {!mostraForm && (
                         <Tooltip title="Adicionar Etapa">
                             <IconButton
                                 ref={buttonAdicionaEtapaRef}
@@ -33,9 +33,7 @@ export const HeaderEtapasOrdensServico: React.FC<{
                                 aria-label="Adicionar Etapa"
                                 color="primary"
                                 size="small"
-                                onClick={() => {
-                                    funcaoMostraForm();
-                                }}
+                                onClick={funcaoAdicionar}
                             >
                                 <AddIcon fontSize="small" />
                             </IconButton>

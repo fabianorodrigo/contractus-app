@@ -1,9 +1,14 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
-import React from 'react';
+import React, {Dispatch, useContext} from 'react';
 import {formataNumeroStringLocal} from '../../../../commonLib/formatacao';
-import {ItemOrdemServico} from '../../../../models';
+import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
+import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
 import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
-import {DeleteIcon} from '../../lib/icons';
+import {AppContext, AppContextStoreType} from '../../../App-Context';
+import {IEntidadeContexto} from '../../../models/EntidadeContext';
+import {ContratosMap} from '../../../models/TypeContext';
+import {DeleteIcon, EditIcon} from '../../lib/icons';
+import {OrdemServicoContext} from '../context';
 
 const privateUseStyles = makeStyles((theme) => ({
     deleted: {
@@ -18,11 +23,20 @@ const privateUseStyles = makeStyles((theme) => ({
 export const RowItemOrdemServico: React.FC<{
     item: ItemOrdemServico;
     order?: number;
-    statusOrdemServico: StatusOrdemServico;
-    funcaoRemove: Function;
+    funcaoEditar: () => void;
+    funcaoRemover: () => void;
 }> = (props) => {
-    const {item, order, statusOrdemServico, funcaoRemove} = props;
+    const {item, order, funcaoEditar, funcaoRemover} = props;
     const i = `${item.id}${item.descricao}_${order}`;
+
+    //If re-rendering the component is expensive, you can optimize it by using memoization.
+    const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
+        AppContext,
+    );
+    const contratos: ContratosMap = appState.contratos;
+    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const statusOrdemServico = getStatusOrdemServico(osState.dado);
+
     const privateClasses = privateUseStyles();
     return (
         <TableRow className={item.hasOwnProperty('toDelete') ? privateClasses.deleted : privateClasses.notDeleted}>
@@ -47,6 +61,18 @@ export const RowItemOrdemServico: React.FC<{
                     : item.valorUnitarioReal}
             </TableCell>
             <TableCell scope="row" key={`tdAcoes${i}`} align="right">
+                <Tooltip title="Editar Item">
+                    <IconButton
+                        key={`buttonEdit${i}`}
+                        aria-label="Editar Item"
+                        color="primary"
+                        size="small"
+                        disabled={item.hasOwnProperty('toDelete')}
+                        onClick={funcaoEditar}
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
                 {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
                     <Tooltip title="Remover Item">
                         <IconButton
@@ -55,9 +81,7 @@ export const RowItemOrdemServico: React.FC<{
                             color="primary"
                             size="small"
                             disabled={item.hasOwnProperty('toDelete')}
-                            onClick={() => {
-                                funcaoRemove();
-                            }}
+                            onClick={funcaoRemover}
                         >
                             <DeleteIcon fontSize="small" />
                         </IconButton>
