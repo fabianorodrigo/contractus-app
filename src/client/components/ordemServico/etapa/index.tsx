@@ -1,8 +1,10 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
-import React, {Dispatch, useContext} from 'react';
+import {useSnackbar} from 'notistack';
+import React, {Dispatch, useContext, useEffect} from 'react';
 import {EtapaOrdemServico, OrdemServicoFull} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
+import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
@@ -12,6 +14,7 @@ import {FormEtapaOrdensServico} from './form';
 import {HeaderEtapasOrdensServico} from './header';
 import {novaEtapaOrdemServico} from './new';
 import {RowEtapaOrdemServico} from './row';
+import {valida} from './valida';
 
 export const TabelaEtapasOrdensServico: React.FC<{
     funcaoAdicionar: (etapa: EtapaOrdemServico) => void;
@@ -32,11 +35,44 @@ export const TabelaEtapasOrdensServico: React.FC<{
 
     const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
     const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
         EtapaOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoEtapa, refButtonAdicionaEtapa);
+    //custom hook para controle de estado dos atributos da entidade
+    let [errosInput, setErrosInput] = React.useState({
+        descricao: '',
+        dtInicioPlanejada: '',
+        dtFimPlanejada: '',
+        dtInicioReal: '',
+        dtFimReal: '',
+        valorAdiantamentoPlanejado: '',
+        valorAdiantamentoReal: '',
+    });
+    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
+        (etapa: EtapaOrdemServico, indice?: number) => {
+            errosInput = valida(etapa);
+            if (Object.values(errosInput).every((v) => v == '')) {
+                confirmar(etapa);
+            } else {
+                setErrosInput({...errosInput});
+                Object.values(errosInput).forEach((msg) => {
+                    if (msg != '') {
+                        enqueueSnackbar(msg, {variant: 'warning'});
+                    }
+                });
+            }
+        },
+        instancia,
+    );
+
+    //quando mudar a instancia em edição, é preciso atualizar a variável 'inputs',
+    //que é passada para o componente do Form. Se não for feito, ficará null
+    useEffect(() => {
+        updateInputs(instancia);
+    }, [instancia]);
 
     return (
         <div style={{marginLeft: 8, marginTop: 8}}>
@@ -53,6 +89,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                     ? tipoOrdemServico.etapas[0].numeroDiasUteisDuracao
                                     : 10,
                             ),
+                            inputs,
                         )}
                         buttonAdicionaEtapaRef={refButtonAdicionaEtapa}
                     />
@@ -64,17 +101,19 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                     <RowEtapaOrdemServico
                                         etapa={etapa}
                                         key={i}
-                                        funcaoEditar={editar.bind(null, etapa, i)}
-                                        funcaoRemover={remover.bind(null, i)}
+                                        funcaoEditar={editar.bind(null, etapa, hasChanged, i)}
+                                        funcaoRemover={remover.bind(null, hasChanged, i)}
                                     />
                                 );
                             })}
                         {mostraForm && (
                             <FormEtapaOrdensServico
-                                etapaEditada={instancia}
-                                onSubmitForm={confirmar}
+                                etapaEditada={inputs}
+                                onInputChange={onInputChange}
+                                onSubmitForm={onSubmit}
                                 fechaForm={fecharForm}
                                 inputDescricaoEtapaRef={refInputDescricaoEtapa}
+                                errosInput={errosInput}
                             />
                         )}
                     </TableBody>

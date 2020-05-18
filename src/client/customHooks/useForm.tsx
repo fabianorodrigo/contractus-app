@@ -15,7 +15,8 @@ export const useFormHook = <T extends {}>(
     entidadeContexto?: IEntidadeContexto<T>,
 ) => {
     const [inputs, setInputs] = React.useState<T>(valorInicial);
-    const [tiposAtributos] = React.useState(typeOfAtributos(valorInicial));
+    const [versaoOriginal, setVersaoOriginal] = React.useState<T>(valorInicial);
+    const [tiposAtributos, setTiposAtributos] = React.useState(typeOfAtributos(valorInicial));
     //trata o submit do formulário
     const onSubmit = (event: FormEvent<HTMLFormElement> | React.MouseEvent) => {
         if (event) {
@@ -23,6 +24,17 @@ export const useFormHook = <T extends {}>(
         }
         callback(inputs);
     };
+
+    const updateInputs = (valor: T) => {
+        setInputs(valor);
+        setTiposAtributos(typeOfAtributos(valor));
+        setVersaoOriginal(valor);
+    };
+
+    const hasChanged = () => {
+        return JSON.stringify(inputs) != JSON.stringify(versaoOriginal);
+    };
+
     //trata das mudanças de valores
     const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let valor: any;
@@ -123,6 +135,8 @@ export const useFormHook = <T extends {}>(
     };
 
     return {
+        updateInputs,
+        hasChanged,
         onSubmit,
         onInputChange,
         addItemArray,
@@ -135,8 +149,10 @@ export const useFormHook = <T extends {}>(
 function typeOfAtributos(obj: {[atributo: string]: any}) {
     //TODO: Acessar informação do decorator @property
     const retorno: {[atributo: string]: any} = {};
-    Object.keys(obj).forEach((k) => {
-        retorno[k] = typeof obj[k];
-    });
+    if (obj) {
+        Object.keys(obj).forEach((k) => {
+            retorno[k] = typeof obj[k];
+        });
+    }
     return retorno;
 }

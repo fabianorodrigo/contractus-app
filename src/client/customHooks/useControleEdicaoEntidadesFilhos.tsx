@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {MostrarDialog} from '../components/lib/dialogConfirmacao';
 
 /**
  * Custom hook para controle da edição de entidades filhos de uma entidade principal.
@@ -39,23 +40,32 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
      * Abre formulário para iniciar edição de uma nova instância
      *
      * @param instanciaEmBranco Instância com propriedades vazias a ser editada
+     * @param funcaoInstanciaEmEdicaoMudou Função que verifica se há algum item em edição e se ele sofreu alterações pelo usuário
      */
-    const criar = (instanciaAEditar: Partial<T>) => {
-        editar(instanciaAEditar, -1);
+    const criar = (instanciaEmBranco: Partial<T>, funcaoInstanciaEmEdicaoMudou: () => boolean) => {
+        editar(instanciaEmBranco, funcaoInstanciaEmEdicaoMudou, -1);
     };
 
     /**
      * Abre formulário para iniciar edição de instância existente ou uma nova
      *
      * @param instanciaAEditar Instância a ser editada
+     * @param funcaoInstanciaEmEdicaoMudou Função que verifica se há algum item em edição e se ele sofreu alterações pelo usuário
      * @param indice Se editando item existente, esta é sua posição no array da
      * respectiva propriedade dentro da entidade principal
      */
-    const editar = (instanciaAEditar: Partial<T>, indice: number) => {
-        if (instancia != null) {
-            fecharForm();
-        } else {
-            if (indice) setInstanciaIndice(indice);
+    const editar = async (
+        instanciaAEditar: Partial<T>,
+        funcaoInstanciaEmEdicaoMudou: () => boolean,
+        indice: number,
+    ) => {
+        if (
+            instancia == null ||
+            !funcaoInstanciaEmEdicaoMudou() ||
+            (await MostrarDialog('Deseja descartar as alterações já realizadas?'))
+        ) {
+            //fecharForm();
+            if (indice != undefined) setInstanciaIndice(indice);
             setInstancia(instanciaAEditar);
             setMostraForm(true);
         }
@@ -89,12 +99,17 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
      * Faz o controle necessário para permitir a remoção de um item no array de subentidades e,
      * atendendo aos requisitos, chama a {funcaoRemoverCallback}
      *
+     * @param funcaoInstanciaEmEdicaoMudou Função que verifica se há algum item em edição e se ele sofreu alterações pelo usuário
      * @param indice Indice do item no array de subentidades que será removido
      */
-    const remover = (indice: number) => {
-        //Se estiver rolando uma edição, fecha o form antes de remover
+    const remover = async (funcaoInstanciaEmEdicaoMudou: () => boolean, indice: number) => {
         if (instancia != null) {
-            fecharForm();
+            if (
+                !funcaoInstanciaEmEdicaoMudou() ||
+                (await MostrarDialog('Deseja descartar as alterações já realizadas?'))
+            ) {
+                fecharForm();
+            }
         } else {
             funcaoRemoverCallback(indice);
         }
