@@ -249,8 +249,9 @@ CREATE TABLE contractusapp."TB_ETAPA_ORDEM_SERVICO" (
     "VL_ADIANTAMENTO_REAL" numeric(10,2) NULL,
     "IN_RESULTADO_ETAPA" text,
     "ID_ORDEM_SERVICO" integer,
-    "DT_CANCELAMENTO" timestamp with time zone
-);
+    "NR_TERMO_ACEITACAO_SEI" integer
+    "DE_LINK_TERMO_ACEITACAO_SEI" text
+    "DT_CANCELAMENTO" timestamp with time zone);
 
 
 ALTER TABLE contractusapp."TB_ETAPA_ORDEM_SERVICO" OWNER TO contractusapp;
