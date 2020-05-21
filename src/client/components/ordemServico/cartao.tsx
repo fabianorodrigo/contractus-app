@@ -1,14 +1,14 @@
 import {Button, Grid, Paper, Typography} from '@material-ui/core';
 import React from 'react';
 import {encurtaNome} from '../../../commonLib/formatacao';
-import {OrdemServico} from '../../../models';
+import {IOrdemServico} from '../../../commonLib/interface-models';
 import useStyles from '../../services/styles';
 import {BuildIcon, ImportantDevicesIcon, SearchIcon} from '../lib/icons';
 
 const icones = [null, <SearchIcon />, <ImportantDevicesIcon />, <BuildIcon />];
 
 export const CartaoOrdemServico: React.FC<{
-    ordemServico: OrdemServico;
+    ordemServico: IOrdemServico;
 }> = ({ordemServico}) => {
     const classes = useStyles();
     return (

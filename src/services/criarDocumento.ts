@@ -11,10 +11,12 @@ enum NivelAcesso {
     Sigiloso = '2',
 }
 
-const TIPO_DOCUMENTO_ORDEM_SERVICO = '222';
+export const TIPO_DOCUMENTO_ORDEM_SERVICO = '222';
+export const TIPO_DOCUMENTO_TERMO_ACEITACAO = '555';
 
 export function criarDocumento(
     numeroProcesso: string,
+    idTipoDocumento: string,
     numeroDocumento: string,
     descricao: string,
     conteudo: string,
@@ -23,7 +25,7 @@ export function criarDocumento(
         Tipo: TipoDocumento.Gerado,
         IdProcedimento: undefined, //dentificador do processo onde o documento deve ser inserido, passar null quando na mesma operação estiver sendo gerado o processo. Opcional se ProtocoloProcedimento informado
         ProtocoloProcedimento: numeroProcesso,
-        IdSerie: TIPO_DOCUMENTO_ORDEM_SERVICO,
+        IdSerie: idTipoDocumento,
         Numero: numeroDocumento,
         Data: undefined, //Data do documento, obrigatório para documentos externos. Passar null para documentos gerados
         Descricao: descricao,

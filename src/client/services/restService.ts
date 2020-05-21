@@ -24,7 +24,7 @@ export async function get<T>(url: string): Promise<RespostaServico<T>> {
     }
 }
 
-export async function post<T>(url: string, dados: T, id: number | null): Promise<RespostaServico<T>> {
+export async function post<T>(url: string, dados: T, id: number | undefined): Promise<RespostaServico<T>> {
     try {
         let response;
         if (id) {

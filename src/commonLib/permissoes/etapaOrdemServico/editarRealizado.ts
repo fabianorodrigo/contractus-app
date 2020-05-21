@@ -18,5 +18,14 @@ export function editarRealizado(
     //Se o uso for HABILITAR_UI, retorna sem acumular mensagens ou qualquer outra validação/processamento
     if (r.ok == false && c.tipoUso == TipoUsoPermissoes.HABILITAR_UI) return r;
 
+    /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
+    r = c.construir(
+        etapa.numeroDocumentoTermoAceitacaoSEI == null && etapa.linkTermoAceitacaoSEI == null,
+        '',
+        `Termo de Aceitação já foi emitido para esta etapa`,
+    );
+    //Se o uso for HABILITAR_UI, retorna sem acumular mensagens ou qualquer outra validação/processamento
+    if (r.ok == false && c.tipoUso == TipoUsoPermissoes.HABILITAR_UI) return r;
+
     return r;
 }

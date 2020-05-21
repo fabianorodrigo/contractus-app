@@ -1,17 +1,17 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import 'date-fns';
 import React, {Dispatch, FormEvent, useContext} from 'react';
-import {EntregavelOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {IEntregavelOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 export const FormEntregavelOrdemServico: React.FC<{
-    entregavelEditado: EntregavelOrdemServico;
+    entregavelEditado: IEntregavelOrdemServico;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: () => void;
@@ -25,7 +25,7 @@ export const FormEntregavelOrdemServico: React.FC<{
     const {state: appState}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const contratos: ContratosMap = appState.contratos;
 
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
     return (

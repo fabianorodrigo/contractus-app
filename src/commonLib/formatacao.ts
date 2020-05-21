@@ -11,6 +11,7 @@ export function formataNumeroStringLocal(numero: number | string, financeiro: bo
     if (typeof v == 'string') {
         v = parseFloat(v);
     }
+    if (v == null) return '';
     if (financeiro) {
         //como o Nodejs não vem por default com todos os locales, formatava errado no server side
         //foi melhor então testar essa função customizada ao invés do toLocaleString (que funciona certinho no front)

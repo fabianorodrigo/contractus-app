@@ -1,4 +1,4 @@
-import {EntregavelOrdemServico} from '../../../../models';
+import {IEntregavelOrdemServico} from '../../../../commonLib/interface-models';
 
 type TypeValidaEntregavel = {
     descricao: string;
@@ -16,7 +16,7 @@ type TypeValidaEntregavel = {
  *
  * @param entregavel Enregável  a ser validado
  */
-export const valida = (entregavel: EntregavelOrdemServico): TypeValidaEntregavel => {
+export const valida = (entregavel: IEntregavelOrdemServico): TypeValidaEntregavel => {
     let errosInput: TypeValidaEntregavel = {} as TypeValidaEntregavel;
 
     errosInput.descricao =

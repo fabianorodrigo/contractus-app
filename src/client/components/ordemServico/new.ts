@@ -1,7 +1,7 @@
-import {OrdemServicoFull} from '../../../models';
+import {IOrdemServico} from '../../../commonLib/interface-models';
 
-export function novaOrdemServico(): OrdemServicoFull {
-    return ({
+export function novaOrdemServico(): IOrdemServico {
+    return {
         idContrato: -1,
         emergencial: false,
         idTipoOrdemServicoContrato: -1,
@@ -12,5 +12,5 @@ export function novaOrdemServico(): OrdemServicoFull {
         itens: [],
         entregaveis: [],
         etapas: [],
-    } as unknown) as OrdemServicoFull;
+    };
 }

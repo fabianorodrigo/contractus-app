@@ -1,12 +1,12 @@
 import {IconButton, TableCell, TableHead, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
-import {OrdemServicoFull} from '../../../../models';
+import {IOrdemServico} from '../../../../commonLib/interface-models';
+import {getTipoOrdemServico} from '../../../../commonLib/interface-models/getTipoOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import {AddIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
-import {getTipoOrdemServico} from '../getTipoOrdemServico';
 export const HeaderEtapasOrdensServico: React.FC<{
     mostraForm: boolean;
     funcaoAdicionar: () => void;
@@ -18,7 +18,7 @@ export const HeaderEtapasOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
 
     return (

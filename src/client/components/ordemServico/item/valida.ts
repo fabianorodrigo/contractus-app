@@ -1,5 +1,5 @@
-import {ItemOrdemServico} from '../../../../models';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {IItemOrdemServico} from '../../../../commonLib/interface-models';
+import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 
 type TypeValidaItem = {
     descricao: string;
@@ -16,7 +16,7 @@ type TypeValidaItem = {
  *
  * @param item Enregável  a ser validado
  */
-export const valida = (item: ItemOrdemServico, statusOrdemServico: StatusOrdemServico): TypeValidaItem => {
+export const valida = (item: IItemOrdemServico, statusOrdemServico: StatusOrdemServico): TypeValidaItem => {
     let errosInput: TypeValidaItem = {} as TypeValidaItem;
 
     errosInput.descricao =

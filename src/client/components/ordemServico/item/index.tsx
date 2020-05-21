@@ -1,13 +1,13 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
-import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
+import {IItemOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
 import {FooterItensOrdensServico} from './footer';
@@ -18,8 +18,8 @@ import {RowItemOrdemServico} from './row';
 import {valida} from './valida';
 
 export const TabelaItensOrdensServico: React.FC<{
-    funcaoAdicionar: (item: ItemOrdemServico) => void;
-    funcaoAtualizar: (item: ItemOrdemServico, indice: number) => void;
+    funcaoAdicionar: (item: IItemOrdemServico) => void;
+    funcaoAtualizar: (item: IItemOrdemServico, indice: number) => void;
     funcaoRemover: (indice: number) => void;
 }> = (props) => {
     const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
@@ -34,12 +34,12 @@ export const TabelaItensOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
-        ItemOrdemServico
+        IItemOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoItem, refButtonAdicionaItem);
     //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState({
@@ -51,7 +51,7 @@ export const TabelaItensOrdensServico: React.FC<{
         valorUnitarioReal: '',
     });
     const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
-        (item: ItemOrdemServico, indice?: number) => {
+        (item: IItemOrdemServico, indice?: number) => {
             errosInput = valida(item, statusOrdemServico);
             if (Object.values(errosInput).every((v) => v == '')) {
                 confirmar(item);
@@ -102,7 +102,7 @@ export const TabelaItensOrdensServico: React.FC<{
                     <TableBody>
                         {osState.dado.itens &&
                             osState.dado.itens.map((itemObj, i) => {
-                                const item = itemObj as ItemOrdemServico;
+                                const item = itemObj as IItemOrdemServico;
                                 if (i == 0) totalPlanejado = totalRealizado = 0;
                                 totalPlanejado += item.quantidadeEstimada * item.valorUnitarioEstimado;
                                 totalRealizado +=

@@ -1,10 +1,10 @@
 import {IconButton, Link, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {encurtaNome, formataDataStringLocal} from '../../../commonLib/formatacao';
-import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
+import {getStatusOrdemServico} from '../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap, OrdensServicoMap} from '../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../App-Context';
-import {ContratosMap, OrdensServicoMap} from '../../models/TypeContext';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
 import {DeleteIcon, DescriptionIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';

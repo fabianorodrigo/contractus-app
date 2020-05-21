@@ -1,18 +1,16 @@
 import {Grid} from '@material-ui/core';
 import 'date-fns';
 import React from 'react';
-import {TipoOrdemServicoContrato} from '../../../../models';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {ITipoOrdemServicoContrato} from '../../../../commonLib/interface-models';
 import {CampoData} from '../../lib/CampoData';
 import {CampoTexto} from '../../lib/campoTexto';
 export const FormCamposRealizado: React.FC<{
     inputs: any;
-    tipoOrdemServico: TipoOrdemServicoContrato;
-    statusOrdemServico: StatusOrdemServico;
+    tipoOrdemServico: ITipoOrdemServicoContrato;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    errosInput: any;
+    errosInput: {[atributo: string]: boolean};
 }> = (props) => {
-    const {inputs, tipoOrdemServico, statusOrdemServico, onInputChange, errosInput} = props;
+    const {inputs, tipoOrdemServico, onInputChange, errosInput} = props;
     return (
         <React.Fragment>
             <Grid item xs={3}>
@@ -21,10 +19,9 @@ export const FormCamposRealizado: React.FC<{
                     atributo="dtInicioReal"
                     label="Início Realizado"
                     objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico == StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    error={errosInput.dtInicioPlanejada != ''}
+                    error={errosInput.dtInicioReal}
                     desabilitaDatasFuturas={true}
                 />
             </Grid>
@@ -34,10 +31,9 @@ export const FormCamposRealizado: React.FC<{
                     atributo="dtFimReal"
                     label="Conclusão Realizada"
                     objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico == StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    error={errosInput.dtFimPlanejada != ''}
+                    error={errosInput.dtFimReal}
                     desabilitaDatasFuturas={true}
                 />
             </Grid>
@@ -48,11 +44,10 @@ export const FormCamposRealizado: React.FC<{
                         atributo="valorAdiantamentoReal"
                         label="Valor Antecipado"
                         objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico == StatusOrdemServico.RASCUNHO}
                         obrigatorio={true}
                         onChange={onInputChange}
                         type="number"
-                        error={errosInput.valorAdiantamentoPlanejado != ''}
+                        error={errosInput.valorAdiantamentoReal}
                     />
                 </Grid>
             )}

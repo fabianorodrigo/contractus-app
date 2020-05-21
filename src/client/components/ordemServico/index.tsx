@@ -1,12 +1,17 @@
 import {makeStyles, TextField} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
-import {OrdemServico, OrdemServicoFull} from '../../../models';
-import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
+import {IOrdemServico} from '../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../commonLib/interface-models/getStatusOrdemServico';
+import {getTipoOrdemServico} from '../../../commonLib/interface-models/getTipoOrdemServico';
+import {
+    ContratosMap,
+    FornecedoresMap,
+    OrdensServicoMap,
+} from '../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../commonLib/interface-models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType, AppDispatch} from '../../App-Context';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
-import {ContratosMap, FornecedoresMap, OrdensServicoMap} from '../../models/TypeContext';
 import {deleteOrdemServico, emitirOrdemServicoSEI, getOrdemServico, getOrdensServico} from '../../services/backend';
 import {formataMensagemErro, formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import {RespostaServico} from '../../services/restService';
@@ -14,7 +19,6 @@ import {DialogConfirmacao} from '../lib/dialogConfirmacao';
 import {ToolbarInterna} from '../toolbarInterna';
 import {OrdemServicoContext} from './context';
 import {FormOrdemServico} from './form';
-import {getTipoOrdemServico} from './getTipoOrdemServico';
 import {ListaCartoesOrdensServico} from './listaCartoes';
 import {TabelaOrdensServico} from './tabela';
 
@@ -43,7 +47,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const fornecedores: FornecedoresMap = appState.fornecedores;
     const contratos: ContratosMap = appState.contratos;
     const ordensServico: OrdensServicoMap = appState.ordensServico;
-    const {state: osState, dispatch: osDispatch}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState, dispatch: osDispatch}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     //Função que para setar o state que coloca o BackDrop na frente da tela com o indicador de progresso ativo
     const emEspera = (emEspera: boolean) => {
         appDispatch({
@@ -90,9 +94,9 @@ export const OrdensServico: React.FC<{}> = ({}) => {
             //Para conseguir executar await dentro de useEffect, a solução é
             //criar uma função async que tenha o await dentro dela, e depois
             //invocá-la
-            let respostaServico: RespostaServico<OrdemServico[]>;
+            let respostaServico: RespostaServico<IOrdemServico[]>;
             async function buscaOSs() {
-                respostaServico = await getRespostaServico<OrdemServico[]>(
+                respostaServico = await getRespostaServico<IOrdemServico[]>(
                     getOrdensServico.bind(null, idContratoSelecionado),
                 );
                 if (respostaServico.sucesso) {
@@ -115,10 +119,10 @@ export const OrdensServico: React.FC<{}> = ({}) => {
         event.target.value == 'grid' ? setVisaoSelecionada('grid') : setVisaoSelecionada('cards');
     };
     //### Controle da ordem de serviço visualizada/em edição
-    const abrirDialog = async (ordemServico: OrdemServicoFull) => {
+    const abrirDialog = async (ordemServico: IOrdemServico) => {
         //Se OS já existe (tem id), busca todos os dados incluindo as relations da ordem de serviço
         if (ordemServico && ordemServico.id) {
-            const respostaServico = await getRespostaServico<OrdemServicoFull>(
+            const respostaServico = await getRespostaServico<IOrdemServico>(
                 getOrdemServico.bind(null, ordemServico.id as number),
             );
             if (respostaServico.sucesso) {
@@ -142,8 +146,8 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     const [mensagemDialogExclusao, setMensagemDialogExclusao] = React.useState<string>('');
     const [detalhesMensagem, setDetalhesMensagem] = React.useState<Array<string>>([]);
     const [idOSExcluir, setIdOSExcluir] = React.useState<number | undefined>(undefined);
-    const excluirOrdemServico = async (ordemServico: OrdemServicoFull) => {
-        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+    const excluirOrdemServico = async (ordemServico: IOrdemServico) => {
+        const respostaServico = await getRespostaServico<IOrdemServico>(
             getOrdemServico.bind(null, ordemServico.id as number),
         );
         if (respostaServico.sucesso) {
@@ -175,8 +179,8 @@ export const OrdensServico: React.FC<{}> = ({}) => {
     //Emissão de OS no SEI enquanto rascunhos de ordem de serviço
     const [mensagemDialogEmissao, setMensagemDialogEmissao] = React.useState<string>('');
     const [idOSEmitir, setIdOSEmitir] = React.useState<number | undefined>(undefined);
-    const emitirOSSEI = async (ordemServico: OrdemServicoFull) => {
-        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+    const emitirOSSEI = async (ordemServico: IOrdemServico) => {
+        const respostaServico = await getRespostaServico<IOrdemServico>(
             getOrdemServico.bind(null, ordemServico.id as number),
         );
         if (respostaServico.sucesso) {
@@ -237,7 +241,7 @@ export const OrdensServico: React.FC<{}> = ({}) => {
                 funcaoFecharCallback={async (sim: boolean) => {
                     setMensagemDialogEmissao('');
                     if (sim) {
-                        const respostaServico = await getRespostaServico<OrdemServicoFull>(
+                        const respostaServico = await getRespostaServico<IOrdemServico>(
                             emitirOrdemServicoSEI.bind(null, ordensServico[idOSEmitir as number]),
                         );
                         if (respostaServico.sucesso) {

@@ -1,5 +1,5 @@
-import {EtapaOrdemServico} from '../../../../models';
-import {validaDataInicioMenorIgualDataFim} from '../../lib/validaDataInicioDataFim';
+import {IEtapaOrdemServico} from '../../../../commonLib/interface-models';
+import {validaDataInicioMenorIgualDataFim} from '../../../../commonLib/validaDataInicioDataFim';
 
 type TypeValidaEtapa = {
     descricao: string;
@@ -17,13 +17,13 @@ type TypeValidaEtapa = {
  *
  * @param etapa Etapa a ser validada
  */
-export const valida = (etapa: EtapaOrdemServico): TypeValidaEtapa => {
+export const valida = (etapa: IEtapaOrdemServico): TypeValidaEtapa => {
     let errosInput: TypeValidaEtapa = {} as TypeValidaEtapa;
     errosInput.descricao =
         etapa.descricao == null || etapa.descricao.trim() == ''
             ? 'Uma descrição da etapa de execução dos serviços deve ser informada'
             : '';
-
+    //FIXME: Utilizar a commonLib/permissoes/
     //planejamento
     errosInput.dtInicioPlanejada =
         etapa.dtInicioPlanejada == null ? 'A data planejada para início da etapa deve ser informada' : '';

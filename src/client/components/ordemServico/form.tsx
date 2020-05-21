@@ -6,18 +6,23 @@ import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
 import {formataDataStringLocal} from '../../../commonLib/formatacao';
 import {
-    EntregavelOrdemServico,
-    EtapaOrdemServico,
-    ItemOrdemServico,
-    OrdemServicoFull,
-    TipoOrdemServicoContrato,
-} from '../../../models';
-import {getStatusOrdemServico} from '../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../models/StatusOrdemServico';
+    IEntregavelOrdemServico,
+    IEtapaOrdemServico,
+    IItemOrdemServico,
+    IOrdemServico,
+    ITipoOrdemServicoContrato,
+} from '../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../commonLib/interface-models/getStatusOrdemServico';
+import {getTipoOrdemServico} from '../../../commonLib/interface-models/getTipoOrdemServico';
+import {
+    AreasRequisitantesMap,
+    ContratosMap,
+    FornecedoresMap,
+} from '../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../commonLib/interface-models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
-import {AreasRequisitantesMap, ContratosMap, FornecedoresMap} from '../../models/TypeContext';
 import {postOrdemServico} from '../../services/backend';
 import {getProximoDiaUtil, LocalFeriado} from '../../services/dataHora';
 import {formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
@@ -30,7 +35,6 @@ import {Transicao} from '../lib/Transicao';
 import {OrdemServicoContext} from './context';
 import {TabelaEntregaveisOrdensServico} from './entregavel';
 import {TabelaEtapasOrdensServico} from './etapa';
-import {getTipoOrdemServico} from './getTipoOrdemServico';
 import {TabelaItensOrdensServico} from './item';
 
 const privateUseStyles = makeStyles((theme) => ({
@@ -50,7 +54,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
     const fornecedores: FornecedoresMap = appState.fornecedores;
     const contratos: ContratosMap = appState.contratos;
     const areas: AreasRequisitantesMap = appState.areasRequisigantes;
-    const ordemServicoContexto: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const ordemServicoContexto: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const {state: osState, dispatch: osDispatch} = ordemServicoContexto;
     const statusOS = getStatusOrdemServico(osState.dado);
 
@@ -66,7 +70,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         itens: '',
     });
 
-    const valida = (os: OrdemServicoFull) => {
+    const valida = (os: IOrdemServico) => {
         errosInput.idContrato =
             os.idContrato == null || os.idContrato < 0
                 ? 'O contrato ao qual a ordem de serviço se refere deve ser informado'
@@ -132,8 +136,8 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         }
     };
     const {inputs, onInputChange, addItemArray, updateItemArray, markToRemoveItemArray, onSubmit} = useFormHook<
-        OrdemServicoFull
-    >(onSubmitOS, osState.dado as OrdemServicoFull, ordemServicoContexto);
+        IOrdemServico
+    >(onSubmitOS, osState.dado, ordemServicoContexto);
     const [aberto, setAberto] = React.useState(true);
 
     const onClickClose = () => {
@@ -217,9 +221,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Contrato"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={
-                                        inputs.id != null || (osState.dado as OrdemServicoFull).itens?.length > 0
-                                    }
+                                    somenteLeitura={inputs.id != null || osState.dado.itens?.length > 0}
                                     obrigatorio={true}
                                     onChange={onChangeContratoOuTipoOrdemServiço}
                                     defaultValue={inputs.idContrato}
@@ -346,11 +348,11 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaItensOrdensServico
-                                    funcaoAdicionar={(item: ItemOrdemServico) => {
+                                    funcaoAdicionar={(item: IItemOrdemServico) => {
                                         addItemArray('itens', item);
                                     }}
-                                    funcaoAtualizar={(etapa: ItemOrdemServico, indice: number) => {
-                                        updateItemArray('itens', indice, etapa);
+                                    funcaoAtualizar={(item: IItemOrdemServico, indice: number) => {
+                                        updateItemArray('itens', indice, item);
                                     }}
                                     funcaoRemover={(indice: number) => {
                                         markToRemoveItemArray('itens', indice);
@@ -359,10 +361,10 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaEtapasOrdensServico
-                                    funcaoAdicionar={(etapa: EtapaOrdemServico) => {
+                                    funcaoAdicionar={(etapa: IEtapaOrdemServico) => {
                                         addItemArray('etapas', etapa);
                                     }}
-                                    funcaoAtualizar={(etapa: EtapaOrdemServico, indice: number) => {
+                                    funcaoAtualizar={(etapa: IEtapaOrdemServico, indice: number) => {
                                         updateItemArray('etapas', indice, etapa);
                                     }}
                                     funcaoRemover={(indice: number) => {
@@ -372,10 +374,10 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                             </Grid>
                             <Grid item xs={12}>
                                 <TabelaEntregaveisOrdensServico
-                                    funcaoAdicionar={(entregavel: EntregavelOrdemServico) => {
+                                    funcaoAdicionar={(entregavel: IEntregavelOrdemServico) => {
                                         addItemArray('entregaveis', entregavel);
                                     }}
-                                    funcaoAtualizar={(entregavel: EntregavelOrdemServico, indice: number) => {
+                                    funcaoAtualizar={(entregavel: IEntregavelOrdemServico, indice: number) => {
                                         updateItemArray('entregaveis', indice, entregavel);
                                     }}
                                     funcaoRemover={(indice: number) => {
@@ -398,7 +400,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
         </div>
     );
 
-    function carregaDefaultsTipoOrdemServico(tipoOS: TipoOrdemServicoContrato) {
+    function carregaDefaultsTipoOrdemServico(tipoOS: ITipoOrdemServicoContrato) {
         let entregaveis = [];
         let etapas = [];
         const entidade = osState;
@@ -454,7 +456,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                 tipo: EditionType.ATUALIZAR_CONTEXTO,
                 dado: {
                     ...entidade.dado,
-                } as OrdemServicoFull,
+                },
             });
         }
     }

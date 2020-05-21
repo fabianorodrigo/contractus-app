@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DescriptionIcon from '@material-ui/icons/Description';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/EditTwoTone';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 import GavelIcon from '@material-ui/icons/Gavel';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
@@ -38,4 +39,5 @@ export {
     HelpOutlineOutlinedIcon,
     DescriptionIcon,
     PeopleAltIcon,
+    FindInPageIcon,
 };

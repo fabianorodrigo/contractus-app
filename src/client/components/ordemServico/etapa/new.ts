@@ -1,13 +1,13 @@
 import moment from 'moment';
-import {EtapaOrdemServico, OrdemServicoFull} from '../../../../models';
+import {IEtapaOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getProximoDiaUtil, LocalFeriado} from '../../../services/dataHora';
 
-export function novaEtapaOrdemServico(ordemServico: OrdemServicoFull, numeroDiasUteisDuracao: number) {
+export function novaEtapaOrdemServico(ordemServico: IOrdemServico, numeroDiasUteisDuracao: number) {
     let dataInicio = moment();
     let dataFim = null;
     if (ordemServico.etapas && ordemServico.etapas.length > 0) {
         dataInicio = moment(
-            (ordemServico.etapas[ordemServico.etapas.length - 1] as EtapaOrdemServico).dtFimPlanejada,
+            (ordemServico.etapas[ordemServico.etapas.length - 1] as IEtapaOrdemServico).dtFimPlanejada,
         ).add(1, 'd');
     }
     dataInicio = getProximoDiaUtil(dataInicio, LocalFeriado.RioDeJaneiro);

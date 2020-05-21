@@ -16,7 +16,7 @@ import EditIcon from '@material-ui/icons/EditTwoTone';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCartTwoTone';
 import {useSnackbar} from 'notistack';
 import React from 'react';
-import {Contrato} from '../../../models';
+import {IContrato} from '../../../commonLib/interface-models';
 import {getContratos} from '../../services/backend';
 import {formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import useStyles from '../../services/styles';
@@ -27,7 +27,7 @@ export const ListaContratos: React.FC<{}> = ({}) => {
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
     //Buscando contratos
-    const [contratos, setContratos] = React.useState<Contrato[]>([]);
+    const [contratos, setContratos] = React.useState<IContrato[]>([]);
     React.useEffect(() => {
         getContratos().then((respostaServico) => {
             if (respostaServico.sucesso) {

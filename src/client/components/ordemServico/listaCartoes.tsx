@@ -1,7 +1,7 @@
 import {Grid} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
+import {OrdensServicoMap} from '../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../App-Context';
-import {OrdensServicoMap} from '../../models/TypeContext';
 import useStyles from '../../services/styles';
 import {CartaoOrdemServico} from './cartao';
 

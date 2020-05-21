@@ -1,10 +1,9 @@
 import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
+import {getAcoesOrdemServico, TipoUsoPermissoes} from '../commonLib';
 import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
-import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
-import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {
     AreaRequisitanteRepository,
     ContratoRepository,
@@ -15,7 +14,14 @@ import {
     ItemOrdemServicoRepository,
     OrdemServicoRepository,
 } from '../repositories';
-import {criarDocumento, criarIncluirDocumentoRequest, Documento, SeiService, SeiServiceProvider} from '../services';
+import {
+    criarDocumento,
+    criarIncluirDocumentoRequest,
+    Documento,
+    SeiService,
+    SeiServiceProvider,
+    TIPO_DOCUMENTO_ORDEM_SERVICO,
+} from '../services';
 import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
 import {converteOrdemServicoFullToOrdemServico} from './converteOrdemServicoFullToOrdemServico';
 import {getHTMLOrdemServicoSEI} from './getHTMLOrdemServicoSEI';
@@ -55,7 +61,6 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
         protected SEIService: SeiService,
     ) {}
 
-    // Map to `GET /ping`
     @post('/ordem-servico/emitirSEI/{id}', {
         responses: {
             '200': {
@@ -71,6 +76,11 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
             id as number,
             AcaoGetOrdemServico.Emissao_SEI,
         );
+        if (ordemServico.numeroDocumentoOrdemServicoSEI || ordemServico.linkOrdemServicoSEI) {
+            throw new Error(
+                `Ordem de Serviço já foi emitida. SEI: ${ordemServico.numeroDocumentoOrdemServicoSEI} - ${ordemServico.linkOrdemServicoSEI}`,
+            );
+        }
         const contrato = await getValidaContrato(this.contratoRepository, ordemServico.idContrato);
         const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
         const fornecedor = await this.fornecedorRepository.findById(contrato.idFornecedor);
@@ -91,8 +101,11 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
 
         const doc: Documento = criarDocumento(
             areaRequisitante.numeroProcessoOrdensServicoSEI,
-            'todo',
-            `Ordem de Serviço #todo# - Contrato ${contrato.numeroContrato}/${contrato.anoContrato}`,
+            TIPO_DOCUMENTO_ORDEM_SERVICO,
+            String(ordemServico.numero).padStart(3, '0'),
+            `Ordem de Serviço ${String(ordemServico.numero).padStart(3, '0')} - Contrato ${contrato.numeroContrato}/${
+                contrato.anoContrato
+            }`,
             Buffer.from(htmlDocumento).toString('base64'),
         );
         let documentoSEI = null;
@@ -371,42 +384,41 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
         const ordemServico = await this.ordemServicoRepository.findById(id, {
             include: [{relation: 'itens'}, {relation: 'etapas'}, {relation: 'entregaveis'}, {relation: 'indicadores'}],
         });
-        //Só exclui se ainda estiver no status RASCUNHO
-        if (getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO) {
-            const transacao = await this.ordemServicoRepository.beginTransaction();
-            try {
-                if (ordemServico.itens) {
-                    for await (let item of ordemServico.itens) {
-                        await this.itemOrdemServicoRepository.deleteById(item.id, {transaction: transacao});
-                    }
+        //objeto validador das ações habilitadas com a opção de lançar exceção em caso de impossibilidade
+        const permissoesEtapa = getAcoesOrdemServico(ordemServico, TipoUsoPermissoes.VALIDAR_SERVIDOR);
+        const transacao = await this.ordemServicoRepository.beginTransaction();
+        try {
+            if (ordemServico.itens) {
+                for await (let item of ordemServico.itens) {
+                    await this.itemOrdemServicoRepository.deleteById(item.id, {transaction: transacao});
                 }
-                if (ordemServico.etapas) {
-                    for await (let etapa of ordemServico.etapas) {
-                        await this.etapaOrdemServicoRepository.deleteById(etapa.id, {transaction: transacao});
-                    }
-                }
-                if (ordemServico.entregaveis) {
-                    for await (let entregavel of ordemServico.entregaveis) {
-                        await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {
-                            transaction: transacao,
-                        });
-                    }
-                }
-                if (ordemServico.indicadores) {
-                    for await (let indicador of ordemServico.indicadores) {
-                        await this.indicadorOrdemServicoRepository.deleteById(indicador.id, {
-                            transaction: transacao,
-                        });
-                    }
-                }
-
-                await this.ordemServicoRepository.deleteById(id);
-                await transacao.commit();
-            } catch (e) {
-                console.error(e);
-                await transacao.rollback();
-                throw e;
             }
+            if (ordemServico.etapas) {
+                for await (let etapa of ordemServico.etapas) {
+                    await this.etapaOrdemServicoRepository.deleteById(etapa.id, {transaction: transacao});
+                }
+            }
+            if (ordemServico.entregaveis) {
+                for await (let entregavel of ordemServico.entregaveis) {
+                    await this.entregavelOrdemServicoRepository.deleteById(entregavel.id, {
+                        transaction: transacao,
+                    });
+                }
+            }
+            if (ordemServico.indicadores) {
+                for await (let indicador of ordemServico.indicadores) {
+                    await this.indicadorOrdemServicoRepository.deleteById(indicador.id, {
+                        transaction: transacao,
+                    });
+                }
+            }
+
+            await this.ordemServicoRepository.deleteById(id);
+            await transacao.commit();
+        } catch (e) {
+            console.error(e);
+            await transacao.rollback();
+            throw e;
         }
     }
 }

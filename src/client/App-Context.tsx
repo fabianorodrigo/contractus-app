@@ -1,5 +1,10 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
-import {AreasRequisitantesMap, ContratosMap, FornecedoresMap, OrdensServicoMap} from './models/TypeContext';
+import {
+    AreasRequisitantesMap,
+    ContratosMap,
+    FornecedoresMap,
+    OrdensServicoMap,
+} from '../commonLib/interface-models/maps-entidades-types';
 
 export type AppContextStoreType = {
     emEspera: boolean;

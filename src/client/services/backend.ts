@@ -1,15 +1,21 @@
-import {AreaRequisitante, Contrato, Fornecedor, OrdemServico, OrdemServicoFull} from '../../models';
+import {
+    IAreaRequisitante,
+    IContrato,
+    IEtapaOrdemServico,
+    IFornecedor,
+    IOrdemServico,
+} from '../../commonLib/interface-models';
 import {del, get, post, postAcao, RespostaServico} from './restService';
 
-export function getFornecedores(): Promise<RespostaServico<Fornecedor[]>> {
+export function getFornecedores(): Promise<RespostaServico<IFornecedor[]>> {
     return get('/fornecedor');
 }
 
-export function getAreasRequisitantes(): Promise<RespostaServico<AreaRequisitante[]>> {
+export function getAreasRequisitantes(): Promise<RespostaServico<IAreaRequisitante[]>> {
     return get('/areaRequisitante');
 }
 
-export function getContratos(): Promise<RespostaServico<Contrato[]>> {
+export function getContratos(): Promise<RespostaServico<IContrato[]>> {
     return get(`/contrato?filter={ "order": ["dtInicioVigencia DESC"
   ],
   "include": [
@@ -21,35 +27,46 @@ export function getContratos(): Promise<RespostaServico<Contrato[]>> {
 }`);
 }
 
-export function getOrdensServico(idContrato: number): Promise<RespostaServico<OrdemServico[]>> {
+export function getOrdensServico(idContrato: number): Promise<RespostaServico<IOrdemServico[]>> {
     return get(`/contratoes/${idContrato}/ordem-servicos`);
 }
 
-export function getOrdemServico(id: number): Promise<RespostaServico<OrdemServicoFull>> {
+export function getOrdemServico(id: number): Promise<RespostaServico<IOrdemServico>> {
     return get(`/ordem-servico/${id}?filter={ "include": [
     { "relation": "itens"},{ "relation": "etapas"},{ "relation": "entregaveis"}]}`);
 }
 
-export function postOrdemServico(ordemServico: OrdemServicoFull): Promise<RespostaServico<OrdemServicoFull>> {
+export function postOrdemServico(ordemServico: IOrdemServico): Promise<RespostaServico<IOrdemServico>> {
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
-    const ordemToPost = removerAtributosNulos(ordemServico);
-    return post(`/ordem-servico/`, ordemToPost as OrdemServicoFull, ordemToPost.id);
-}
-
-export function emitirOrdemServicoSEI(ordemServico: OrdemServico): Promise<RespostaServico<OrdemServicoFull>> {
-    return postAcao<OrdemServicoFull>(`/ordem-servico/emitirSEI/${ordemServico.id}`, null);
+    const ordemToPost = removerAtributosNulos<IOrdemServico>(ordemServico);
+    return post<IOrdemServico>(`/ordem-servico/`, ordemToPost, ordemToPost.id);
 }
 
 export function deleteOrdemServico(id: number): Promise<RespostaServico<void>> {
     return del(`/ordem-servico/${id}`);
 }
 
-function removerAtributosNulos(obj: {[atributo: string]: any}) {
+export function emitirOrdemServicoSEI(ordemServico: IOrdemServico): Promise<RespostaServico<IOrdemServico>> {
+    return postAcao<IOrdemServico>(`/ordem-servico/emitirSEI/${ordemServico.id}`, null);
+}
+
+export function emitirTermoAceitacaoEtapaSEI(etapa: IEtapaOrdemServico): Promise<RespostaServico<IEtapaOrdemServico>> {
+    if (typeof etapa.valorAdiantamentoPlanejado == 'string')
+        etapa.valorAdiantamentoPlanejado = parseFloat(etapa.valorAdiantamentoPlanejado);
+    if (typeof etapa.valorAdiantamentoReal == 'string')
+        etapa.valorAdiantamentoReal = parseFloat(etapa.valorAdiantamentoReal);
+    return postAcao<IEtapaOrdemServico>(
+        `/etapa-ordem-servico/emitirTermoAceite/${etapa.id}`,
+        removerAtributosNulos(etapa),
+    );
+}
+
+function removerAtributosNulos<T>(obj: {[atributo: string]: any}): T {
     const retorno: {[atributo: string]: any} = {};
     Object.keys(obj).forEach((k) => {
         if (obj[k] != null) {
             retorno[k] = obj[k];
         }
     });
-    return retorno;
+    return retorno as T;
 }

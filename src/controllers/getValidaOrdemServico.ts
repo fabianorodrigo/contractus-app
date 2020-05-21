@@ -1,6 +1,6 @@
+import {getStatusOrdemServico} from '../commonLib/interface-models/getStatusOrdemServico';
+import {StatusOrdemServico} from '../commonLib/interface-models/StatusOrdemServico';
 import {OrdemServico} from '../models';
-import {getStatusOrdemServico} from '../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../models/StatusOrdemServico';
 import {OrdemServicoRepository} from '../repositories';
 
 export enum AcaoGetOrdemServico {

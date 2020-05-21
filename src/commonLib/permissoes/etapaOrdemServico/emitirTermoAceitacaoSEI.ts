@@ -15,8 +15,13 @@ export function emitirTermoAceitacaoSEI(
     ordemServico: IOrdemServico,
     tipoOrdemServico: ITipoOrdemServicoContrato,
 ): RetornoPermisao {
+    /* ################## A ETAPA JÁ TEM QUE TER SIDO SALVA NA BASE (TER UM ID) ##############################*/
+    let r = c.construir(etapa.id != undefined, '', `Etapa não possui um ID`);
+    //Se o uso for HABILITAR_UI, retorna sem acumular mensagens ou qualquer outra validação/processamento
+    if (r.ok == false && c.tipoUso == TipoUsoPermissoes.HABILITAR_UI) return r;
+
     /* ################## O TIPO DA OS DEVE PREVER TERMOS DE ACEITAÇÃO POR ETAPA ##############################*/
-    let r = c.construir(
+    r = c.construir(
         tipoOrdemServico.termoAceitacaoEmitidoPorEtapa,
         '',
         `O Tipo da Ordem de Serviço não está configurado para emissão de termos de aceitação por etapa`,

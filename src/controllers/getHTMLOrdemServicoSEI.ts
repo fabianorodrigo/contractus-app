@@ -13,7 +13,6 @@ export function getHTMLOrdemServicoSEI(
         throw new Error(`Tipo de Ordem de Serviço não tem Template definido na base de dados`);
     //como teremos que alterar e incluir alguns valores da OS para passar para o template, clonamos
     const osFormatada = getOrdemServicoFormatadaToTemplate(ordemServico, tipoOrdemServico);
-    ordemServico;
 
     const objRef: {[name: string]: any} = {
         os: osFormatada,

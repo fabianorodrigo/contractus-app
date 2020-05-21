@@ -1,16 +1,16 @@
 import {Grid} from '@material-ui/core';
 import 'date-fns';
 import React from 'react';
-import {TipoOrdemServicoContrato} from '../../../../models';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {ITipoOrdemServicoContrato} from '../../../../commonLib/interface-models';
+import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {CampoData} from '../../lib/CampoData';
 import {CampoTexto} from '../../lib/campoTexto';
 export const FormCamposPlanejamento: React.FC<{
     inputs: any;
-    tipoOrdemServico: TipoOrdemServicoContrato;
+    tipoOrdemServico: ITipoOrdemServicoContrato;
     statusOrdemServico: StatusOrdemServico;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    errosInput: any;
+    errosInput: {[atributo: string]: boolean};
 }> = (props) => {
     const {inputs, tipoOrdemServico, statusOrdemServico, onInputChange, errosInput} = props;
     return (
@@ -24,7 +24,7 @@ export const FormCamposPlanejamento: React.FC<{
                     somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    error={errosInput.dtInicioPlanejada != ''}
+                    error={errosInput.dtInicioPlanejada}
                 />
             </Grid>
             <Grid item xs={3}>
@@ -36,7 +36,7 @@ export const FormCamposPlanejamento: React.FC<{
                     somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
-                    error={errosInput.dtFimPlanejada != ''}
+                    error={errosInput.dtFimPlanejada}
                 />
             </Grid>
             {tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa && (
@@ -50,7 +50,7 @@ export const FormCamposPlanejamento: React.FC<{
                         obrigatorio={true}
                         onChange={onInputChange}
                         type="number"
-                        error={errosInput.valorAdiantamentoPlanejado != ''}
+                        error={errosInput.valorAdiantamentoPlanejado}
                     />
                 </Grid>
             )}

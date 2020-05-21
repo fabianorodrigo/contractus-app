@@ -1,3 +1,4 @@
+export * from '../commonLib/interface-models/StatusOrdemServico';
 export * from './area-requisitante.model';
 export * from './contrato.model';
 export * from './entregavel-ordem-servico.model';

@@ -1,12 +1,12 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
 import {formataNumeroStringLocal} from '../../../../commonLib/formatacao';
-import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {IItemOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import {DeleteIcon, EditIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 
@@ -21,7 +21,7 @@ const privateUseStyles = makeStyles((theme) => ({
 }));
 
 export const RowItemOrdemServico: React.FC<{
-    item: ItemOrdemServico;
+    item: IItemOrdemServico;
     order?: number;
     funcaoEditar: () => void;
     funcaoRemover: () => void;
@@ -34,7 +34,7 @@ export const RowItemOrdemServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
     const privateClasses = privateUseStyles();

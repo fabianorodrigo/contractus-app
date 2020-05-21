@@ -1,12 +1,12 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
-import {EntregavelOrdemServico, OrdemServicoFull} from '../../../../models';
+import {IEntregavelOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
 import {FormEntregavelOrdemServico} from './form';
@@ -16,8 +16,8 @@ import {RowEntregavelOrdemServico} from './row';
 import {valida} from './valida';
 
 export const TabelaEntregaveisOrdensServico: React.FC<{
-    funcaoAdicionar: (etapa: EntregavelOrdemServico) => void;
-    funcaoAtualizar: (etapa: EntregavelOrdemServico, indice: number) => void;
+    funcaoAdicionar: (etapa: IEntregavelOrdemServico) => void;
+    funcaoAtualizar: (etapa: IEntregavelOrdemServico, indice: number) => void;
     funcaoRemover: (indice: number) => void;
 }> = (props) => {
     const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
@@ -32,18 +32,18 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
 
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
-        EntregavelOrdemServico
+        IEntregavelOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricao, refButtonAdiciona);
     //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState({
         descricao: '',
     });
     const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
-        (entregavel: EntregavelOrdemServico, indice?: number) => {
+        (entregavel: IEntregavelOrdemServico, indice?: number) => {
             errosInput = valida(entregavel);
             if (Object.values(errosInput).every((v) => v == '')) {
                 confirmar(entregavel);
@@ -78,7 +78,7 @@ export const TabelaEntregaveisOrdensServico: React.FC<{
                     <TableBody>
                         {osState.dado.entregaveis &&
                             osState.dado.entregaveis.map((entregavelObj, i) => {
-                                const entregavel = entregavelObj as EntregavelOrdemServico;
+                                const entregavel: IEntregavelOrdemServico = entregavelObj as IEntregavelOrdemServico;
                                 return (
                                     <RowEntregavelOrdemServico
                                         entregavel={entregavel}

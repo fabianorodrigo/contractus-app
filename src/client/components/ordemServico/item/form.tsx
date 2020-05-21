@@ -1,11 +1,12 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, FormEvent, useContext} from 'react';
-import {ItemOrdemServico, OrdemServicoFull} from '../../../../models';
-import {getStatusOrdemServico} from '../../../../models/getStatusOrdemServico';
-import {StatusOrdemServico} from '../../../../models/StatusOrdemServico';
+import {IOrdemServico} from '../../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
+import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
+import {ItemOrdemServico} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
@@ -28,7 +29,7 @@ export const FormItemOrdensServico: React.FC<{
     const {state: appState}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
     const contratos: ContratosMap = appState.contratos;
 
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
     return (

@@ -1,6 +1,6 @@
-import {OrdemServicoFull} from '../../../../models';
+import {IOrdemServico} from '../../../../commonLib/interface-models';
 
-export function novoEntregavelOrdemServico(ordemServico: OrdemServicoFull) {
+export function novoEntregavelOrdemServico(ordemServico: IOrdemServico) {
     return {
         id: undefined,
         idOrdemServico: <number>ordemServico.id,

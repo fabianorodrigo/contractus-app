@@ -1,6 +1,6 @@
-import {Contrato, OrdemServicoFull} from '../../../../models';
+import {IContrato, IOrdemServico} from '../../../../commonLib/interface-models';
 
-export function novoItemOrdemServico(ordemServico: OrdemServicoFull, contrato: Contrato) {
+export function novoItemOrdemServico(ordemServico: IOrdemServico, contrato: IContrato) {
     return {
         id: undefined,
         idOrdemServico: ordemServico.id,

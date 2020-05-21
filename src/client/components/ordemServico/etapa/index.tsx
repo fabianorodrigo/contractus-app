@@ -1,20 +1,21 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
-import {EtapaOrdemServico, OrdemServicoFull} from '../../../../models';
+import {getAcoesEtapaOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
+import {IOrdemServico} from '../../../../commonLib/interface-models';
+import {getTipoOrdemServico} from '../../../../commonLib/interface-models/getTipoOrdemServico';
+import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
+import {EtapaOrdemServico} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {ContratosMap} from '../../../models/TypeContext';
 import useStyles from '../../../services/styles';
 import {OrdemServicoContext} from '../context';
-import {getTipoOrdemServico} from '../getTipoOrdemServico';
 import {FormEtapaOrdensServico} from './form';
 import {HeaderEtapasOrdensServico} from './header';
 import {novaEtapaOrdemServico} from './new';
 import {RowEtapaOrdemServico} from './row';
-import {valida} from './valida';
 
 export const TabelaEtapasOrdensServico: React.FC<{
     funcaoAdicionar: (etapa: EtapaOrdemServico) => void;
@@ -33,7 +34,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
         AppContext,
     );
     const contratos: ContratosMap = appState.contratos;
-    const {state: osState}: IEntidadeContexto<OrdemServicoFull> = useContext(OrdemServicoContext);
+    const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
 
     //Custom Hook para controle dos elementos visuais durante a edição
@@ -41,31 +42,23 @@ export const TabelaEtapasOrdensServico: React.FC<{
         EtapaOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoEtapa, refButtonAdicionaEtapa);
     //custom hook para controle de estado dos atributos da entidade
-    let [errosInput, setErrosInput] = React.useState({
-        descricao: '',
-        dtInicioPlanejada: '',
-        dtFimPlanejada: '',
-        dtInicioReal: '',
-        dtFimReal: '',
-        valorAdiantamentoPlanejado: '',
-        valorAdiantamentoReal: '',
-    });
-    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
-        (etapa: EtapaOrdemServico, indice?: number) => {
-            errosInput = valida(etapa);
-            if (Object.values(errosInput).every((v) => v == '')) {
-                confirmar(etapa);
-            } else {
-                setErrosInput({...errosInput});
-                Object.values(errosInput).forEach((msg) => {
-                    if (msg != '') {
-                        enqueueSnackbar(msg, {variant: 'warning'});
-                    }
-                });
-            }
-        },
-        instancia,
-    );
+    let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
+    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook((etapa: EtapaOrdemServico) => {
+        //Habilitação de ações
+        const pode = getAcoesEtapaOrdemServico(TipoUsoPermissoes.VALIDAR_UI, etapa);
+        const validacao = pode.salvar();
+
+        if (validacao.ok) {
+            confirmar(etapa);
+        } else if (validacao.mensagensAtributo) {
+            Object.keys(validacao.mensagensAtributo).forEach((atributo: string) => {
+                errosInput[atributo] = true;
+                const msg = (validacao.mensagensAtributo as any)[atributo];
+                enqueueSnackbar(msg, {variant: 'warning'});
+            });
+            setErrosInput({...errosInput});
+        }
+    }, instancia);
 
     //quando mudar a instancia em edição, é preciso atualizar a variável 'inputs',
     //que é passada para o componente do Form. Se não for feito, ficará null

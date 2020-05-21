@@ -97,6 +97,26 @@ export class EtapaOrdemServico extends Entity {
     idOrdemServico?: number;
 
     @property({
+        type: 'number',
+        nullable: true,
+        default: null,
+        postgresql: {
+            columnName: 'NR_TERMO_ACEITACAO_SEI',
+        },
+    })
+    numeroDocumentoTermoAceitacaoSEI?: number;
+
+    @property({
+        type: 'string',
+        nullable: true,
+        default: null,
+        postgresql: {
+            columnName: 'DE_LINK_TERMO_ACEITACAO_SEI',
+        },
+    })
+    linkTermoAceitacaoSEI?: string;
+
+    @property({
         type: 'date',
         nullable: true,
         default: null,

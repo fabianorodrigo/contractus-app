@@ -20,14 +20,19 @@ export function formataMensagemErroLoopback(error: any) {
         return 'Os dados enviados ao servidor não são válidos: '.concat(
             error.details
                 .map((d: {message: string; code: string; path: string}) => {
-                    return d.message.replace(/should have required property/g, 'atributo não informado');
+                    if (d.code == 'type') {
+                        return d.path.substr(1).concat(d.message.replace(/should be/g, ' deve ser do tipo'));
+                    } else if (d.code == 'required') {
+                        return d.message.replace(/should have required property/g, 'atributo não informado');
+                    } else {
+                        return d.code.concat(': ', d.message);
+                    }
                 })
                 .join(', '),
         );
     } else if (error.code == 'ENTITY_NOT_FOUND') {
         const regex = /Entity not found:(.*) with id (\d+)/gm;
         const partes = regex.exec(error.message);
-        console.log(partes);
 
         if (partes != null && partes?.length > 2) {
             return `O servidor não encontrou  ${
