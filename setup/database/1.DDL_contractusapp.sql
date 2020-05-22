@@ -241,8 +241,8 @@ ALTER SEQUENCE contractusapp."SQ_TB_ENTREGAVEL_TIPO_ORDEM_SERVICO_CONTRATO" OWNE
 CREATE TABLE contractusapp."TB_ETAPA_ORDEM_SERVICO" (
     "ID_ETAPA_ORDEM_SERVICO" integer NOT NULL,
     "NM_ETAPA" text NOT NULL,
-    "DT_INICIO_PLANEJADA" timestamp with time zone NOT NULL,
-    "DT_FIM_PLANEJADA" timestamp with time zone NOT NULL,
+    "DT_INICIO_PLANEJADA" timestamp with time zone,
+    "DT_FIM_PLANEJADA" timestamp with time zone,
     "VL_ADIANTAMENTO_PLANEJADO" numeric(10,2) NULL,
     "DT_INICIO_REAL" timestamp with time zone,
     "DT_FIM_REAL" timestamp with time zone,
