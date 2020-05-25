@@ -10,7 +10,6 @@ import {getTipoOrdemServico} from '../../../../commonLib/interface-models/getTip
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../context';
 import {FormCamposPlanejamento} from './formCamposPlanejamento';
@@ -21,10 +20,9 @@ export const FormEtapaOrdensServico: React.FC<{
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: Function;
-    inputDescricaoEtapaRef?: React.RefObject<HTMLInputElement>;
     errosInput: {[atributo: string]: boolean};
 }> = (props) => {
-    const {etapaEditada, onInputChange, onSubmitForm, fechaForm, inputDescricaoEtapaRef, errosInput} = props;
+    const {etapaEditada, onInputChange, onSubmitForm, fechaForm, errosInput} = props;
     if (etapaEditada == null) return null;
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state: appState}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(AppContext);
@@ -35,8 +33,16 @@ export const FormEtapaOrdensServico: React.FC<{
     const tipoOrdemServico = getTipoOrdemServico(osState.dado, contratos);
 
     //Habilitação de ações
-    const pode = getAcoesEtapaOrdemServico(TipoUsoPermissoes.HABILITAR_UI, etapaEditada, osState.dado);
-
+    const pode = getAcoesEtapaOrdemServico(
+        TipoUsoPermissoes.HABILITAR_UI,
+        etapaEditada,
+        osState.dado,
+        tipoOrdemServico,
+    );
+    //debugando
+    /*Object.keys(pode).forEach((fName) => {
+        console.log(fName, (pode as any)[fName]().ok);
+    });*/
     return (
         <TableRow>
             <TableCell
@@ -46,24 +52,11 @@ export const FormEtapaOrdensServico: React.FC<{
             >
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <Grid container>
-                        <Grid item xs={tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa ? 3 : 5}>
-                            <CampoTexto
-                                fullWidth={true}
-                                atributo="descricao"
-                                label="Etapa"
-                                objetoValor={etapaEditada}
-                                somenteLeitura={pode.editarDescricao().ok}
-                                obrigatorio={true}
-                                onChange={onInputChange}
-                                error={errosInput.descricao}
-                                inputRef={inputDescricaoEtapaRef}
-                            />
-                        </Grid>
                         {pode.editarPlanejamento().ok && (
                             <FormCamposPlanejamento
                                 inputs={etapaEditada}
                                 tipoOrdemServico={tipoOrdemServico as ITipoOrdemServicoContrato}
-                                statusOrdemServico={statusOrdemServico}
+                                pode={pode}
                                 onInputChange={onInputChange}
                                 errosInput={errosInput}
                             />
@@ -72,6 +65,7 @@ export const FormEtapaOrdensServico: React.FC<{
                             <FormCamposRealizado
                                 inputs={etapaEditada}
                                 tipoOrdemServico={tipoOrdemServico as ITipoOrdemServicoContrato}
+                                pode={pode}
                                 onInputChange={onInputChange}
                                 errosInput={errosInput}
                             />

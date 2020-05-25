@@ -1,7 +1,7 @@
 import {service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
-import {getAcoesEtapaOrdemServico, TipoUsoPermissoes} from '../commonLib';
+import {getAcoesEtapaOrdemServico, tem, TipoUsoPermissoes} from '../commonLib';
 import {ValidationError} from '../commonLib/ValidationError';
 import {EtapaOrdemServico} from '../models';
 import {
@@ -80,6 +80,10 @@ export class EtapaOrdemServicoController {
             } else {
                 etapa.dtInicioReal = etapaOrdemServico.dtInicioReal;
                 etapa.dtFimReal = etapaOrdemServico.dtFimReal;
+                if (tem(etapaOrdemServico.valorAdiantamentoReal))
+                    etapa.valorAdiantamentoReal = etapaOrdemServico.valorAdiantamentoReal;
+                if (tem(etapaOrdemServico.idResultadoEtapa))
+                    etapa.idResultadoEtapa = etapaOrdemServico.idResultadoEtapa;
             }
         }
         const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);

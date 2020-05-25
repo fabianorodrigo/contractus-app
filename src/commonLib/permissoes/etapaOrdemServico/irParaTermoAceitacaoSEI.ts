@@ -1,11 +1,12 @@
 import {IEtapaOrdemServico} from '../../interface-models';
 import {ConstrutorRetornoPermissoes} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
+import {tem} from '../tem';
 
 export function irParaTermoAceitacaoSEI(c: ConstrutorRetornoPermissoes, etapa: IEtapaOrdemServico): RetornoPermisao {
     /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
     let r = c.construir(
-        etapa.linkTermoAceitacaoSEI != null,
+        tem(etapa.linkTermoAceitacaoSEI),
         '',
         `Termo de Aceitação ainda não foi emitido para esta etapa no SEI`,
     );

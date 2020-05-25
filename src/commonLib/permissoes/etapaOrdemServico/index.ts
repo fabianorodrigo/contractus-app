@@ -71,7 +71,9 @@ export function getAcoesEtapaOrdemServico(
             return remover(c, etapa, ordemServico);
         },
         salvar: (): RetornoPermisao => {
-            return salvar(c, etapa);
+            if (!ordemServico)
+                throw new Error(`Parâmetro 'ordemServico' precisa ser informado para verificar permisão 'salvar'`);
+            return salvar(c, etapa, ordemServico);
         },
     };
 }

@@ -1,8 +1,8 @@
 export interface IEtapaOrdemServico {
     id?: number;
     descricao: string;
-    dtInicioPlanejada: string;
-    dtFimPlanejada: string;
+    dtInicioPlanejada?: string;
+    dtFimPlanejada?: string;
     valorAdiantamentoPlanejado?: number;
     dtInicioReal?: string;
     dtFimReal?: string;

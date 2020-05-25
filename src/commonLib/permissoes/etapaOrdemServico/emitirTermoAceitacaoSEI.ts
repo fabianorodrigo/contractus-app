@@ -7,6 +7,7 @@ import {
 } from '../../interface-models';
 import {ConstrutorRetornoPermissoes} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
+import {tem} from '../tem';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
 
 export function emitirTermoAceitacaoSEI(
@@ -16,7 +17,7 @@ export function emitirTermoAceitacaoSEI(
     tipoOrdemServico: ITipoOrdemServicoContrato,
 ): RetornoPermisao {
     /* ################## A ETAPA JÁ TEM QUE TER SIDO SALVA NA BASE (TER UM ID) ##############################*/
-    let r = c.construir(etapa.id != undefined, '', `Etapa não possui um ID`);
+    let r = c.construir(tem(etapa.id), '', `Etapa não possui um ID`);
     //Se o uso for HABILITAR_UI, retorna sem acumular mensagens ou qualquer outra validação/processamento
     if (r.ok == false && c.tipoUso == TipoUsoPermissoes.HABILITAR_UI) return r;
 
@@ -31,7 +32,7 @@ export function emitirTermoAceitacaoSEI(
 
     /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
     r = c.construir(
-        etapa.numeroDocumentoTermoAceitacaoSEI == null && etapa.linkTermoAceitacaoSEI == null,
+        !tem(etapa.numeroDocumentoTermoAceitacaoSEI) && !tem(etapa.linkTermoAceitacaoSEI),
         '',
         `Termo de Aceitação já foi emitido para esta etapa. SEI: ${etapa.numeroDocumentoTermoAceitacaoSEI} - ${etapa.linkTermoAceitacaoSEI}`,
     );
@@ -50,7 +51,7 @@ export function emitirTermoAceitacaoSEI(
 
     /* #################### ETAPA NÁO PODE TER SIDO CANCELADA ##########################*/
     r = c.construir(
-        etapa.dtCancelamento == null,
+        !tem(etapa.dtCancelamento),
         '',
         `A Etapa consta como cancelada. Não é possível emitir Termo de Aceitação`,
         r,

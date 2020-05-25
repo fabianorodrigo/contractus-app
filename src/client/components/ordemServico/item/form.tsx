@@ -18,10 +18,10 @@ export const FormItemOrdensServico: React.FC<{
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: () => void;
-    inputDescricaoItemRef?: React.RefObject<HTMLInputElement>;
+    inputDescricaoEtapaRef?: React.RefObject<HTMLInputElement>;
     errosInput: any;
 }> = (props) => {
-    const {itemEditado, onInputChange, onSubmitForm, fechaForm, inputDescricaoItemRef, errosInput} = props;
+    const {itemEditado, onInputChange, onSubmitForm, fechaForm, inputDescricaoEtapaRef, errosInput} = props;
     if (itemEditado == null) return null;
 
     const classes = useStyles();
@@ -46,7 +46,7 @@ export const FormItemOrdensServico: React.FC<{
                             obrigatorio={true}
                             onChange={onInputChange}
                             error={errosInput.descricao != ''}
-                            inputRef={inputDescricaoItemRef}
+                            autoFocus={true}
                         />
                     </Grid>
                     <Grid item xs={4}>

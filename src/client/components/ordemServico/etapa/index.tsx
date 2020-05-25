@@ -26,7 +26,6 @@ export const TabelaEtapasOrdensServico: React.FC<{
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
-    const refInputDescricaoEtapa = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaEtapa = React.useRef<HTMLInputElement>(null);
 
     //If re-rendering the component is expensive, you can optimize it by using memoization.
@@ -40,14 +39,13 @@ export const TabelaEtapasOrdensServico: React.FC<{
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
         EtapaOrdemServico
-    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoEtapa, refButtonAdicionaEtapa);
+    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refButtonAdicionaEtapa);
     //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
     const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook((etapa: EtapaOrdemServico) => {
         //Habilitação de ações
-        const pode = getAcoesEtapaOrdemServico(TipoUsoPermissoes.VALIDAR_UI, etapa);
+        const pode = getAcoesEtapaOrdemServico(TipoUsoPermissoes.VALIDAR_UI, etapa, osState.dado);
         const validacao = pode.salvar();
-
         if (validacao.ok) {
             confirmar(etapa);
         } else if (validacao.mensagensAtributo) {
@@ -104,7 +102,6 @@ export const TabelaEtapasOrdensServico: React.FC<{
                                 onInputChange={onInputChange}
                                 onSubmitForm={onSubmit}
                                 fechaForm={fecharForm}
-                                inputDescricaoEtapaRef={refInputDescricaoEtapa}
                                 errosInput={errosInput}
                             />
                         )}

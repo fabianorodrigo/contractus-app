@@ -2,26 +2,37 @@ import {Grid} from '@material-ui/core';
 import 'date-fns';
 import React from 'react';
 import {ITipoOrdemServicoContrato} from '../../../../commonLib/interface-models';
-import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {CampoData} from '../../lib/CampoData';
 import {CampoTexto} from '../../lib/campoTexto';
 export const FormCamposPlanejamento: React.FC<{
     inputs: any;
     tipoOrdemServico: ITipoOrdemServicoContrato;
-    statusOrdemServico: StatusOrdemServico;
+    pode: any;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     errosInput: {[atributo: string]: boolean};
 }> = (props) => {
-    const {inputs, tipoOrdemServico, statusOrdemServico, onInputChange, errosInput} = props;
+    const {inputs, tipoOrdemServico, pode, onInputChange, errosInput} = props;
     return (
         <React.Fragment>
+            <Grid item xs={tipoOrdemServico?.termoAceitacaoEmitidoPorEtapa ? 3 : 5}>
+                <CampoTexto
+                    fullWidth={true}
+                    atributo="descricao"
+                    label="Etapa"
+                    objetoValor={inputs}
+                    somenteLeitura={!pode.editarDescricao().ok}
+                    obrigatorio={true}
+                    onChange={onInputChange}
+                    error={errosInput.descricao}
+                    autoFocus={true}
+                />
+            </Grid>
             <Grid item xs={3}>
                 <CampoData
                     fullWidth={true}
                     atributo="dtInicioPlanejada"
                     label="Início Planejado"
                     objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
                     error={errosInput.dtInicioPlanejada}
@@ -33,7 +44,6 @@ export const FormCamposPlanejamento: React.FC<{
                     atributo="dtFimPlanejada"
                     label="Conclusão Planejada"
                     objetoValor={inputs}
-                    somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                     obrigatorio={true}
                     onChange={onInputChange}
                     error={errosInput.dtFimPlanejada}
@@ -46,7 +56,6 @@ export const FormCamposPlanejamento: React.FC<{
                         atributo="valorAdiantamentoPlanejado"
                         label="Valor Planejado"
                         objetoValor={inputs}
-                        somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                         obrigatorio={true}
                         onChange={onInputChange}
                         type="number"

@@ -18,7 +18,6 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
     funcaoAdicionarCallback: (instancia: T) => void,
     funcaoAtualizarCallback: (instancia: T, indice: number) => void,
     funcaoRemoverCallback: (indice: number) => void,
-    refInputFoco: React.RefObject<HTMLInputElement>,
     refBotaoFoco: React.RefObject<HTMLInputElement>,
 ) => {
     const [instancia, setInstancia] = React.useState<any>(null);
@@ -29,9 +28,8 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
     //quando mudar o valor de mostraForm, se for para TRUE, foca no campo de foco
     //passado. Se for FALSE, foca no botão adicionar
     useEffect(() => {
-        if (mostraForm && refInputFoco.current != null) {
-            refInputFoco.current.focus();
-        } else if (!mostraForm && refBotaoFoco.current != null) {
+        //console.log('foco', mostraForm, refInputFoco, refInputFoco.current, refBotaoFoco.current);
+        if (!mostraForm && refBotaoFoco.current != null) {
             refBotaoFoco.current.focus();
         }
     }, [mostraForm]);

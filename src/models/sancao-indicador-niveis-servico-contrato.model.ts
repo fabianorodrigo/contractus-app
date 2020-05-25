@@ -46,14 +46,6 @@ export class SancaoIndicadorNiveisServicoContrato extends Entity {
     })
     percentualGlosa: number;
 
-    @property({
-        type: 'number',
-        postgresql: {
-            columnName: 'ID_TIPO_ORDEM_SERVICO',
-        },
-    })
-    idTipoOrdemServicoContrato?: number;
-
     constructor(data?: Partial<SancaoIndicadorNiveisServicoContrato>) {
         super(data);
     }

@@ -1,6 +1,7 @@
 import {getStatusOrdemServico, IEtapaOrdemServico, IOrdemServico, StatusOrdemServico} from '../../interface-models';
 import {ConstrutorRetornoPermissoes} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
+import {tem} from '../tem';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
 
 export function remover(
@@ -10,7 +11,7 @@ export function remover(
 ): RetornoPermisao {
     /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
     let r = c.construir(
-        etapa.numeroDocumentoTermoAceitacaoSEI == null && etapa.linkTermoAceitacaoSEI == null,
+        !tem(etapa.numeroDocumentoTermoAceitacaoSEI) && !tem(etapa.linkTermoAceitacaoSEI),
         '',
         `Termo de Aceitação já foi emitido para esta etapa. SEI: ${etapa.numeroDocumentoTermoAceitacaoSEI} - ${etapa.linkTermoAceitacaoSEI}`,
     );
@@ -20,7 +21,7 @@ export function remover(
     /* #################### ORDEM DE SERVIÇO DEVE ESTAR EM RASCUNHO OU A ETAPA É UMA ETAPA NÃO PREVISTA NO PLANEJAMENTO #########################*/
     r = c.construir(
         getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO ||
-            (etapa.dtInicioPlanejada == null && etapa.dtFimPlanejada == null),
+            (!tem(etapa.dtInicioPlanejada) && !tem(etapa.dtFimPlanejada)),
         '',
         `A Ordem de Serviço já foi emitida e esta era uma etapa prevista no planejamento`,
         r,

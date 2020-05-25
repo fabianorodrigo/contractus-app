@@ -15,7 +15,6 @@ export const CampoTexto: React.FC<{
     type?: string;
     helperText?: string;
     error?: boolean;
-    inputRef?: React.RefObject<HTMLInputElement>;
     autoFocus?: boolean;
 }> = ({
     atributo,
@@ -31,7 +30,6 @@ export const CampoTexto: React.FC<{
     type,
     helperText,
     error,
-    inputRef,
     autoFocus,
 }) => {
     return (
@@ -49,7 +47,6 @@ export const CampoTexto: React.FC<{
             type={type}
             helperText={helperText}
             error={error}
-            inputRef={inputRef}
             autoFocus={autoFocus}
         />
     );

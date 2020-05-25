@@ -26,7 +26,6 @@ export const TabelaItensOrdensServico: React.FC<{
     const classes = useStyles();
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
 
-    const refInputDescricaoItem = React.useRef<HTMLInputElement>(null);
     const refButtonAdicionaItem = React.useRef<HTMLInputElement>(null);
 
     //If re-rendering the component is expensive, you can optimize it by using memoization.
@@ -40,7 +39,7 @@ export const TabelaItensOrdensServico: React.FC<{
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
         IItemOrdemServico
-    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refInputDescricaoItem, refButtonAdicionaItem);
+    >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refButtonAdicionaItem);
     //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState({
         descricao: '',
@@ -123,7 +122,6 @@ export const TabelaItensOrdensServico: React.FC<{
                                 onInputChange={onInputChange}
                                 onSubmitForm={onSubmit}
                                 fechaForm={fecharForm}
-                                inputDescricaoItemRef={refInputDescricaoItem}
                                 errosInput={errosInput}
                             />
                         )}

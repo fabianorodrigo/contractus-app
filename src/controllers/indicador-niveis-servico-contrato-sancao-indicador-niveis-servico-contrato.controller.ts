@@ -53,7 +53,6 @@ export class IndicadorNiveisServicoContratoSancaoIndicadorNiveisServicoContratoC
                     schema: getModelSchemaRef(SancaoIndicadorNiveisServicoContrato, {
                         title: 'NewSancaoIndicadorNiveisServicoContratoInIndicadorNiveisServicoContrato',
                         exclude: ['id'],
-                        optional: ['idTipoOrdemServicoContrato'],
                     }),
                 },
             },

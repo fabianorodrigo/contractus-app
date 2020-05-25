@@ -2,6 +2,7 @@ import {IEtapaOrdemServico, IOrdemServico, StatusOrdemServico} from '../../inter
 import {getStatusOrdemServico} from '../../interface-models/getStatusOrdemServico';
 import {ConstrutorRetornoPermissoes} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
+import {tem} from '../tem';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
 
 export function editarRealizado(
@@ -20,7 +21,7 @@ export function editarRealizado(
 
     /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
     r = c.construir(
-        etapa.numeroDocumentoTermoAceitacaoSEI == null && etapa.linkTermoAceitacaoSEI == null,
+        !tem(etapa.numeroDocumentoTermoAceitacaoSEI) && !tem(etapa.linkTermoAceitacaoSEI),
         '',
         `Termo de Aceitação já foi emitido para esta etapa`,
     );

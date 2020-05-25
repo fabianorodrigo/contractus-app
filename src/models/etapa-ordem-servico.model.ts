@@ -30,21 +30,19 @@ export class EtapaOrdemServico extends Entity {
 
     @property({
         type: 'date',
-        required: true,
         postgresql: {
             columnName: 'DT_INICIO_PLANEJADA',
         },
     })
-    dtInicioPlanejada: string;
+    dtInicioPlanejada?: string;
 
     @property({
         type: 'date',
-        required: true,
         postgresql: {
             columnName: 'DT_FIM_PLANEJADA',
         },
     })
-    dtFimPlanejada: string;
+    dtFimPlanejada?: string;
 
     @property({
         type: 'number',
