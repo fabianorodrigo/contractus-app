@@ -4,7 +4,6 @@ import React, {Dispatch, FormEvent, useContext} from 'react';
 import {IEntregavelOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {CampoTexto} from '../../lib/campoTexto';
@@ -38,7 +37,6 @@ export const FormEntregavelOrdemServico: React.FC<{
                             atributo="descricao"
                             label="Entregável"
                             objetoValor={entregavelEditado}
-                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                             obrigatorio={true}
                             onChange={onInputChange}
                             error={errosInput.descricao != ''}

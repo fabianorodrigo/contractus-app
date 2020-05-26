@@ -12,7 +12,7 @@ export function salvar(
 ): RetornoPermisao {
     /* ################################# DESCRIÇÃO DEVE ESTAR PREENCHIDA ##############################################*/
     let r = c.construir(
-        etapa.descricao != null && etapa.descricao.trim() != '',
+        tem(etapa.descricao) && etapa.descricao.trim() != '',
         'descricao',
         'Uma descrição da etapa de execução dos serviços deve ser informada',
     );
