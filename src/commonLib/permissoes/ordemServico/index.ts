@@ -2,7 +2,9 @@ import {IOrdemServico} from '../../interface-models';
 import {ConstrutorRetornoPermissoesFactory} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
+import {emitirSEI} from './emitirSEI';
 import {excluir} from './excluir';
+import {irParaSEI} from './irParaSEI';
 
 /**
  * Retorna objeto com um função para cada ação possível para uma Ordem de Serviço
@@ -15,11 +17,17 @@ import {excluir} from './excluir';
  * na primeira não conformidade; se VALIDAR_UI, faz todas as validações e retorna todas as mensagens de inconformidade;
  * se HABILITAR_UI, retorna {'ok': false} na primeira inconformidade
  */
-export function getAcoesOrdemServico(ordemServico: IOrdemServico, tipoUso: TipoUsoPermissoes) {
+export function getAcoesOrdemServico(tipoUso: TipoUsoPermissoes, ordemServico: IOrdemServico) {
     const c = ConstrutorRetornoPermissoesFactory(tipoUso);
     return {
+        emitirSEI: (): RetornoPermisao => {
+            return emitirSEI(c, ordemServico);
+        },
         excluir: (): RetornoPermisao => {
             return excluir(c, ordemServico);
+        },
+        irParaSEI: (): RetornoPermisao => {
+            return irParaSEI(c, ordemServico);
         },
     };
 }

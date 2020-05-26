@@ -4,7 +4,7 @@ import {RetornoPermisao} from '../RetornoPermisao';
 import {tem} from '../tem';
 
 export function irParaTermoAceitacaoSEI(c: ConstrutorRetornoPermissoes, etapa: IEtapaOrdemServico): RetornoPermisao {
-    /* ############################# TERMO NÃO PODE JÁ TER SIDO EMITIDO #####################################*/
+    /* ############################# TERMO TEM QUE JÁ TER SIDO EMITIDO #####################################*/
     let r = c.construir(
         tem(etapa.linkTermoAceitacaoSEI),
         '',

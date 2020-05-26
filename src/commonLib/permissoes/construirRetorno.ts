@@ -28,16 +28,18 @@ export const ConstrutorRetornoPermissoesFactory = (tipoUso: TipoUsoPermissoes): 
         ): RetornoPermisao => {
             let retorno: RetornoPermisao;
             if (retornoParcial == null) {
-                retorno = {ok: false};
+                retorno = {ok: resultadoAssert};
             } else {
                 retorno = retornoParcial;
                 //Se já era TRUE e o resultado da avaliação veio TRUE, retorna com TRUE
                 if (resultadoAssert && retorno.ok) return retorno;
             }
             //Se o uso for VALIDAR_SERVIDOR, lança exceção caso o resultado do assert seja FALSE
-            if (resultadoAssert == false && tipoUso == TipoUsoPermissoes.VALIDAR_SERVIDOR)
-                throw new ValidationError(422, mensagem);
-            retorno.ok = resultadoAssert;
+            if (resultadoAssert == false) {
+                retorno.ok = resultadoAssert;
+                if (tipoUso == TipoUsoPermissoes.VALIDAR_SERVIDOR) throw new ValidationError(422, mensagem);
+            }
+
             if (retorno.ok == false) {
                 //Se o uso for HABILITAR_UI, retorna sem acumular mensagens ou qualquer outro processamento
                 if (tipoUso == TipoUsoPermissoes.HABILITAR_UI) return retorno;

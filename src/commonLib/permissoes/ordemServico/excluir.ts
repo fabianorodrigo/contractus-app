@@ -5,9 +5,9 @@ import {RetornoPermisao} from '../RetornoPermisao';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
 
 export function excluir(c: ConstrutorRetornoPermissoes, ordemServico: IOrdemServico): RetornoPermisao {
-    /* ################################# ORDEM DE SERVIÇO JÁ FOI EMITIDA RASCUNHO ##############################*/
+    /* ################################# ORDEM DE SERVIÇO SÓ PODE SER EXCLUÍDA ENQUANTO RASCUNHO ##############################*/
     let r = c.construir(
-        getStatusOrdemServico(ordemServico) > StatusOrdemServico.RASCUNHO,
+        getStatusOrdemServico(ordemServico) == StatusOrdemServico.RASCUNHO,
         '',
         `Ordem de Serviço não pode ser excluída pois não consta mais como rascunho, mas como já emitida no SEI`,
     );

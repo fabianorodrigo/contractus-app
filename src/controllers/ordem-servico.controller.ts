@@ -385,7 +385,7 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
             include: [{relation: 'itens'}, {relation: 'etapas'}, {relation: 'entregaveis'}, {relation: 'indicadores'}],
         });
         //objeto validador das ações habilitadas com a opção de lançar exceção em caso de impossibilidade
-        const permissoesEtapa = getAcoesOrdemServico(ordemServico, TipoUsoPermissoes.VALIDAR_SERVIDOR);
+        const permissoesEtapa = getAcoesOrdemServico(TipoUsoPermissoes.VALIDAR_SERVIDOR, ordemServico);
         const transacao = await this.ordemServicoRepository.beginTransaction();
         try {
             if (ordemServico.itens) {

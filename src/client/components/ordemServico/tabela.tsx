@@ -1,12 +1,12 @@
 import {IconButton, Link, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
+import {getAcoesOrdemServico, TipoUsoPermissoes} from '../../../commonLib';
 import {encurtaNome, formataDataStringLocal} from '../../../commonLib/formatacao';
 import {getStatusOrdemServico} from '../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap, OrdensServicoMap} from '../../../commonLib/interface-models/maps-entidades-types';
-import {StatusOrdemServico} from '../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../App-Context';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
-import {DeleteIcon, DescriptionIcon, SearchIcon} from '../lib/icons';
+import {DeleteIcon, DescriptionIcon, FindInPageIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';
 
 export const TabelaOrdensServico: React.FC<{
@@ -80,6 +80,8 @@ export const TabelaOrdensServico: React.FC<{
             dados={ordensContrato}
             colunasAcao={ordensContrato.map((oc) => {
                 const statusOrdemServico = getStatusOrdemServico(oc);
+                //Habilitação de ações
+                const pode = getAcoesOrdemServico(TipoUsoPermissoes.HABILITAR_UI, oc);
                 return (
                     <React.Fragment>
                         <Tooltip title="Visualizar">
@@ -87,17 +89,31 @@ export const TabelaOrdensServico: React.FC<{
                                 <SearchIcon fontSize="small" onClick={funcaoVisualizar.bind(null, oc)} />
                             </IconButton>
                         </Tooltip>
-                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                        {pode.excluir().ok && (
                             <Tooltip title="Excluir">
                                 <IconButton aria-label="Excluir" color="primary" size="small">
                                     <DeleteIcon fontSize="small" onClick={funcaoExcluir.bind(null, oc)} />
                                 </IconButton>
                             </Tooltip>
                         )}
-                        {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                        {pode.emitirSEI().ok && (
                             <Tooltip title="Emitir Ordem de Serviço no SEI">
                                 <IconButton aria-label="Emitir Ordem de Serviço no SEI" color="primary" size="small">
                                     <DescriptionIcon fontSize="small" onClick={funcaoEmitirOSSEI.bind(null, oc)} />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {pode.irParaSEI().ok && (
+                            <Tooltip title="Visualizar Ordem de Serviço no SEI">
+                                <IconButton
+                                    aria-label="Visualizar Ordem de Serviço no SEI"
+                                    color="primary"
+                                    size="small"
+                                    onClick={() => {
+                                        window.open(oc.linkOrdemServicoSEI, '_blank');
+                                    }}
+                                >
+                                    <FindInPageIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         )}
