@@ -1,8 +1,7 @@
 import {IconButton, Link, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
-import {getAcoesOrdemServico, TipoUsoPermissoes} from '../../../commonLib';
+import {getAcoesOrdemServico, tem, TipoUsoPermissoes} from '../../../commonLib';
 import {encurtaNome, formataDataStringLocal} from '../../../commonLib/formatacao';
-import {getStatusOrdemServico} from '../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap, OrdensServicoMap} from '../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../App-Context';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
@@ -26,7 +25,14 @@ export const TabelaOrdensServico: React.FC<{
     } = useContext(AppContext);
     const contratos: ContratosMap = appState.contratos;
     const ordens: OrdensServicoMap = appState.ordensServico;
-    const ordensContrato = Object.values(ordens).filter((o) => o.idContrato == idContratoSelecionado);
+    const ordensContrato = Object.values(ordens)
+        .filter((o) => o.idContrato == idContratoSelecionado)
+        .sort((a, b) => {
+            if (!tem(a.numero) && !tem(b.numero)) return 0;
+            if (!tem(a.numero) && tem(b.numero)) return -1;
+            if (tem(a.numero) && !tem(b.numero)) return 1;
+            return (b.numero as number) - (a.numero as number);
+        }); //filtrando pelo contrato selecionado e ordenando pelo número da OS decrescente (sem número vêm na frente)
 
     function getTipoOrdemServico(idTipoOrdemServicoContrato: number) {
         return contratos[idContratoSelecionado]
@@ -79,7 +85,6 @@ export const TabelaOrdensServico: React.FC<{
             colunas={colunas}
             dados={ordensContrato}
             colunasAcao={ordensContrato.map((oc) => {
-                const statusOrdemServico = getStatusOrdemServico(oc);
                 //Habilitação de ações
                 const pode = getAcoesOrdemServico(TipoUsoPermissoes.HABILITAR_UI, oc);
                 return (

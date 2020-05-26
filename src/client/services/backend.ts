@@ -28,7 +28,9 @@ export function getContratos(): Promise<RespostaServico<IContrato[]>> {
 }
 
 export function getOrdensServico(idContrato: number): Promise<RespostaServico<IOrdemServico[]>> {
-    return get(`/contratoes/${idContrato}/ordem-servicos`);
+    return get(`/contratoes/${idContrato}/ordem-servicos?filter={
+        "order": ["numero DESC"]
+      }`); //ordena pelo número da ordem de serviço descrescente. OS's mais recentes vem no topo. NÃO ADIANTA POIS GUARDA NO MAP INDEXADO POR ID
 }
 
 export function getOrdemServico(id: number): Promise<RespostaServico<IOrdemServico>> {
