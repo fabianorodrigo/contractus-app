@@ -9,6 +9,12 @@ RUN mkdir -p /home/node/app
 
 WORKDIR /home/node/app
 
+ENV POSTGRES_HOST=localhost;
+ENV POSTGRES_PORT=5432;
+ENV POSTGRES_DATABASE=contractusapp;
+ENV POSTGRES_USER=contractusapp;
+ENV POSTGRES_PASSWORD=contractusapp;
+
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
