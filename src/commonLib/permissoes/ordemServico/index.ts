@@ -2,6 +2,7 @@ import {IOrdemServico} from '../../interface-models';
 import {ConstrutorRetornoPermissoesFactory} from '../construirRetorno';
 import {RetornoPermisao} from '../RetornoPermisao';
 import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
+import {adicionarEntregavel} from './adicionarEntregavel';
 import {emitirSEI} from './emitirSEI';
 import {excluir} from './excluir';
 import {irParaSEI} from './irParaSEI';
@@ -20,6 +21,9 @@ import {irParaSEI} from './irParaSEI';
 export function getAcoesOrdemServico(tipoUso: TipoUsoPermissoes, ordemServico: IOrdemServico) {
     const c = ConstrutorRetornoPermissoesFactory(tipoUso);
     return {
+        adicionarEntregavel: () => {
+            return adicionarEntregavel(c, ordemServico);
+        },
         emitirSEI: (): RetornoPermisao => {
             return emitirSEI(c, ordemServico);
         },

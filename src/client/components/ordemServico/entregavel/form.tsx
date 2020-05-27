@@ -39,7 +39,7 @@ export const FormEntregavelOrdemServico: React.FC<{
                             objetoValor={entregavelEditado}
                             obrigatorio={true}
                             onChange={onInputChange}
-                            error={errosInput.descricao != ''}
+                            error={errosInput.descricao}
                             autoFocus={true}
                         />
                     </Grid>
