@@ -1,6 +1,7 @@
 import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/core';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
+import {getAcoeItemOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
 import {IItemOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
@@ -15,7 +16,6 @@ import {FormItemOrdensServico} from './form';
 import {HeaderItensOrdensServico} from './header';
 import {novoItemOrdemServico} from './new';
 import {RowItemOrdemServico} from './row';
-import {valida} from './valida';
 
 export const TabelaItensOrdensServico: React.FC<{
     funcaoAdicionar: (item: IItemOrdemServico) => void;
@@ -41,26 +41,21 @@ export const TabelaItensOrdensServico: React.FC<{
         IItemOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refButtonAdicionaItem);
     //custom hook para controle de estado dos atributos da entidade
-    let [errosInput, setErrosInput] = React.useState({
-        descricao: '',
-        siglaMetrica: '',
-        quantidadeEstimada: '',
-        valorUnitarioEstimado: '',
-        quantidadeReal: '',
-        valorUnitarioReal: '',
-    });
+    let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
     const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
         (item: IItemOrdemServico, indice?: number) => {
-            errosInput = valida(item, statusOrdemServico);
-            if (Object.values(errosInput).every((v) => v == '')) {
+            //Habilitação de ações
+            const pode = getAcoeItemOrdemServico(TipoUsoPermissoes.VALIDAR_UI, item, osState.dado);
+            const validacao = pode.salvar();
+            if (validacao.ok) {
                 confirmar(item);
-            } else {
-                setErrosInput({...errosInput});
-                Object.values(errosInput).forEach((msg) => {
-                    if (msg != '') {
-                        enqueueSnackbar(msg, {variant: 'warning'});
-                    }
+            } else if (validacao.mensagensAtributo) {
+                Object.keys(validacao.mensagensAtributo).forEach((atributo: string) => {
+                    errosInput[atributo] = true;
+                    const msg = (validacao.mensagensAtributo as any)[atributo];
+                    enqueueSnackbar(msg, {variant: 'warning'});
                 });
+                setErrosInput({...errosInput});
             }
         },
         instancia,

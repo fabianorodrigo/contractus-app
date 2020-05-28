@@ -1,9 +1,9 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, FormEvent, useContext} from 'react';
+import {getAcoeItemOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
 import {IOrdemServico} from '../../../../commonLib/interface-models';
 import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {ItemOrdemServico} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
@@ -18,10 +18,9 @@ export const FormItemOrdensServico: React.FC<{
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: () => void;
-    inputDescricaoEtapaRef?: React.RefObject<HTMLInputElement>;
-    errosInput: any;
+    errosInput: {[atributo: string]: boolean};
 }> = (props) => {
-    const {itemEditado, onInputChange, onSubmitForm, fechaForm, inputDescricaoEtapaRef, errosInput} = props;
+    const {itemEditado, onInputChange, onSubmitForm, fechaForm, errosInput} = props;
     if (itemEditado == null) return null;
 
     const classes = useStyles();
@@ -31,6 +30,8 @@ export const FormItemOrdensServico: React.FC<{
 
     const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
+    //Habilitação de ações
+    const pode = getAcoeItemOrdemServico(TipoUsoPermissoes.HABILITAR_UI, itemEditado, osState.dado);
 
     return (
         <TableRow>
@@ -42,10 +43,10 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="descricao"
                             label="Descrição"
                             objetoValor={itemEditado}
-                            somenteLeitura={statusOrdemServico > statusOrdemServico}
+                            somenteLeitura={!pode.editarDescricao().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
-                            error={errosInput.descricao != ''}
+                            error={errosInput.descricao}
                             autoFocus={true}
                         />
                     </Grid>
@@ -55,7 +56,6 @@ export const FormItemOrdensServico: React.FC<{
                             label="Produto"
                             objetoValor={itemEditado}
                             fullWidth={true}
-                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
                             obrigatorio={false}
                             onChange={onInputChange}
                         />
@@ -65,7 +65,7 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="siglaMetrica"
                             label="Unidade"
                             objetoValor={itemEditado}
-                            somenteLeitura={osState.dado.numeroDocumentoOrdemServicoSEI != null}
+                            somenteLeitura={!pode.editarPlanejamento().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
                             defaultValue={
@@ -74,7 +74,7 @@ export const FormItemOrdensServico: React.FC<{
                                     ? contratos[osState.dado.idContrato].metricas[0].sigla
                                     : ''
                             }
-                            error={errosInput.siglaMetrica != ''}
+                            error={errosInput.siglaMetrica}
                             opcoes={
                                 contratos[osState.dado.idContrato] && contratos[osState.dado.idContrato].metricas
                                     ? contratos[osState.dado.idContrato].metricas.map((metrica) => {
@@ -93,11 +93,11 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="quantidadeEstimada"
                             label="Quantidade"
                             objetoValor={itemEditado}
-                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                            somenteLeitura={!pode.editarPlanejamento().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
-                            error={errosInput.quantidadeEstimada != ''}
+                            error={errosInput.quantidadeEstimada}
                         />
                     </Grid>
                     <Grid item xs={2}>
@@ -106,11 +106,11 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="valorUnitarioEstimado"
                             label="Valor Unitário"
                             objetoValor={itemEditado}
-                            somenteLeitura={statusOrdemServico > StatusOrdemServico.RASCUNHO}
+                            somenteLeitura={!pode.editarPlanejamento().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
-                            error={errosInput.valorUnitarioEstimado != ''}
+                            error={errosInput.valorUnitarioEstimado}
                         />
                     </Grid>
                     <Grid item xs={1}>
@@ -119,14 +119,11 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="quantidadeReal"
                             label="Qtd Real"
                             objetoValor={itemEditado}
-                            somenteLeitura={
-                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                                statusOrdemServico > StatusOrdemServico.RECEBIDA
-                            }
+                            somenteLeitura={!pode.editarRealizado().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
-                            error={errosInput.quantidadeReal != ''}
+                            error={errosInput.quantidadeReal}
                         />
                     </Grid>
                     <Grid item xs={2}>
@@ -135,14 +132,11 @@ export const FormItemOrdensServico: React.FC<{
                             atributo="valorUnitarioReal"
                             label="Valor Unitário Real"
                             objetoValor={itemEditado}
-                            somenteLeitura={
-                                statusOrdemServico == StatusOrdemServico.RASCUNHO ||
-                                statusOrdemServico > StatusOrdemServico.RECEBIDA
-                            }
+                            somenteLeitura={!pode.editarRealizado().ok}
                             obrigatorio={true}
                             onChange={onInputChange}
                             type="number"
-                            error={errosInput.valorUnitarioReal != ''}
+                            error={errosInput.valorUnitarioReal}
                         />
                     </Grid>
                     <Grid item xs={1}>

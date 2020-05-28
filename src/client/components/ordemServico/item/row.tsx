@@ -1,10 +1,10 @@
 import {IconButton, makeStyles, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, useContext} from 'react';
+import {getAcoeItemOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
 import {formataNumeroStringLocal} from '../../../../commonLib/formatacao';
 import {IItemOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {StatusOrdemServico} from '../../../../commonLib/interface-models/StatusOrdemServico';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {DeleteIcon, EditIcon} from '../../lib/icons';
@@ -28,6 +28,7 @@ export const RowItemOrdemServico: React.FC<{
 }> = (props) => {
     const {item, order, funcaoEditar, funcaoRemover} = props;
     const i = `${item.id}${item.descricao}_${order}`;
+    const privateClasses = privateUseStyles();
 
     //If re-rendering the component is expensive, you can optimize it by using memoization.
     const {state: appState, dispatch: appDispatch}: {state: AppContextStoreType; dispatch: Dispatch<any>} = useContext(
@@ -37,7 +38,9 @@ export const RowItemOrdemServico: React.FC<{
     const {state: osState}: IEntidadeContexto<IOrdemServico> = useContext(OrdemServicoContext);
     const statusOrdemServico = getStatusOrdemServico(osState.dado);
 
-    const privateClasses = privateUseStyles();
+    //Habilitação de ações
+    const pode = getAcoeItemOrdemServico(TipoUsoPermissoes.HABILITAR_UI, item, osState.dado);
+
     return (
         <TableRow className={item.hasOwnProperty('toDelete') ? privateClasses.deleted : privateClasses.notDeleted}>
             <TableCell scope="row" key={`tdDescricao${i}`} style={{paddingBottom: '0px', minWidth: '300px'}}>
@@ -73,7 +76,7 @@ export const RowItemOrdemServico: React.FC<{
                         <EditIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
-                {statusOrdemServico == StatusOrdemServico.RASCUNHO && (
+                {pode.remover().ok && (
                     <Tooltip title="Remover Item">
                         <IconButton
                             key={`buttonRemove${i}`}
