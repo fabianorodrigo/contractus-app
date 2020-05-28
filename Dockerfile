@@ -9,11 +9,11 @@ RUN mkdir -p /home/node/app
 
 WORKDIR /home/node/app
 
-ENV POSTGRES_HOST=localhost;
-ENV POSTGRES_PORT=5432;
-ENV POSTGRES_DATABASE=contractusapp;
-ENV POSTGRES_USER=contractusapp;
-ENV POSTGRES_PASSWORD=contractusapp;
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DATABASE=contractusapp
+ENV POSTGRES_USER=contractusapp
+ENV POSTGRES_PASSWORD=contractusapp
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -21,6 +21,7 @@ ENV POSTGRES_PASSWORD=contractusapp;
 COPY --chown=node package*.json ./
 
 RUN npm install
+
 
 # Bundle app source code
 COPY --chown=node . .
