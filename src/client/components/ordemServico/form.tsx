@@ -4,6 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import moment from 'moment';
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext} from 'react';
+import {getAcoesOrdemServico, TipoUsoPermissoes} from '../../../commonLib';
 import {formataDataStringLocal} from '../../../commonLib/formatacao';
 import {
     IEntregavelOrdemServico,
@@ -163,6 +164,10 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
             }
         }
     };
+
+    //Habilitação de ações
+    const pode = getAcoesOrdemServico(TipoUsoPermissoes.HABILITAR_UI, osState.dado);
+
     return (
         <div>
             <Dialog
@@ -221,7 +226,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Contrato"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={inputs.id != null || osState.dado.itens?.length > 0}
+                                    somenteLeitura={!pode.editar().ok || osState.dado.itens?.length > 0}
                                     obrigatorio={true}
                                     onChange={onChangeContratoOuTipoOrdemServiço}
                                     defaultValue={inputs.idContrato}
@@ -250,7 +255,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Tipo da Ordem de Serviço"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onChangeContratoOuTipoOrdemServiço}
                                     defaultValue={inputs.idTipoOrdemServicoContrato}
@@ -271,13 +276,13 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     error={errosInput.idTipoOrdemServicoContrato != ''}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={2}>
                                 <CampoLista
                                     atributo="emergencial"
                                     label="Criticidade"
                                     objetoValor={inputs}
                                     fullWidth={false}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={false}
@@ -288,14 +293,24 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     error={errosInput.emergencial != ''}
                                 />
                             </Grid>
-                            <Grid item xs={2}></Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                                 <CampoTexto
                                     atributo="idProjeto"
                                     label="Projeto"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
+                                    obrigatorio={false}
+                                    onChange={onInputChange}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <CampoTexto
+                                    atributo="idProduto"
+                                    label="Produto"
+                                    objetoValor={inputs}
+                                    fullWidth={true}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={false}
                                     onChange={onInputChange}
                                 />
@@ -306,7 +321,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Área Requisitante"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     defaultValue={inputs.idAreaRequisitante}
@@ -328,7 +343,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Nome do Requisitante"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     error={errosInput.nomeRequisitante != ''}
@@ -340,7 +355,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     label="Fiscal Técnico"
                                     objetoValor={inputs}
                                     fullWidth={true}
-                                    somenteLeitura={statusOS > StatusOrdemServico.RASCUNHO}
+                                    somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
                                     error={errosInput.nomeFiscalTecnico != ''}

@@ -44,6 +44,11 @@ export class OrdemServicoFull extends Model {
     idProjeto?: string;
 
     @property({
+        type: 'string',
+    })
+    idProduto?: string;
+
+    @property({
         type: 'number',
         required: true,
     })

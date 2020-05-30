@@ -77,6 +77,14 @@ export class OrdemServico extends Entity {
     idProjeto?: string;
 
     @property({
+        type: 'string',
+        postgresql: {
+            columnName: 'ID_PRODUTO',
+        },
+    })
+    idProduto?: string;
+
+    @property({
         type: 'number',
         required: true,
         postgresql: {

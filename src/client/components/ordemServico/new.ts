@@ -9,6 +9,7 @@ export function novaOrdemServico(): IOrdemServico {
         nomeRequisitante: '',
         nomeFiscalTecnico: '',
         idProjeto: '',
+        idProduto: '',
         itens: [],
         entregaveis: [],
         etapas: [],

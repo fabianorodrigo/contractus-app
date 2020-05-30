@@ -6,6 +6,7 @@ export interface IOrdemServico {
     idTipoOrdemServicoContrato: number;
     dtEmissao?: string;
     idProjeto?: string;
+    idProduto?: string;
     idAreaRequisitante: number;
     cpfRequisitante?: string;
     nomeRequisitante: string;
