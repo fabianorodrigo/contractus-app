@@ -13,6 +13,7 @@ export function getHTMLOrdemServicoSEI(
         throw new Error(`Tipo de Ordem de Serviço não tem Template definido na base de dados`);
     //como teremos que alterar e incluir alguns valores da OS para passar para o template, clonamos
     const osFormatada = getOrdemServicoFormatadaToTemplate(ordemServico, tipoOrdemServico);
+    areaRequisitante.nomeArea = areaRequisitante.nomeArea.toUpperCase();
 
     const objRef: {[name: string]: any} = {
         os: osFormatada,
@@ -90,6 +91,7 @@ function getOrdemServicoFormatadaToTemplate(ordemServico: OrdemServico, tipoOrde
         .format('DD/MM/YYYY');
     osFormatada.nomeFiscalTecnico = ordemServico.nomeFiscalTecnico.toUpperCase();
     osFormatada.nomeRequisitante = ordemServico.nomeRequisitante.toUpperCase();
+
     let totalQuantidadeEstimada = 0;
     let totalValorEstimado = 0;
     //Formatação dos itens da OS
