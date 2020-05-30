@@ -16,9 +16,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-
-\c contractusapp -- USE DATABASE
-
 --
 -- Name: contractusapp; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -405,6 +402,7 @@ CREATE TABLE contractusapp."TB_ORDEM_SERVICO" (
     "ID_TIPO_ORDEM_SERVICO" integer NOT NULL,
     "DT_EMISSAO" timestamp with time zone,
     "ID_PROJETO" text,
+    "ID_PRODUTO" text,
     "ID_AREA_REQUISITANTE" integer NOT NULL,
     "NR_CPF_REQUISITANTE" text,
     "NM_REQUISITANTE" text NOT NULL,

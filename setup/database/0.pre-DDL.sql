@@ -24,12 +24,14 @@ CREATE DATABASE contractusapp
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
+/*
 \l -- SHOW DATABASES
 
 \c contractusapp -- USE DATABASE
 
 SELECT nspname FROM pg_catalog.pg_namespace; -- SHOW SCHEMAS
 select * from information_schema.tables where table_schema = 'contractusapp'; --tables of schema
+*/
 
 /*
 SELECT 'ALTER TABLE '|| schemaname || '."' || tablename ||'" OWNER TO contractusapp;'

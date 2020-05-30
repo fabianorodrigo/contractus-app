@@ -6,12 +6,15 @@
 
 -   docker run -d -p 5432:5432 --name contractusapp-postgres -e POSTGRES_PASSWORD=contractusapp postgres # apenas ambiente de teste, para produção, ao uma solução com Docker Compose deve ser provida para os dados serem persistidos em um diretório específico, com backup, etc
 
+-   docker cp <contractus-app home>/setup/database/0.pre-DDL.sql contractusapp-postgres
+-   docker cp <contractus-app home>/setup/database/1.DDL_contractusapp.sql contractusapp-postgres
+
 -   docker exec -it contractusapp-postgres bash
 
     -   psql -U postgres
-        -   \<Executar comandos em setup\/database\/0\.pre-DDL\.sql\>
-        -   \<Executar comandos em setup \/databases\/1.DDL_contractusapp\.sql\>
-        -   \<Executar comandos em setup\/database\/2\.DCL\.sql\>
+        -   \\i 0\.pre-DDL\.sql
+        -   \\c contractusapp
+        -   \\i 1.DDL_contractusapp\.sql
         -   exit
     -   exit
 
