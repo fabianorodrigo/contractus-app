@@ -1,7 +1,7 @@
 import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
-import {getAcoesOrdemServico, TipoUsoPermissoes} from '../commonLib';
+import {getAcoesOrdemServico, TipoUsoPermissoes, ValidationError} from '../commonLib';
 import {EntregavelOrdemServico, EtapaOrdemServico, ItemOrdemServico, OrdemServico} from '../models';
 import {OrdemServicoFull} from '../models/ordem-servico-full.model';
 import {
@@ -110,11 +110,22 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
         );
         let documentoSEI = null;
 
-        documentoSEI = tratarIncluirDocumentoResponse(
-            await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
-        );
-        ordemServico.numeroDocumentoOrdemServicoSEI = parseInt(documentoSEI.parametros.DocumentoFormatado);
-        ordemServico.linkOrdemServicoSEI = documentoSEI.parametros.LinkAcesso;
+        try {
+            documentoSEI = tratarIncluirDocumentoResponse(
+                await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
+            );
+            ordemServico.numeroDocumentoOrdemServicoSEI = parseInt(documentoSEI.parametros.DocumentoFormatado);
+            ordemServico.linkOrdemServicoSEI = documentoSEI.parametros.LinkAcesso;
+        } catch (e) {
+            let msgDetalhe = '';
+            const regExp = /Processo \[(.+)\] não encontrado/;
+            let m: RegExpExecArray | null = regExp.exec(e.message);
+            if (m != null) {
+                msgDetalhe = ` Processo vinculado à Área Requisitante não foi encontrado: ${m[1]}`;
+            }
+            throw new ValidationError(404, `Falha ao fazer a integração com o SEI.${msgDetalhe}`);
+        }
+
         //para atualizar a ordem de serviço, precisa remover os atributos de relações com outras entidades
         await this.ordemServicoRepository.replaceById(ordemServico.id, getOrdemServicoSemRelacoes(ordemServico));
         return ordemServico;

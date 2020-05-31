@@ -39,6 +39,8 @@ export function formataMensagemErroLoopback(error: any) {
                 nomeEntidades[partes[1].trim()] ? nomeEntidades[partes[1].trim()] : partes[1]
             } com o ID ${partes[2]}`;
         }
+    } else if (error.name == 'ValidationError') {
+        return error.message;
     } else if (error.statusCode == 500) {
         return 'Falha no servidor da aplicação. Entre em contato com a área responsável pelo suporte ao usuário';
     }
