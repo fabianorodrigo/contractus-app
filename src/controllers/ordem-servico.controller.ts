@@ -184,7 +184,7 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
                 delete (i as any).auto;
                 const etapa: EtapaOrdemServico = i as EtapaOrdemServico;
                 etapa.idOrdemServico = osRetorno.id as number;
-                osRetorno.itens.push(
+                osRetorno.etapas.push(
                     await this.etapaOrdemServicoRepository.create(etapa, {
                         transaction: transacao,
                     }),
@@ -196,7 +196,7 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
                 delete (i as any).auto;
                 const entregavel: EntregavelOrdemServico = i as EntregavelOrdemServico;
                 entregavel.idOrdemServico = osRetorno.id as number;
-                osRetorno.itens.push(
+                osRetorno.entregaveis.push(
                     await this.entregavelOrdemServicoRepository.create(entregavel, {
                         transaction: transacao,
                     }),

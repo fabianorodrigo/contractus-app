@@ -6,7 +6,7 @@ import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidade
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {AddIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 export const HeaderEtapasOrdensServico: React.FC<{
     mostraForm: boolean;
     funcaoAdicionar: () => void;

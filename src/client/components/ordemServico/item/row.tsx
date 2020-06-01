@@ -8,7 +8,7 @@ import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidade
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {DeleteIcon, EditIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 
 const privateUseStyles = makeStyles((theme) => ({
     deleted: {

@@ -16,9 +16,9 @@ import {MostrarDialog} from '../components/lib/dialogConfirmacao';
  */
 export const useControleEdicaoEntidadesFilhos = <T extends {}>(
     funcaoAdicionarCallback: (instancia: T) => void,
-    funcaoAtualizarCallback: (instancia: T, indice: number) => void,
-    funcaoRemoverCallback: (indice: number) => void,
-    refBotaoFoco: React.RefObject<HTMLInputElement>,
+    funcaoAtualizarCallback: undefined | ((instancia: T, indice: number) => void),
+    funcaoRemoverCallback: undefined | ((indice: number) => void),
+    refBotaoFoco: undefined | React.RefObject<HTMLInputElement>,
 ) => {
     const [instancia, setInstancia] = React.useState<any>(null);
     //se estiver editando, essa variável guarda a posição no array
@@ -29,7 +29,7 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
     //passado. Se for FALSE, foca no botão adicionar
     useEffect(() => {
         //console.log('foco', mostraForm, refInputFoco, refInputFoco.current, refBotaoFoco.current);
-        if (!mostraForm && refBotaoFoco.current != null) {
+        if (!mostraForm && refBotaoFoco != undefined && refBotaoFoco.current != null) {
             refBotaoFoco.current.focus();
         }
     }, [mostraForm]);
@@ -77,9 +77,9 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
      * respectiva propriedade dentro da entidade principal
      */
     const confirmar = (instancia: T) => {
-        if (instanciaIndice > -1) {
+        if (instanciaIndice > -1 && funcaoAtualizarCallback != undefined) {
             funcaoAtualizarCallback(instancia, instanciaIndice);
-        } else {
+        } else if (instanciaIndice == -1) {
             funcaoAdicionarCallback(instancia);
         }
         fecharForm();
@@ -108,7 +108,7 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
             ) {
                 fecharForm();
             }
-        } else {
+        } else if (instancia == null && funcaoRemoverCallback != undefined) {
             funcaoRemoverCallback(indice);
         }
     };

@@ -5,6 +5,7 @@ import {TipoUsoPermissoes} from '../TipoUsoPermissoes';
 import {adicionarEntregavel} from './adicionarEntregavel';
 import {editar} from './editar';
 import {emitirSEI} from './emitirSEI';
+import {emitirTRPSEI} from './emitirTRPSEI';
 import {excluir} from './excluir';
 import {irParaSEI} from './irParaSEI';
 
@@ -30,6 +31,9 @@ export function getAcoesOrdemServico(tipoUso: TipoUsoPermissoes, ordemServico: I
         },
         emitirSEI: (): RetornoPermisao => {
             return emitirSEI(c, ordemServico);
+        },
+        emitirTRPSEI: (): RetornoPermisao => {
+            return emitirTRPSEI(c, ordemServico);
         },
         excluir: (): RetornoPermisao => {
             return excluir(c, ordemServico);

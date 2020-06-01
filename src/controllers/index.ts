@@ -28,3 +28,5 @@ export * from './tipo-ordem-servico-contrato.controller';
 export * from './tipo-ordem-servico-contrato-etapa-tipo-ordem-servico.controller';
 export * from './ordem-servico-area-requisitante.controller';
 export * from './area-requisitante.controller';
+export * from './recebimento-ordem-servico-entregavel-recebimento-ordem-servico.controller';
+export * from './recebimento-ordem-servico.controller';

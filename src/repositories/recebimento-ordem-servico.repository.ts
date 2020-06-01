@@ -1,14 +1,31 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {DefaultTransactionalRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {ContractusDataSource} from '../datasources';
-import {RecebimentoOrdemServico, RecebimentoOrdemServicoRelations} from '../models';
+import {EntregavelRecebimentoOrdemServico, RecebimentoOrdemServico, RecebimentoOrdemServicoRelations} from '../models';
+import {EntregavelRecebimentoOrdemServicoRepository} from './entregavel-recebimento-ordem-servico.repository';
 
-export class RecebimentoOrdemServicoRepository extends DefaultCrudRepository<
+export class RecebimentoOrdemServicoRepository extends DefaultTransactionalRepository<
     RecebimentoOrdemServico,
     typeof RecebimentoOrdemServico.prototype.id,
     RecebimentoOrdemServicoRelations
 > {
-    constructor(@inject('datasources.contractusDataSource') dataSource: ContractusDataSource) {
+    public readonly entregaveis: HasManyRepositoryFactory<
+        EntregavelRecebimentoOrdemServico,
+        typeof RecebimentoOrdemServico.prototype.id
+    >;
+
+    constructor(
+        @inject('datasources.contractusDataSource') dataSource: ContractusDataSource,
+        @repository.getter('EntregavelRecebimentoOrdemServicoRepository')
+        protected entregavelRecebimentoOrdemServicoRepositoryGetter: Getter<
+            EntregavelRecebimentoOrdemServicoRepository
+        >,
+    ) {
         super(RecebimentoOrdemServico, dataSource);
+        this.entregaveis = this.createHasManyRepositoryFactoryFor(
+            'entregaveis',
+            entregavelRecebimentoOrdemServicoRepositoryGetter,
+        );
+        this.registerInclusionResolver('entregaveis', this.entregaveis.inclusionResolver);
     }
 }

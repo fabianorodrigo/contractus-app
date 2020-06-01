@@ -7,7 +7,7 @@ import {Progresso} from './components/lib/progresso';
 import {MenuContainer} from './components/menuContainer';
 import {NavBar} from './components/navBar';
 import {OrdensServico} from './components/ordemServico';
-import {OrdemServicoContextProvider} from './components/ordemServico/context';
+import {OrdemServicoContextProvider} from './components/ordemServico/contextOrdemServico';
 import {getAreasRequisitantes, getContratos, getFornecedores} from './services/backend';
 import {formataMensagemErroLoopback} from './services/formatacaoMensagensErro';
 import useStyles from './services/styles';

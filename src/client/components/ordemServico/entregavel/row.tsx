@@ -4,7 +4,7 @@ import {getAcoesEntregavelOrdemServico, TipoUsoPermissoes} from '../../../../com
 import {IEntregavelOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {DeleteIcon, EditIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 
 const privateUseStyles = makeStyles((theme) => ({
     deleted: {

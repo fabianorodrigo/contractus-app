@@ -11,7 +11,7 @@ import useStyles from '../../../services/styles';
 import {CampoLista} from '../../lib/campoLista';
 import {CampoTexto} from '../../lib/campoTexto';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 
 export const FormItemOrdensServico: React.FC<{
     itemEditado: ItemOrdemServico;

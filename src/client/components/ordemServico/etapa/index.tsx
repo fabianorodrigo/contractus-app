@@ -2,24 +2,23 @@ import {InputLabel, Paper, Table, TableBody, TableContainer} from '@material-ui/
 import {useSnackbar} from 'notistack';
 import React, {Dispatch, useContext, useEffect} from 'react';
 import {getAcoesEtapaOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
-import {IOrdemServico} from '../../../../commonLib/interface-models';
+import {IEtapaOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getTipoOrdemServico} from '../../../../commonLib/interface-models/getTipoOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {EtapaOrdemServico} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControleEdicaoEntidadesFilhos';
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import useStyles from '../../../services/styles';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 import {FormEtapaOrdensServico} from './form';
 import {HeaderEtapasOrdensServico} from './header';
 import {novaEtapaOrdemServico} from './new';
 import {RowEtapaOrdemServico} from './row';
 
 export const TabelaEtapasOrdensServico: React.FC<{
-    funcaoAdicionar: (etapa: EtapaOrdemServico) => void;
-    funcaoAtualizar: (etapa: EtapaOrdemServico, indice: number) => void;
+    funcaoAdicionar: (etapa: IEtapaOrdemServico) => void;
+    funcaoAtualizar: (etapa: IEtapaOrdemServico, indice: number) => void;
     funcaoRemover: (indice: number) => void;
 }> = (props) => {
     const {funcaoAdicionar, funcaoAtualizar, funcaoRemover} = props;
@@ -38,11 +37,11 @@ export const TabelaEtapasOrdensServico: React.FC<{
 
     //Custom Hook para controle dos elementos visuais durante a edição
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
-        EtapaOrdemServico
+        IEtapaOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refButtonAdicionaEtapa);
     //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
-    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook((etapa: EtapaOrdemServico) => {
+    const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook((etapa: IEtapaOrdemServico) => {
         //Habilitação de ações
         const pode = getAcoesEtapaOrdemServico(TipoUsoPermissoes.VALIDAR_UI, etapa, osState.dado);
         const validacao = pode.salvar();
@@ -86,7 +85,7 @@ export const TabelaEtapasOrdensServico: React.FC<{
                     <TableBody>
                         {osState.dado.etapas &&
                             osState.dado.etapas.map((etapaObj, i) => {
-                                const etapa = etapaObj as EtapaOrdemServico;
+                                const etapa = etapaObj as IEtapaOrdemServico;
                                 return (
                                     <RowEtapaOrdemServico
                                         etapa={etapa}

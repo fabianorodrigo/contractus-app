@@ -1,16 +1,16 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import 'date-fns';
 import React, {Dispatch, FormEvent, useContext} from 'react';
-import {IEntregavelOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
-import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
-import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {AppContext, AppContextStoreType} from '../../../App-Context';
-import {IEntidadeContexto} from '../../../models/EntidadeContext';
-import {CampoTexto} from '../../lib/campoTexto';
-import {ClearIcon, DoneIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../contextOrdemServico';
-export const FormEntregavelOrdemServico: React.FC<{
-    entregavelEditado: IEntregavelOrdemServico;
+import {IEntregavelRecebimentoOrdemServico, IOrdemServico} from '../../../../../commonLib/interface-models';
+import {getStatusOrdemServico} from '../../../../../commonLib/interface-models/getStatusOrdemServico';
+import {ContratosMap} from '../../../../../commonLib/interface-models/maps-entidades-types';
+import {AppContext, AppContextStoreType} from '../../../../App-Context';
+import {IEntidadeContexto} from '../../../../models/EntidadeContext';
+import {CampoTexto} from '../../../lib/campoTexto';
+import {ClearIcon, DoneIcon} from '../../../lib/icons';
+import {OrdemServicoContext} from '../../contextOrdemServico';
+export const FormEntregavelRecebimentoOrdemServico: React.FC<{
+    entregavelEditado: IEntregavelRecebimentoOrdemServico;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: () => void;
@@ -31,7 +31,7 @@ export const FormEntregavelOrdemServico: React.FC<{
         <TableRow>
             <TableCell colSpan={3} scope="row" style={{margin: '0px', padding: '0px'}}>
                 <Grid container>
-                    <Grid item xs={11}>
+                    <Grid item xs={4}>
                         <CampoTexto
                             fullWidth={true}
                             atributo="descricao"
@@ -41,6 +41,17 @@ export const FormEntregavelOrdemServico: React.FC<{
                             onChange={onInputChange}
                             error={errosInput.descricao}
                             autoFocus={true}
+                        />
+                    </Grid>
+                    <Grid item xs={7}>
+                        <CampoTexto
+                            fullWidth={true}
+                            atributo="linkEvidencia"
+                            label="Link Evidência"
+                            objetoValor={entregavelEditado}
+                            obrigatorio={true}
+                            onChange={onInputChange}
+                            error={errosInput.linkEvidencia}
                         />
                     </Grid>
                     <Grid item xs={1}>

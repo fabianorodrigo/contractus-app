@@ -13,6 +13,7 @@ export * from './metrica-contrato.model';
 export * from './ordem-servico.model';
 export * from './papel-contrato.model';
 export * from './papel.model';
+export * from './recebimento-ordem-servico.model';
 export * from './sancao-indicador-niveis-servico-contrato.model';
 export * from './StatusOrdemServico';
 export * from './tipo-ordem-servico-contrato';

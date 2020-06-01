@@ -11,7 +11,7 @@ import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidade
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import {ClearIcon, DoneIcon} from '../../lib/icons';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 import {FormCamposPlanejamento} from './formCamposPlanejamento';
 import {FormCamposRealizado} from './formCamposRealizado';
 

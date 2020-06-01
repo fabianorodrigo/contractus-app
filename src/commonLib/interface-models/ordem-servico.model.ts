@@ -1,3 +1,5 @@
+import {IEntregavelOrdemServico} from './entregavel-ordem-servico.model';
+
 export interface IOrdemServico {
     id?: number;
     idContrato: number;
@@ -17,6 +19,6 @@ export interface IOrdemServico {
     dtCancelamento?: string;
     itens: object[];
     etapas: object[];
-    entregaveis: object[];
+    entregaveis: IEntregavelOrdemServico[];
     indicadores?: object[];
 }

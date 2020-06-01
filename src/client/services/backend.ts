@@ -4,6 +4,7 @@ import {
     IEtapaOrdemServico,
     IFornecedor,
     IOrdemServico,
+    IRecebimentoOrdemServico,
 } from '../../commonLib/interface-models';
 import {del, get, post, postAcao, RespostaServico} from './restService';
 
@@ -49,6 +50,7 @@ export function deleteOrdemServico(id: number): Promise<RespostaServico<void>> {
 }
 
 export function emitirOrdemServicoSEI(ordemServico: IOrdemServico): Promise<RespostaServico<IOrdemServico>> {
+    console.log('ordemServico.id', ordemServico);
     return postAcao<IOrdemServico>(`/ordem-servico/emitirSEI/${ordemServico.id}`, null);
 }
 
@@ -61,6 +63,13 @@ export function emitirTermoAceitacaoEtapaSEI(etapa: IEtapaOrdemServico): Promise
         `/etapa-ordem-servico/emitirTermoAceite/${etapa.id}`,
         removerAtributosNulos(etapa),
     );
+}
+
+export function emitirTermoRecebimentoSEI(
+    recebimento: IRecebimentoOrdemServico,
+): Promise<RespostaServico<IRecebimentoOrdemServico>> {
+    const recebimentoToPost = removerAtributosNulos<IRecebimentoOrdemServico>(recebimento);
+    return post<IRecebimentoOrdemServico>(`/recebimento-ordem-servico/`, recebimentoToPost, recebimentoToPost.id);
 }
 
 function removerAtributosNulos<T>(obj: {[atributo: string]: any}): T {

@@ -33,7 +33,7 @@ import {CampoTexto} from '../lib/campoTexto';
 import {ConteudoDialog} from '../lib/conteudoDialog';
 import {TituloDialog} from '../lib/tituloDialog';
 import {Transicao} from '../lib/Transicao';
-import {OrdemServicoContext} from './context';
+import {OrdemServicoContext} from './contextOrdemServico';
 import {TabelaEntregaveisOrdensServico} from './entregavel';
 import {TabelaEtapasOrdensServico} from './etapa';
 import {TabelaItensOrdensServico} from './item';

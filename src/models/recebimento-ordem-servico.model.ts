@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {EntregavelRecebimentoOrdemServico} from './entregavel-recebimento-ordem-servico.model';
 
 @model({
     settings: {
@@ -62,6 +63,9 @@ export class RecebimentoOrdemServico extends Entity {
         },
     })
     linkTermoRecebimentoSEI?: string;
+
+    @hasMany(() => EntregavelRecebimentoOrdemServico, {keyTo: 'idRecebimentoOrdemServico'})
+    entregaveis: EntregavelRecebimentoOrdemServico[];
 
     constructor(data?: Partial<RecebimentoOrdemServico>) {
         super(data);

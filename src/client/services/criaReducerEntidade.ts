@@ -22,6 +22,9 @@ export function criaReducerEntidade<T>(funcaoNovaEntidade: Function): TypeFuncti
                 return {editando: true, dado: funcaoNovaEntidade()};
             case EditionType.EDITAR:
                 return {editando: true, dado: <T>acao.dado};
+            case EditionType.SETAR_STATUS: {
+                return {editando: false, dado: <T>acao.dado, status: acao.status};
+            }
             case EditionType.ATUALIZAR_CONTEXTO:
                 return {editando: true, dado: <T>acao.dado};
             case EditionType.FECHAR:

@@ -5,7 +5,7 @@ import {encurtaNome, formataDataStringLocal} from '../../../commonLib/formatacao
 import {ContratosMap, OrdensServicoMap} from '../../../commonLib/interface-models/maps-entidades-types';
 import {AppContext, AppContextStoreType} from '../../App-Context';
 import {TypeOrdemServico_Void} from '../../models/TypeFunctions';
-import {DeleteIcon, DescriptionIcon, FindInPageIcon, SearchIcon} from '../lib/icons';
+import {DeleteIcon, DescriptionIcon, FindInPageIcon, ReceiptIcon, SearchIcon} from '../lib/icons';
 import {Tabela, TabelaColunaDado} from '../lib/tabela';
 
 export const TabelaOrdensServico: React.FC<{
@@ -13,7 +13,8 @@ export const TabelaOrdensServico: React.FC<{
     funcaoVisualizar: TypeOrdemServico_Void;
     funcaoExcluir: TypeOrdemServico_Void;
     funcaoEmitirOSSEI: TypeOrdemServico_Void;
-}> = ({idContratoSelecionado, funcaoVisualizar, funcaoExcluir, funcaoEmitirOSSEI}) => {
+    funcaoEmitirTermoRecebimento: TypeOrdemServico_Void;
+}> = ({idContratoSelecionado, funcaoVisualizar, funcaoExcluir, funcaoEmitirOSSEI, funcaoEmitirTermoRecebimento}) => {
     //Buscando dados
     //TIP REACT: A component calling useContext will always re-render when the context value changes.
     //If re-rendering the component is expensive, you can optimize it by using memoization.
@@ -119,6 +120,18 @@ export const TabelaOrdensServico: React.FC<{
                                     }}
                                 >
                                     <FindInPageIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        {pode.emitirTRPSEI().ok && (
+                            <Tooltip title="Emitir Termo de Recebimento">
+                                <IconButton
+                                    aria-label="Emitir Termo de Recebimento"
+                                    color="primary"
+                                    size="small"
+                                    onClick={funcaoEmitirTermoRecebimento.bind(null, oc)}
+                                >
+                                    <ReceiptIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         )}

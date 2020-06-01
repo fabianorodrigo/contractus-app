@@ -10,7 +10,7 @@ import {useControleEdicaoEntidadesFilhos} from '../../../customHooks/useControle
 import {useFormHook} from '../../../customHooks/useForm';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import useStyles from '../../../services/styles';
-import {OrdemServicoContext} from '../context';
+import {OrdemServicoContext} from '../contextOrdemServico';
 import {FooterItensOrdensServico} from './footer';
 import {FormItemOrdensServico} from './form';
 import {HeaderItensOrdensServico} from './header';
