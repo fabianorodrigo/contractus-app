@@ -16,6 +16,7 @@ import {useFormHook} from '../../../customHooks/useForm';
 import {useGetRespostaServico} from '../../../customHooks/useGetRespostaServico';
 import {EditionType, IEntidadeContexto} from '../../../models/EntidadeContext';
 import {emitirTermoRecebimentoSEI} from '../../../services/backend';
+import {getDataISOHoraSemHorario} from '../../../services/dataHora';
 import useStyles from '../../../services/styles';
 import {DialogActions} from '../../lib/acoesDialog';
 import {CampoData} from '../../lib/CampoData';
@@ -62,6 +63,8 @@ export const FormRecebimentosOrdensServico: React.FC<{
             const pode = getAcoesRecebimentoOrdemServico(TipoUsoPermissoes.VALIDAR_UI, recebimento, osState.dado);
             const validacao = pode.salvar();
             if (validacao.ok) {
+                //Removendo dataHora do recebimento
+                recebimento.dtRecebimento = getDataISOHoraSemHorario(recebimento.dtRecebimento);
                 const respostaServico = await getRespostaPostRecebimentoOrdemServico(recebimento);
                 if (respostaServico.sucesso) {
                     /*appDispatch({
@@ -74,6 +77,7 @@ export const FormRecebimentosOrdensServico: React.FC<{
                         variant: 'success',
                     });
                     onClickClose();
+                    window.open(respostaServico.dados.linkTermoRecebimentoSEI, '_blank');
                 }
             } else if (validacao.mensagensAtributo) {
                 Object.keys(validacao.mensagensAtributo).forEach((atributo: string) => {
@@ -114,6 +118,8 @@ export const FormRecebimentosOrdensServico: React.FC<{
                                         obrigatorio={true}
                                         onChange={onInputChange}
                                         error={errosInput.dtRecebimento}
+                                        dataMaxima={new Date()}
+                                        desabilitaDatasFuturas={true}
                                     />
                                 </Grid>
                                 <Grid item xs={9}>

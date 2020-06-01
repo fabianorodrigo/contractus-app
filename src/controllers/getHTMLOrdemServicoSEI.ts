@@ -49,7 +49,7 @@ export function getHTMLOrdemServicoSEI(
             //Para cada item do array, propriedade de objRef, será feita uma interação
             objRef[m[1]][m[2]].forEach((item: any, itemSeq: number) => {
                 let tempItem = (<RegExpExecArray>m)[4];
-                const reItens = /##(.+)##/gm;
+                const reItens = /##(.*?)##/gm;
                 let mItens;
                 while ((mItens = reItens.exec((<RegExpExecArray>m)[4])) !== null) {
                     // This is necessary to avoid infinite loops with zero-width matches

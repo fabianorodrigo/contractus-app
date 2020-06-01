@@ -109,12 +109,23 @@ export class EtapaOrdemServicoController {
             Buffer.from(htmlDocumento).toString('base64'),
         );
         let documentoSEI = null;
+        try {
+            documentoSEI = tratarIncluirDocumentoResponse(
+                await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
+            );
+            etapa.numeroDocumentoTermoAceitacaoSEI = parseInt(documentoSEI.parametros.DocumentoFormatado);
+            etapa.linkTermoAceitacaoSEI = documentoSEI.parametros.LinkAcesso;
+        } catch (e) {
+            let msgDetalhe = '';
+            const regExp = /Processo \[(.+)\] não encontrado/;
+            let m: RegExpExecArray | null = regExp.exec(e.message);
+            if (m != null) {
+                msgDetalhe = ` Processo vinculado à Área Requisitante não foi encontrado: ${m[1]}`;
+            }
+            console.error(e);
+            throw new ValidationError(404, `Falha ao fazer a integração com o SEI.${msgDetalhe}`);
+        }
 
-        documentoSEI = tratarIncluirDocumentoResponse(
-            await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
-        );
-        etapa.numeroDocumentoTermoAceitacaoSEI = parseInt(documentoSEI.parametros.DocumentoFormatado);
-        etapa.linkTermoAceitacaoSEI = documentoSEI.parametros.LinkAcesso;
         //para atualizar a ordem de serviço, precisa remover os atributos de relações com outras entidades
         await this.etapaOrdemServicoRepository.replaceById(etapa.id, etapa);
         return etapa;

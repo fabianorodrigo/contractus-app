@@ -1,10 +1,30 @@
+import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
+import {ValidationError} from '../commonLib';
 import {EntregavelRecebimentoOrdemServico, RecebimentoOrdemServico} from '../models';
 import {RecebimentoOrdemServicoFull} from '../models/recebimento-ordem-servico-full.model';
-import {RecebimentoOrdemServicoRepository} from '../repositories';
+import {
+    AreaRequisitanteRepository,
+    ContratoRepository,
+    FornecedorRepository,
+    OrdemServicoRepository,
+    RecebimentoOrdemServicoRepository,
+} from '../repositories';
 import {EntregavelRecebimentoOrdemServicoRepository} from '../repositories/entregavel-recebimento-ordem-servico.repository';
+import {
+    criarDocumento,
+    criarIncluirDocumentoRequest,
+    Documento,
+    SeiService,
+    SeiServiceProvider,
+    TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO,
+} from '../services';
+import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
 import {converteRecebimentoOrdemServicoFullToRecebimentoOrdemServico} from './converteRecebimentoOrdemServicoFullToRecebimentoOrdemServico';
+import {getHTMLTermoRecebimentoProvisorioSEI} from './getHTMLTermoRecebimentoSEI';
+import {getValidaContrato} from './getValidaContrato';
+import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
 
 export class RecebimentoOrdemServicoController {
     constructor(
@@ -12,6 +32,16 @@ export class RecebimentoOrdemServicoController {
         public recebimentoOrdemServicoRepository: RecebimentoOrdemServicoRepository,
         @repository(EntregavelRecebimentoOrdemServicoRepository)
         public entregavelRecebimentoOrdemServicoRepository: EntregavelRecebimentoOrdemServicoRepository,
+        @repository(OrdemServicoRepository)
+        public ordemServicoRepository: OrdemServicoRepository,
+        @repository(ContratoRepository)
+        public contratoRepository: ContratoRepository,
+        @repository(AreaRequisitanteRepository)
+        public areaRequisitanteRepository: AreaRequisitanteRepository,
+        @repository(FornecedorRepository)
+        public fornecedorRepository: FornecedorRepository,
+        @service(SeiServiceProvider)
+        protected SEIService: SeiService,
     ) {}
 
     @post('/recebimento-ordem-servico', {
@@ -35,6 +65,57 @@ export class RecebimentoOrdemServicoController {
         })
         recebimentoOrdemServico: Omit<RecebimentoOrdemServicoFull, 'id'>,
     ): Promise<RecebimentoOrdemServicoFull> {
+        const ordemServico = await getValidaOrdemServico(
+            this.ordemServicoRepository,
+            recebimentoOrdemServico.idOrdemServico,
+            AcaoGetOrdemServico.Emissao_TRP_SEI,
+        );
+        const contrato = await getValidaContrato(this.contratoRepository, ordemServico.idContrato);
+        const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
+        const fornecedor = await this.fornecedorRepository.findById(contrato.idFornecedor);
+        const tipoOS = contrato.tiposOrdemServico.find((tos) => tos.id == ordemServico.idTipoOrdemServicoContrato);
+        if (!tipoOS) throw new Error(`Tipo de Ordem de Serviço não encontrado no Contrato`);
+
+        //Gera documento HTML a ser enviado para o SEI
+        const htmlDocumento: string = getHTMLTermoRecebimentoProvisorioSEI(
+            recebimentoOrdemServico,
+            ordemServico,
+            contrato,
+            tipoOS,
+            fornecedor,
+            areaRequisitante,
+        );
+
+        const doc: Documento = criarDocumento(
+            areaRequisitante.numeroProcessoOrdensServicoSEI,
+            TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO,
+            '',
+            `Termo de Recebimento Provisório: OS ${String(ordemServico.numero).padStart(3, '0')} - Contrato ${
+                contrato.numeroContrato
+            }/${contrato.anoContrato}`,
+            Buffer.from(htmlDocumento).toString('base64'),
+        );
+        let documentoSEI = null;
+
+        try {
+            documentoSEI = tratarIncluirDocumentoResponse(
+                await this.SEIService.incluirDocumento(criarIncluirDocumentoRequest(doc)),
+            );
+            recebimentoOrdemServico.numeroDocumentoTermoRecebimentoSEI = parseInt(
+                documentoSEI.parametros.DocumentoFormatado,
+            );
+            recebimentoOrdemServico.linkTermoRecebimentoSEI = documentoSEI.parametros.LinkAcesso;
+        } catch (e) {
+            let msgDetalhe = '';
+            const regExp = /Processo \[(.+)\] não encontrado/;
+            let m: RegExpExecArray | null = regExp.exec(e.message);
+            if (m != null) {
+                msgDetalhe = ` Processo vinculado à Área Requisitante não foi encontrado: ${m[1]}`;
+            }
+            console.error(e);
+            throw new ValidationError(404, `Falha ao fazer a integração com o SEI.${msgDetalhe}`);
+        }
+
         const recebimentoRetorno: RecebimentoOrdemServicoFull = JSON.parse(JSON.stringify(recebimentoOrdemServico));
         //limpa os entregaveis pois serão inseridos os com id retornados da criação via repositório
         recebimentoRetorno.entregaveis = [];

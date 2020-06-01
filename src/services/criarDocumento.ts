@@ -13,6 +13,8 @@ enum NivelAcesso {
 
 export const TIPO_DOCUMENTO_ORDEM_SERVICO = '222';
 export const TIPO_DOCUMENTO_TERMO_ACEITACAO = '555';
+export const TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO = '226';
+export const TIPO_DOCUMENTO_TERMO_RECEBIMENTO_DEFINITIVO = '227';
 
 export function criarDocumento(
     numeroProcesso: string,

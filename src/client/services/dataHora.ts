@@ -6,6 +6,12 @@ export enum LocalFeriado {
     Brasil,
 }
 
+export function getDataISOHoraSemHorario(dataISO: string): string {
+    let data = moment(dataISO);
+    zerarHorario(data);
+    return data.toDate().toISOString();
+}
+
 /**
  * Retorna o próximo dia útil a partir da {data} informada.
  * Se {data} é um dia útil, retornará o próprio
@@ -13,10 +19,7 @@ export enum LocalFeriado {
  */
 export function getProximoDiaUtil(data: Moment, local?: LocalFeriado): Moment {
     const clone = data.clone();
-    clone.hour(0);
-    clone.minute(0);
-    clone.second(0);
-    clone.millisecond(0);
+    zerarHorario(clone);
     const funcaoLocalDiaUtil =
         local == undefined || local == LocalFeriado.Brasil
             ? eDiaUtilBrasil
@@ -29,6 +32,18 @@ export function getProximoDiaUtil(data: Moment, local?: LocalFeriado): Moment {
     }
 
     return clone;
+}
+
+/**
+ * Altera os atributos hora, minuto, segundo, milisegundo para ZERO
+ * @param data Data que será modificada
+ */
+export function zerarHorario(data: Moment): Moment {
+    data.hour(0);
+    data.minute(0);
+    data.second(0);
+    data.millisecond(0);
+    return data;
 }
 
 /**

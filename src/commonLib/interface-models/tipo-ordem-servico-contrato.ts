@@ -13,6 +13,7 @@ export interface ITipoOrdemServicoContrato {
     templateTermoRecebimentoDefinitivo?: string;
     unidadeGarantia: string;
     tempoGarantia: number;
+    numeroDiasEmissaoTRD: number;
     entregaveis: IEntregavelTipoOrdemServico[];
     indicadores: IIndicadorNiveisServicoContrato[];
     etapas: IEtapaTipoOrdemServico[];

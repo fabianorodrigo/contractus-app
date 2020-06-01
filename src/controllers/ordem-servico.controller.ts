@@ -123,6 +123,7 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
             if (m != null) {
                 msgDetalhe = ` Processo vinculado à Área Requisitante não foi encontrado: ${m[1]}`;
             }
+            console.error(e);
             throw new ValidationError(404, `Falha ao fazer a integração com o SEI.${msgDetalhe}`);
         }
 

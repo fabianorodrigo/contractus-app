@@ -1,30 +1,32 @@
-import {formataNumeroStringLocal} from '../commonLib/formatacao';
+import moment from 'moment';
 import {
     AreaRequisitante,
     Contrato,
-    EtapaOrdemServico,
     Fornecedor,
     OrdemServico,
+    RecebimentoOrdemServico,
     TipoOrdemServicoContrato,
 } from '../models';
 
-export function getHTMLTermoAceitacaoSEI(
-    etapa: EtapaOrdemServico,
+export function getHTMLTermoRecebimentoProvisorioSEI(
+    recebimento: RecebimentoOrdemServico,
     ordemServico: OrdemServico,
     contrato: Contrato,
     tipoOrdemServico: TipoOrdemServicoContrato,
     fornecedor: Fornecedor,
     areaRequisitante: AreaRequisitante,
 ) {
-    if (!tipoOrdemServico.templateTermoAceitacao)
-        throw new Error(`Tipo de Ordem de Serviço não tem Template de Termo de Aceitação definido na base de dados`);
+    if (!tipoOrdemServico.templateTermoRecebimentoProvisorio)
+        throw new Error(
+            `Tipo de Ordem de Serviço não tem Template de Termo de Recebimento Provisório definido na base de dados`,
+        );
     //como teremos que alterar e incluir alguns valores da OS para passar para o template, clonamos
-    const etapaFormatada = getTermoAceitacaoFormatadoToTemplate(etapa);
-    etapaFormatada.numeroOS = String(ordemServico.numero).padStart(3, '0');
+    const recebimentoFormatado = getTermoRecebimentoProvisorioFormatadoToTemplate(recebimento);
+    recebimentoFormatado.numeroOS = String(ordemServico.numero).padStart(3, '0');
     areaRequisitante.nomeArea = areaRequisitante.nomeArea.toUpperCase();
 
     const objRef: {[name: string]: any} = {
-        etapa: etapaFormatada,
+        recebimento: recebimentoFormatado,
         os: ordemServico,
         contrato,
         tipoOrdemServico,
@@ -33,11 +35,11 @@ export function getHTMLTermoAceitacaoSEI(
         projeto: {nome: ordemServico.idProjeto},
     };
 
-    let htmlFinal = tipoOrdemServico.templateTermoAceitacao;
+    let htmlFinal = tipoOrdemServico.templateTermoRecebimentoProvisorio;
     const regex = /###([A-z0-9]+)\.([A-z0-9]+)(\.forEach\((.*?)\))?###/gms; //como os trechos que tem forEach podem quebrar linhas, temos que incluir a flag 's' - singleline
     let m: RegExpExecArray | null;
 
-    while ((m = regex.exec(tipoOrdemServico.templateTermoAceitacao)) !== null) {
+    while ((m = regex.exec(tipoOrdemServico.templateTermoRecebimentoProvisorio)) !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
         if (m.index === regex.lastIndex) {
             regex.lastIndex++;
@@ -83,22 +85,10 @@ export function getHTMLTermoAceitacaoSEI(
 /**
  * Clona a {etapa}, formata alguns atributos e inclui outros necessários ao template HTML do Termo de Aceitação para inclusão no SEI
  *
- * @param etapa Etapa da Ordem de Serviço original
+ * @param recebimento Etapa da Ordem de Serviço original
  */
-function getTermoAceitacaoFormatadoToTemplate(etapa: EtapaOrdemServico) {
-    const etapaFormatada = JSON.parse(JSON.stringify(etapa));
-    etapaFormatada.idResultadoEtapa =
-        etapa.idResultadoEtapa == 'A'
-            ? 'ACEITA'
-            : etapa.idResultadoEtapa == 'P'
-            ? 'ACEITA PARCIALMENTE'
-            : etapa.idResultadoEtapa == 'R'
-            ? 'REJEITADA'
-            : etapa.idResultadoEtapa;
-    etapaFormatada.valorAdiantamentoPlanejado = formataNumeroStringLocal(
-        <number>etapa.valorAdiantamentoPlanejado,
-        true,
-    );
-    etapaFormatada.valorAdiantamentoReal = formataNumeroStringLocal(<number>etapa.valorAdiantamentoReal, true);
-    return etapaFormatada;
+function getTermoRecebimentoProvisorioFormatadoToTemplate(recebimento: RecebimentoOrdemServico) {
+    const recebimentoFormatado = JSON.parse(JSON.stringify(recebimento));
+    recebimentoFormatado.dtRecebimento = moment(recebimento.dtRecebimento).format('DD/MM/YYYY');
+    return recebimentoFormatado;
 }

@@ -6,6 +6,7 @@ import {OrdemServicoRepository} from '../repositories';
 export enum AcaoGetOrdemServico {
     Excluir,
     Emissao_SEI,
+    Emissao_TRP_SEI,
 }
 
 /**
@@ -47,6 +48,17 @@ export async function getValidaOrdemServico(
         if (!ordemServico.entregaveis || ordemServico.entregaveis.length == 0)
             throw new Error(
                 `Ordem de Serviço com identificador ${ordemServico.id} está com a lista de entregáveis esperados vazia`,
+            );
+        if (!ordemServico.idTipoOrdemServicoContrato) {
+            throw new Error(
+                `Ordem de Serviço com identificador ${ordemServico.id} não possui um Tipo de Ordem de Serviço estabelecido`,
+            );
+        }
+    } else if (proposito == AcaoGetOrdemServico.Emissao_TRP_SEI) {
+        const statusOS = getStatusOrdemServico(ordemServico);
+        if (statusOS == StatusOrdemServico.RASCUNHO)
+            throw new Error(
+                `Ordem de Serviço com identificador ${ordemServico.id} com status inválido para emissão do Termo de Recebimento Provisório: ${statusOS}`,
             );
         if (!ordemServico.idTipoOrdemServicoContrato) {
             throw new Error(

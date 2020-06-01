@@ -99,6 +99,15 @@ export class TipoOrdemServicoContrato extends Entity {
     })
     tempoGarantia: number;
 
+    @property({
+        type: 'number',
+        required: true,
+        postgresql: {
+            columnName: 'NR_DIAS_EMISSAO_TRD',
+        },
+    })
+    numeroDiasEmissaoTRD: number;
+
     @hasMany(() => EntregavelTipoOrdemServico, {
         keyTo: 'idTipoOrdemServicoContrato',
     })
