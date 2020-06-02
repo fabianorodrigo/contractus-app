@@ -23,10 +23,10 @@ import {
 import {StatusOrdemServico} from '../../../commonLib/interface-models/StatusOrdemServico';
 import {ActionEntity, ActionType, AppContext, AppContextStoreType} from '../../App-Context';
 import {useFormHook} from '../../customHooks/useForm';
+import {useGetRespostaServico} from '../../customHooks/useGetRespostaServico';
 import {EditionType, IEntidadeContexto} from '../../models/EntidadeContext';
 import {postOrdemServico} from '../../services/backend';
 import {getProximoDiaUtil, LocalFeriado} from '../../services/dataHora';
-import {formataMensagemErroLoopback} from '../../services/formatacaoMensagensErro';
 import useStyles from '../../services/styles';
 import {CampoLista, SelectItemNulo} from '../lib/campoLista';
 import {CampoTexto} from '../lib/campoTexto';
@@ -60,80 +60,34 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
     const statusOS = getStatusOrdemServico(osState.dado);
 
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
+    const {getRespostaServico: getRespostaPostOrdemServico} = useGetRespostaServico<IOrdemServico>(postOrdemServico);
 
-    const [errosInput, setErrosInput] = React.useState({
-        idContrato: '',
-        idTipoOrdemServicoContrato: '',
-        emergencial: '',
-        idAreaRequisitante: '',
-        nomeRequisitante: '',
-        nomeFiscalTecnico: '',
-        itens: '',
-    });
-
-    const valida = (os: IOrdemServico) => {
-        errosInput.idContrato =
-            os.idContrato == null || os.idContrato < 0
-                ? 'O contrato ao qual a ordem de serviço se refere deve ser informado'
-                : '';
-        errosInput.idTipoOrdemServicoContrato =
-            os.idTipoOrdemServicoContrato == null || os.idTipoOrdemServicoContrato < 0
-                ? 'O tipo da Ordem de Serviço deve ser informado'
-                : '';
-        errosInput.emergencial = os.emergencial == null ? 'A criticidade dos serviços deve ser informada' : '';
-        errosInput.idAreaRequisitante =
-            os.idAreaRequisitante == null || os.idAreaRequisitante < 0
-                ? 'A Área Requisitante do serviço deve ser informada'
-                : '';
-        errosInput.nomeRequisitante =
-            os.nomeRequisitante == null || os.nomeRequisitante.trim() == ''
-                ? 'O nome do requisitante do serviço deve ser informado'
-                : '';
-        errosInput.nomeFiscalTecnico =
-            os.nomeFiscalTecnico == null || os.nomeFiscalTecnico.trim() == ''
-                ? 'O nome do fiscal técnico do serviço deve ser informado'
-                : '';
-        errosInput.itens =
-            os.itens == null || os.itens.length == 0
-                ? 'Os itens da ordem de serviço contratados devem ser especificados'
-                : '';
-
-        return Object.values(errosInput).every((v) => v == '');
-    };
-
+    let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
     const onSubmitOS = async () => {
-        if (valida(osState.dado)) {
-            try {
-                const respostaServico = await postOrdemServico(osState.dado);
-                if (!respostaServico.sucesso) {
-                    enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
-                        variant: 'error',
-                    });
-                    console.error(respostaServico.dados);
-                    console.log(JSON.stringify(osState.dado));
-                    console.warn(osState.dado);
-                } else {
-                    appDispatch({
-                        tipo: ActionType.INCLUIR,
-                        entidade: ActionEntity.ORDEM_SERVICO,
-                        dados: respostaServico.dados,
-                    });
-                    osDispatch({tipo: EditionType.FECHAR});
-                    enqueueSnackbar(`Ordem de Serviço ${osState.dado.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
-                        variant: 'success',
-                    });
-                }
-            } catch (e) {
-                console.log('deu catch', e);
-                alert(e);
+        //Habilitação de ações
+        const pode = getAcoesOrdemServico(TipoUsoPermissoes.VALIDAR_UI, osState.dado);
+        const validacao = pode.salvar();
+        if (validacao.ok) {
+            const respostaServico = await getRespostaPostOrdemServico(osState.dado);
+            if (respostaServico.sucesso) {
+                appDispatch({
+                    tipo: ActionType.INCLUIR,
+                    entidade: ActionEntity.ORDEM_SERVICO,
+                    dados: respostaServico.dados,
+                });
+                osDispatch({tipo: EditionType.FECHAR});
+                enqueueSnackbar(`Ordem de Serviço ${osState.dado.id ? 'atualizada' : 'cadastrada'} com sucesso`, {
+                    variant: 'success',
+                });
             }
-        } else {
-            setErrosInput({...errosInput});
-            Object.values(errosInput).forEach((message) => {
-                if (message != null && message != '') {
-                    enqueueSnackbar(message, {variant: 'error'});
-                }
+        } else if (validacao.mensagensAtributo) {
+            errosInput = {};
+            Object.keys(validacao.mensagensAtributo).forEach((atributo: string) => {
+                errosInput[atributo] = true;
+                const msg = (validacao.mensagensAtributo as any)[atributo];
+                enqueueSnackbar(msg, {variant: 'warning'});
             });
+            setErrosInput({...errosInput});
         }
     };
     const {inputs, onInputChange, addItemArray, updateItemArray, markToRemoveItemArray, onSubmit} = useFormHook<
@@ -245,7 +199,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                             };
                                         }),
                                     )}
-                                    error={errosInput.idContrato != ''}
+                                    error={errosInput.idContrato}
                                     autoFocus={true}
                                 />
                             </Grid>
@@ -273,7 +227,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                               )
                                             : [SelectItemNulo]
                                     }
-                                    error={errosInput.idTipoOrdemServicoContrato != ''}
+                                    error={errosInput.idTipoOrdemServicoContrato}
                                 />
                             </Grid>
                             <Grid item xs={2}>
@@ -290,7 +244,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                         {valor: false, label: 'Normal'},
                                         {valor: true, label: 'Emergencial'},
                                     ]}
-                                    error={errosInput.emergencial != ''}
+                                    error={errosInput.emergencial}
                                 />
                             </Grid>
                             <Grid item xs={4}>
@@ -333,7 +287,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                             };
                                         }),
                                     )}
-                                    error={errosInput.idAreaRequisitante != ''}
+                                    error={errosInput.idAreaRequisitante}
                                     autoFocus={true}
                                 />
                             </Grid>
@@ -346,7 +300,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
-                                    error={errosInput.nomeRequisitante != ''}
+                                    error={errosInput.nomeRequisitante}
                                 />
                             </Grid>
                             <Grid item xs={6}>
@@ -358,7 +312,7 @@ export const FormOrdemServico: React.FC<{}> = ({}) => {
                                     somenteLeitura={!pode.editar().ok}
                                     obrigatorio={true}
                                     onChange={onInputChange}
-                                    error={errosInput.nomeFiscalTecnico != ''}
+                                    error={errosInput.nomeFiscalTecnico}
                                 />
                             </Grid>
                             <Grid item xs={12}>

@@ -40,7 +40,6 @@ export const TabelaItensOrdensServico: React.FC<{
     const {criar, editar, confirmar, fecharForm, remover, instancia, mostraForm} = useControleEdicaoEntidadesFilhos<
         IItemOrdemServico
     >(funcaoAdicionar, funcaoAtualizar, funcaoRemover, refButtonAdicionaItem);
-    //custom hook para controle de estado dos atributos da entidade
     let [errosInput, setErrosInput] = React.useState<{[atributo: string]: boolean}>({});
     const {inputs, updateInputs, hasChanged, onInputChange, onSubmit} = useFormHook(
         (item: IItemOrdemServico, indice?: number) => {

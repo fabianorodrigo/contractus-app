@@ -8,6 +8,7 @@ import {emitirSEI} from './emitirSEI';
 import {emitirTRPSEI} from './emitirTRPSEI';
 import {excluir} from './excluir';
 import {irParaSEI} from './irParaSEI';
+import {salvar} from './salvar';
 
 /**
  * Retorna objeto com um função para cada ação possível para uma Ordem de Serviço
@@ -40,6 +41,9 @@ export function getAcoesOrdemServico(tipoUso: TipoUsoPermissoes, ordemServico: I
         },
         irParaSEI: (): RetornoPermisao => {
             return irParaSEI(c, ordemServico);
+        },
+        salvar: (): RetornoPermisao => {
+            return salvar(c, ordemServico);
         },
     };
 }
