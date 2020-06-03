@@ -5,4 +5,5 @@ export enum StatusOrdemServico {
     RECEBIDA,
     FATURADA,
     PAGA,
+    CANCELADA,
 }

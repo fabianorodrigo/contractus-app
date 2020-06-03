@@ -7,6 +7,7 @@ export enum AcaoGetOrdemServico {
     Excluir,
     Emissao_SEI,
     Emissao_TRP_SEI,
+    Emissao_TRD_SEI,
 }
 
 /**
@@ -54,11 +55,11 @@ export async function getValidaOrdemServico(
                 `Ordem de Serviço com identificador ${ordemServico.id} não possui um Tipo de Ordem de Serviço estabelecido`,
             );
         }
-    } else if (proposito == AcaoGetOrdemServico.Emissao_TRP_SEI) {
+    } else if (proposito == AcaoGetOrdemServico.Emissao_TRP_SEI || proposito == AcaoGetOrdemServico.Emissao_TRD_SEI) {
         const statusOS = getStatusOrdemServico(ordemServico);
-        if (statusOS == StatusOrdemServico.RASCUNHO)
+        if (statusOS == StatusOrdemServico.RASCUNHO || statusOS == StatusOrdemServico.CANCELADA)
             throw new Error(
-                `Ordem de Serviço com identificador ${ordemServico.id} com status inválido para emissão do Termo de Recebimento Provisório: ${statusOS}`,
+                `Ordem de Serviço com identificador ${ordemServico.id} com status inválido para emissão do Termo de Recebimento: ${statusOS}`,
             );
         if (!ordemServico.idTipoOrdemServicoContrato) {
             throw new Error(

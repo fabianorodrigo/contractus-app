@@ -66,6 +66,7 @@
     "loopback-connector-soap": "^5.1.0",
     "moment": "^2.24.0",
     "notistack": "^0.9.9",
+    "numero-por-extenso": "^1.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "tslib": "^1.10.0",

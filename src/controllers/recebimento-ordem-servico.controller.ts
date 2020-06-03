@@ -2,6 +2,7 @@ import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {ValidationError} from '../commonLib';
+import {TipoRecebimentoOrdemServico} from '../commonLib/interface-models/TipoRecebimentoOrdemServico';
 import {EntregavelRecebimentoOrdemServico, RecebimentoOrdemServico} from '../models';
 import {RecebimentoOrdemServicoFull} from '../models/recebimento-ordem-servico-full.model';
 import {
@@ -18,11 +19,12 @@ import {
     Documento,
     SeiService,
     SeiServiceProvider,
+    TIPO_DOCUMENTO_TERMO_RECEBIMENTO_DEFINITIVO,
     TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO,
 } from '../services';
 import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumentoResponse';
 import {converteRecebimentoOrdemServicoFullToRecebimentoOrdemServico} from './converteRecebimentoOrdemServicoFullToRecebimentoOrdemServico';
-import {getHTMLTermoRecebimentoProvisorioSEI} from './getHTMLTermoRecebimentoSEI';
+import {getHTMLTermoRecebimentoSEI} from './getHTMLTermoRecebimentoSEI';
 import {getValidaContrato} from './getValidaContrato';
 import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
 
@@ -68,7 +70,9 @@ export class RecebimentoOrdemServicoController {
         const ordemServico = await getValidaOrdemServico(
             this.ordemServicoRepository,
             recebimentoOrdemServico.idOrdemServico,
-            AcaoGetOrdemServico.Emissao_TRP_SEI,
+            recebimentoOrdemServico.tipoRecebimento == TipoRecebimentoOrdemServico.DEFINITIVO
+                ? AcaoGetOrdemServico.Emissao_TRD_SEI
+                : AcaoGetOrdemServico.Emissao_TRP_SEI,
         );
         const contrato = await getValidaContrato(this.contratoRepository, ordemServico.idContrato);
         const areaRequisitante = await this.areaRequisitanteRepository.findById(ordemServico.idAreaRequisitante);
@@ -77,7 +81,7 @@ export class RecebimentoOrdemServicoController {
         if (!tipoOS) throw new Error(`Tipo de Ordem de Serviço não encontrado no Contrato`);
 
         //Gera documento HTML a ser enviado para o SEI
-        const htmlDocumento: string = getHTMLTermoRecebimentoProvisorioSEI(
+        const htmlDocumento: string = getHTMLTermoRecebimentoSEI(
             recebimentoOrdemServico,
             ordemServico,
             contrato,
@@ -88,11 +92,17 @@ export class RecebimentoOrdemServicoController {
 
         const doc: Documento = criarDocumento(
             areaRequisitante.numeroProcessoOrdensServicoSEI,
-            TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO,
+            recebimentoOrdemServico.tipoRecebimento == TipoRecebimentoOrdemServico.DEFINITIVO
+                ? TIPO_DOCUMENTO_TERMO_RECEBIMENTO_DEFINITIVO
+                : TIPO_DOCUMENTO_TERMO_RECEBIMENTO_PROVISORIO,
             '',
-            `Termo de Recebimento Provisório: OS ${String(ordemServico.numero).padStart(3, '0')} - Contrato ${
-                contrato.numeroContrato
-            }/${contrato.anoContrato}`,
+            `Termo de Recebimento ${
+                recebimentoOrdemServico.tipoRecebimento == TipoRecebimentoOrdemServico.DEFINITIVO
+                    ? 'Definitivo'
+                    : 'Provisório'
+            }: OS ${String(ordemServico.numero).padStart(3, '0')} - Contrato ${contrato.numeroContrato}/${
+                contrato.anoContrato
+            }`,
             Buffer.from(htmlDocumento).toString('base64'),
         );
         let documentoSEI = null;
