@@ -117,7 +117,7 @@ Desconto conforme Indicadores de Nível Mínimo de Serviço (tabela abaixo): <b>
 			<p class="Tabela_Texto_Alinhado_Esquerda">##descricaoSancao##</p>
 			</th>
 			<td>
-			<p class="Tabela_Texto_Centralizado">##valorGlosa##</p>
+			<p class="Tabela_Texto_Alinhado_Direita">##valorGlosa##</p>
 			</td>
 		</tr>)###
 	</tbody>
@@ -254,7 +254,7 @@ Desconto conforme Indicadores de Nível Mínimo de Serviço (tabela abaixo): <b>
 			<p class="Tabela_Texto_Alinhado_Esquerda">##descricaoSancao##</p>
 			</th>
 			<td>
-			<p class="Tabela_Texto_Centralizado">##valorGlosa##</p>
+			<p class="Tabela_Texto_Alinhado_Direita">##valorGlosa##</p>
 			</td>
 		</tr>)###
 	</tbody>

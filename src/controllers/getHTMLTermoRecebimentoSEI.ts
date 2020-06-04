@@ -133,7 +133,6 @@ function getOrdemServicoFormatadaToTemplate(
     );
 
     //Formatação das indicadores da OS
-
     if (!tem(osFormatada.indicadores)) osFormatada.indicadores = [];
     if (osFormatada.indicadores.length == 0) {
         if (tipoOrdemServico.indicadores) {
