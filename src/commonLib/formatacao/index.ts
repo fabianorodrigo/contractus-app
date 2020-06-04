@@ -9,6 +9,7 @@ export function formataDataStringLocal(dataStringISO?: string): string {
 export function formataNumeroStringLocal(numero: number | string, financeiro: boolean, casosDecimais: number = 2) {
     let v = numero;
     if (typeof v == 'string') {
+        if (v.trim() == '') return v;
         v = parseFloat(v);
     }
     if (v == null) return '';
