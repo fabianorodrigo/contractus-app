@@ -65,6 +65,7 @@ export const FormRecebimentosOrdensServico: React.FC<{
             if (validacao.ok) {
                 //Removendo dataHora do recebimento
                 recebimento.dtRecebimento = getDataISOHoraSemHorario(recebimento.dtRecebimento);
+                onClickClose();
                 const respostaServico = await getRespostaPostRecebimentoOrdemServico(recebimento);
                 if (respostaServico.sucesso) {
                     /*appDispatch({
@@ -76,7 +77,6 @@ export const FormRecebimentosOrdensServico: React.FC<{
                     enqueueSnackbar(`Termo de Recebimento da Ordem de Serviço registrado com sucesso`, {
                         variant: 'success',
                     });
-                    onClickClose();
                     window.open(respostaServico.dados.linkTermoRecebimentoSEI, '_blank');
                 }
             } else if (validacao.mensagensAtributo) {
@@ -166,7 +166,7 @@ export const FormRecebimentosOrdensServico: React.FC<{
                         </ConteudoDialog>
                         <DialogActions>
                             <Button type="submit" color="primary">
-                                Salvar
+                                Confirmar
                             </Button>
                             <Button color="primary" onClick={onClickClose}>
                                 Cancelar
