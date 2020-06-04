@@ -35,10 +35,11 @@
     "webpack": "webpack &&  npm run copyAssetsDev"
   },
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "https://github.com/fabianorodrigo/contractus-app"
   },
-  "author": "",
-  "license": "",
+  "author": "Fabiano Nascimento",
+  "license": "GNU Affero General Public License v3.0 or later",
   "files": [
     "README.md",
     "index.js",
