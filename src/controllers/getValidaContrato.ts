@@ -10,7 +10,10 @@ import {ContratoRepository} from '../repositories';
  */
 export async function getValidaContrato(contratoRepository: ContratoRepository, id: number) {
     //busca o contrato com todas as suas relações necessárias
-    const include = [{relation: 'tiposOrdemServico', include: [{relation: 'indicadores'}]}, {relation: 'metricas'}];
+    const include = [
+        {relation: 'tiposOrdemServico', scope: {include: [{relation: 'indicadores'}]}},
+        {relation: 'metricas'},
+    ];
 
     const contrato = await contratoRepository.findById(id, {
         include,

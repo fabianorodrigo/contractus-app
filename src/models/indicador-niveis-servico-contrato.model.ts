@@ -55,7 +55,7 @@ export class IndicadorNiveisServicoContrato extends Entity {
     idTipoOrdemServicoContrato?: number;
 
     @hasMany(() => SancaoIndicadorNiveisServicoContrato, {
-        keyTo: 'idTipoOrdemServicoContrato',
+        keyTo: 'idIndicadorNiveisServicoContrato',
     })
     sancoes: SancaoIndicadorNiveisServicoContrato[];
 
