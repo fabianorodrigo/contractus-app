@@ -1,8 +1,8 @@
 version: '3.3'
 services:
     postgresdb:
-        image: fabianorodrigo/contractusapp-postgres:latest
-        container_name: postgressdbcompose
+        image: fabianorodrigo/contractus-app-database:0.4.0
+        container_name: contractus-app-database-docker-compose
         networks:
             - contractusnet
         ports:
@@ -15,7 +15,8 @@ services:
             - POSTGRES_USER=contractusapp
             - POSTGRES_PASSWORD=contractusapp
     contractus-app:
-        image: fabianorodrigo/contractus-app:latest
+        image: fabianorodrigo/contractus-app:0.4.0
+        container_name: contractus-app-docker-compose
         depends_on:
             - postgresdb
         ports:
@@ -23,8 +24,7 @@ services:
         networks:
             - contractusnet
         environment:
-            - sonar.jdbc.url=jdbc:postgresql://postgresdb:5432/contractus
-            - POSTGRES_HOST=postgressdbcompose
+            - POSTGRES_HOST=contractus-app-database-docker-compose
         #command: sysctl -w vm.max_map_count=262144
         ulimits:
             nofile:
