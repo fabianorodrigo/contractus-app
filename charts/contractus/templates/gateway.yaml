@@ -1,0 +1,30 @@
+{{- if (.Values.istio) and (.Values.istio.gateway) -}}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: contractus-gateway
+  namespace: contractus
+  labels:
+    {{- include "contractus.labels" . | nindent 4 }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+    hosts:
+      - {{ .Values.istio.gateway.host | quote }}
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      credentialName: {{ .Values.istio.gateway.tls.credentialName }}
+      mode: SIMPLE
+    hosts:
+      - {{ .Values.istio.gateway.host | quote }}
+{{- end }}

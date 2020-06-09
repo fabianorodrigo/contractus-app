@@ -1,0 +1,20 @@
+{{- if (.Values.istio) and (.Values.istio.gateway) -}}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: contractus-vs
+  namespace: contractus
+  labels:
+    {{- include "contractus.labels" . | nindent 4 }}
+spec:
+  gateways:
+    - contractus-gateway
+  hosts:
+    - {{ .Values.istio.gateway.host | quote }}
+  http:
+  - route:
+    - destination:
+        host: contractus-webapp.contractus.svc.cluster.local
+        port:
+          number: {{ .Values.service.targetPort }}
+{{- end }}
