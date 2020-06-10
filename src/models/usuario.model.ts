@@ -1,5 +1,6 @@
 export class Usuario {
-    //extends Entity {
-    id: number;
+    id: string | string[] | Buffer | Buffer[];
+    cn: string | string[] | Buffer | Buffer[];
+    login: string;
     email: string;
 }

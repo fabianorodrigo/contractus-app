@@ -12,7 +12,14 @@ import {RestApplication} from '@loopback/rest';
 import {RestExplorerBindings, RestExplorerComponent} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {BcryptHasher, JWTService, PasswordHasherBindings, UsuarioService} from './security';
+import {
+    AutenticacaoLDAP,
+    BcryptHasher,
+    JWTService,
+    LDAPBindings,
+    PasswordHasherBindings,
+    UsuarioService,
+} from './security';
 import {ContractusAppSequence} from './sequence';
 
 export interface PackageInfo {
@@ -84,6 +91,13 @@ export class ContractusAppApplication extends BootMixin(ServiceMixin(RepositoryM
         this.bind(TokenServiceBindings.TOKEN_SECRET).to(process.env.JWT_TOKEN_SECRET);
         this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(process.env.JWT_TOKEN_EXPIRES_IN);
         this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+
+        //setando as configurações do LDAP Para autenticação
+        this.bind(LDAPBindings.LDAP_URL).to(process.env.LDAP_URL as string);
+        this.bind(LDAPBindings.LDAP_BASE_DN).to(process.env.LDAP_BASE_DN as string);
+        this.bind(LDAPBindings.LDAP_USERNAME).to(process.env.LDAP_USERNAME as string);
+        this.bind(LDAPBindings.LDAP_PASSWORD).to(process.env.LDAP_PASSWORD as string);
+        this.bind(LDAPBindings.LDAP_AUTENTICADOR).toClass(AutenticacaoLDAP);
     }
 
     addSecuritySpec(): void {

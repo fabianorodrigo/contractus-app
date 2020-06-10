@@ -2,9 +2,8 @@ const CredentialsSchema = {
     type: 'object',
     required: ['email', 'password'],
     properties: {
-        email: {
+        login: {
             type: 'string',
-            format: 'email',
         },
         password: {
             type: 'string',

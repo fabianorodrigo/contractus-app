@@ -74,7 +74,7 @@ export class UsuarioController {
         @inject(SecurityBindings.USER)
         currentUserProfile: UserProfile,
     ): Promise<Usuario | undefined> {
-        const userId = currentUserProfile[securityId];
-        return (this.userService as UsuarioService).findById(userId);
+        const login = currentUserProfile[securityId];
+        return (this.userService as UsuarioService).findById(login);
     }
 }
