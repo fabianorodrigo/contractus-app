@@ -42,7 +42,7 @@ export class UsuarioService implements UserService<Usuario, Credentials> {
 
     convertToUserProfile(usuario: Usuario): UserProfile {
         let userName = usuario.email;
-        return {[securityId]: usuario.id.toString(), id: usuario.id.toString(), name: usuario.email};
+        return {[securityId]: usuario.email, id: usuario.id.toString(), name: usuario.email};
     }
 
     findById(id: string): Usuario | undefined {

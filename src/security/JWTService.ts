@@ -27,10 +27,10 @@ export class JWTService implements TokenService {
         try {
             // decode user profile from token
             const decodedToken = await verifyAsync(token, this.jwtSecret);
-            // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
+            // Não sobrescreve os atributos 'iat' e 'exp', nem 'email' para user profile
             userProfile = Object.assign(
                 {id: '', [securityId]: '', name: ''},
-                {id: decodedToken.id, [securityId]: decodedToken.id, name: decodedToken.name},
+                {id: decodedToken.id, [securityId]: decodedToken.name, name: decodedToken.name},
             );
         } catch (error) {
             throw new HttpErrors.Unauthorized(`Erro na verificação do token: ${error.message}`);
