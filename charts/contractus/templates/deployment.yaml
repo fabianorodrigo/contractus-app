@@ -61,27 +61,27 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: POSTGRES_HOST
-                  name: contractus-app
+                  name: contractus-webapp
             - name: POSTGRES_PORT
               valueFrom:
                 configMapKeyRef:
                   key: POSTGRES_PORT
-                  name: contractus-app
+                  name: contractus-webapp
             - name: POSTGRES_DATABASE
               valueFrom:
                 configMapKeyRef:
                   key: POSTGRES_DATABASE
-                  name: contractus-app
+                  name: contractus-webapp
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   key: POSTGRES_USER
-                  name: contractus-app
+                  name: contractus-webapp
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: POSTGRES_PASSWORD
-                  name: contractus-app
+                  name: contractus-webapp
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
