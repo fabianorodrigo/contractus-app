@@ -1,10 +1,9 @@
 import {Grid, IconButton, TableCell, TableRow, Tooltip} from '@material-ui/core';
 import React, {Dispatch, FormEvent, useContext} from 'react';
 import {getAcoeItemOrdemServico, TipoUsoPermissoes} from '../../../../commonLib';
-import {IOrdemServico} from '../../../../commonLib/interface-models';
+import {IItemOrdemServico, IOrdemServico} from '../../../../commonLib/interface-models';
 import {getStatusOrdemServico} from '../../../../commonLib/interface-models/getStatusOrdemServico';
 import {ContratosMap} from '../../../../commonLib/interface-models/maps-entidades-types';
-import {ItemOrdemServico} from '../../../../models';
 import {AppContext, AppContextStoreType} from '../../../App-Context';
 import {IEntidadeContexto} from '../../../models/EntidadeContext';
 import useStyles from '../../../services/styles';
@@ -14,7 +13,7 @@ import {ClearIcon, DoneIcon} from '../../lib/icons';
 import {OrdemServicoContext} from '../contextOrdemServico';
 
 export const FormItemOrdensServico: React.FC<{
-    itemEditado: ItemOrdemServico;
+    itemEditado: IItemOrdemServico;
     onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmitForm: (event: FormEvent<HTMLFormElement> | React.MouseEvent) => void;
     fechaForm: () => void;
