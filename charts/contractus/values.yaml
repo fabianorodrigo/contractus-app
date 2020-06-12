@@ -1,0 +1,30 @@
+service:
+  type: ClusterIP
+  containerPort: 3000
+  targetPort: 3000
+
+image:
+  repository: fabianorodrigo/contractus-app
+  tag: "latest"
+
+deployment:
+  replicaCount: 1
+  container:
+    ports:
+      - name: http
+        containerPort: 3000
+        protocol: TCP
+    variables:
+      configMap:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: "5432"
+        POSTGRES_DATABASE: contractusapp
+      secret:
+        POSTGRES_USER: Y29udHJhY3R1c2FwcA==
+        POSTGRES_PASSWORD: Y29udHJhY3R1c2FwcA==
+
+istio:
+  gateway:
+    host: "contractus.mydomain.com"
+    tls:
+      credentialName: istio-ingressgateway-domain-cert
