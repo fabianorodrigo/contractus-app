@@ -1,8 +1,8 @@
 {
     "name": "seiDataSource",
     "connector": "soap",
-    "url": "https://sei3teste.ancine.gov.br/sei/ws/SeiWS.php",
-    "wsdl": "http://sei3teste.ancine.gov.br/sei/controlador_ws.php?servico=sei",
+    "url": "https://dominioorgao.gov.br/sei/ws/SeiWS.php",
+    "wsdl": "http://dominioorgao.gov.br/sei/controlador_ws.php?servico=sei",
     "remotingEnabled": true,
     "operations": {
         "incluirDocumento": {

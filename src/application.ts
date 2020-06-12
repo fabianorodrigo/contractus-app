@@ -98,6 +98,27 @@ export class ContractusAppApplication extends BootMixin(ServiceMixin(RepositoryM
         this.bind(LDAPBindings.LDAP_USERNAME).to(process.env.LDAP_USERNAME as string);
         this.bind(LDAPBindings.LDAP_PASSWORD).to(process.env.LDAP_PASSWORD as string);
         this.bind(LDAPBindings.LDAP_AUTENTICADOR).toClass(AutenticacaoLDAP);
+
+        //setando datasource SEI com base nas variáveis de ambiente
+        this.bind('datasources.config.SEI').to({
+            name: 'seiDataSource',
+            connector: 'soap',
+            url: process.env.SEI_URL || 'Variável de ambiente SEI_URL sem valor',
+            wsdl: process.env.SEI_WSDL_URL || 'Variável de ambiente SEI_WSDL_URL sem valor',
+            remotingEnabled: true,
+            operations: {
+                incluirDocumento: {
+                    service: 'SeiWS',
+                    port: 'SeiPortService',
+                    operation: 'incluirDocumento',
+                },
+                consultarDocumento: {
+                    service: 'SeiWS',
+                    port: 'SeiPortService',
+                    operation: 'consultarDocumento',
+                },
+            },
+        });
     }
 
     addSecuritySpec(): void {
