@@ -1,19 +1,10 @@
+import {authenticate} from '@loopback/authentication';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
-import {
-    post,
-    param,
-    get,
-    getFilterSchemaFor,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    patch,
-    put,
-    del,
-    requestBody,
-} from '@loopback/rest';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {IndicadorNiveisServicoContrato} from '../models';
 import {IndicadorNiveisServicoContratoRepository} from '../repositories';
 
+@authenticate('jwt')
 export class IndicadorNiveisServicoContratoController {
     constructor(
         @repository(IndicadorNiveisServicoContratoRepository)

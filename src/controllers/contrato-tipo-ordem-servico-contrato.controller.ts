@@ -1,8 +1,10 @@
+import {authenticate} from '@loopback/authentication';
 import {Count, CountSchema, Filter, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, getWhereSchemaFor, param, patch, post, requestBody} from '@loopback/rest';
 import {Contrato, TipoOrdemServicoContrato} from '../models';
 import {ContratoRepository} from '../repositories';
 
+@authenticate('jwt')
 export class ContratoTipoOrdemServicoContratoController {
     constructor(
         @repository(ContratoRepository)

@@ -6,6 +6,7 @@ import {SecurityBindings, UserProfile} from '@loopback/security';
 import {AreaRequisitante} from '../models';
 import {AreaRequisitanteRepository} from '../repositories';
 
+@authenticate('jwt')
 export class AreaRequisitanteController {
     constructor(
         @repository(AreaRequisitanteRepository)

@@ -1,8 +1,10 @@
+import {authenticate} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
-import {param, get, getModelSchemaRef} from '@loopback/rest';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
 import {Contrato, Fornecedor} from '../models';
 import {ContratoRepository} from '../repositories';
 
+@authenticate('jwt')
 export class ContratoFornecedorController {
     constructor(
         @repository(ContratoRepository)

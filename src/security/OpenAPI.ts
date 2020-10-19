@@ -9,6 +9,38 @@ export const OPERATION_SECURITY_SPEC = [{bearerAuth: []}];
 export type SecuritySchemeObjects = {
     [securityScheme: string]: SecuritySchemeObject | ReferenceObject;
 };
+
+export const LOGIN_OPENAPI_SPEC = {
+    responses: {
+        '200': {
+            description: 'Usuario & Token',
+            content: {
+                'application/json': {
+                    schema: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                            },
+                            nomeCompleto: {
+                                type: 'string',
+                            },
+                            login: {
+                                type: 'string',
+                            },
+                            email: {
+                                type: 'string',
+                            },
+                            token: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
 /**
  * SECURITY_SCHEME_SPEC is a map of security scheme object definitions that are
  * defined globally for the application. For our purposes, it only contains a

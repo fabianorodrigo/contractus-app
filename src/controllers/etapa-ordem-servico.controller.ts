@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {getModelSchemaRef, param, post, requestBody} from '@loopback/rest';
@@ -23,6 +24,7 @@ import {tratarIncluirDocumentoResponse} from '../services/tratarIncluirDocumento
 import {getHTMLTermoAceitacaoSEI} from './getHTMLTermoAceitacaoSEI';
 import {getValidaContrato} from './getValidaContrato';
 
+@authenticate('jwt')
 export class EtapaOrdemServicoController {
     constructor(
         @repository(EtapaOrdemServicoRepository)

@@ -1,5 +1,5 @@
+export * from '../commonLib/interface-models/Credentials';
 export * from '../models/usuario.model';
-export * from './Credentials';
 export * from './CredentialsRequestBody';
 export * from './hash.password.bcryptjs';
 export * from './JWTAuthenticationStrategy';

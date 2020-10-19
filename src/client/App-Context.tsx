@@ -1,4 +1,5 @@
 import React, {createContext, ReactNode, useReducer} from 'react';
+import {IUsuario} from '../commonLib';
 import {
     AreasRequisitantesMap,
     ContratosMap,
@@ -7,6 +8,7 @@ import {
 } from '../commonLib/interface-models/maps-entidades-types';
 
 export type AppContextStoreType = {
+    usuario?: IUsuario;
     emEspera: boolean;
     fornecedores: FornecedoresMap;
     contratos: ContratosMap;
@@ -23,6 +25,8 @@ export enum ActionType {
     EM_ESPERA,
     INCLUIR,
     REMOVER,
+    LOGIN,
+    LOGOUT,
 }
 
 export interface AppDispatch {
@@ -73,6 +77,14 @@ const reducer = (state: AppContextStoreType, acao: {tipo: ActionType; entidade?:
         }
         case ActionType.REMOVER: {
             delete retorno[acao.entidade as ActionEntity][acao.dados.id];
+            return retorno;
+        }
+        case ActionType.LOGIN: {
+            retorno.usuario = acao.dados;
+            return retorno;
+        }
+        case ActionType.LOGOUT: {
+            delete retorno.usuario;
             return retorno;
         }
         default:

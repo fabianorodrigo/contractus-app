@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
@@ -39,7 +40,9 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
     return result;
 };
 
-@intercept(log)*/ export class OrdemServicoController {
+@intercept(log)*/
+@authenticate('jwt')
+export class OrdemServicoController {
     constructor(
         @repository(OrdemServicoRepository)
         public ordemServicoRepository: OrdemServicoRepository,
@@ -425,7 +428,9 @@ import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServic
                 }
             }
 
-            await this.ordemServicoRepository.deleteById(id);
+            await this.ordemServicoRepository.deleteById(id, {
+                transaction: transacao,
+            });
             await transacao.commit();
         } catch (e) {
             console.error(e);

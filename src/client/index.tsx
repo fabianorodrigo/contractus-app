@@ -1,5 +1,6 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
+import {SnackbarProvider} from 'notistack';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {App} from './App';
@@ -78,7 +79,9 @@ ReactDOM.render(
             <ThemeProvider theme={appTheme}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
-                <App />
+                <SnackbarProvider maxSnack={3}>
+                    <App />
+                </SnackbarProvider>
             </ThemeProvider>
         </div>
     </AppContextProvider>,

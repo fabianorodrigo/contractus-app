@@ -30,12 +30,14 @@ export class AutenticacaoLDAP {
                 attributes: ['objectGUID', 'sAMAccountName', 'cn', 'mail', 'manager', 'memberOf'],
             };
             const searchResult = await this.ldapClient.search(this.baseDN, opts);
-            if (searchResult.searchEntries.length === 1) {
+            if (searchResult.searchEntries.length == 0) {
+                return undefined;
+            } else if (searchResult.searchEntries.length === 1) {
                 try {
                     const user = searchResult.searchEntries[0];
                     return {
                         id: user.objectGUID,
-                        cn: user.cn,
+                        nomeCompleto: user.cn as string,
                         login: user.sAMAccountName as string,
                         email: user.mail as string,
                     };
@@ -61,7 +63,7 @@ export class AutenticacaoLDAP {
         const usuario = await this.buscarUsuario(login, false);
         if (usuario != null) {
             try {
-                await this.ldapClient.bind(usuario.cn as string, senha);
+                await this.ldapClient.bind(usuario.nomeCompleto, senha);
                 return usuario;
             } catch (e) {
                 console.error(e);

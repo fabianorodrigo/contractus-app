@@ -53,7 +53,7 @@ export const RowEtapaOrdemServico: React.FC<{
     const emitirTermoAceitacao = async (etapa: IEtapaOrdemServico): Promise<void> => {
         try {
             emEspera(true);
-            const respostaServico = await emitirTermoAceitacaoEtapaSEI(etapa);
+            const respostaServico = await emitirTermoAceitacaoEtapaSEI(appState.usuario?.token, etapa);
             if (!respostaServico.sucesso) {
                 enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
                     variant: 'error',

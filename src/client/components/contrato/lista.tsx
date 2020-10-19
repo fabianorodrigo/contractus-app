@@ -29,7 +29,7 @@ export const ListaContratos: React.FC<{}> = ({}) => {
     //Buscando contratos
     const [contratos, setContratos] = React.useState<IContrato[]>([]);
     React.useEffect(() => {
-        getContratos().then((respostaServico) => {
+        getContratos(undefined).then((respostaServico) => {
             if (respostaServico.sucesso) {
                 setContratos(respostaServico.dados);
             } else {

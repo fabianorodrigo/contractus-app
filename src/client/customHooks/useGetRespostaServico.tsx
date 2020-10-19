@@ -1,12 +1,14 @@
 import {useSnackbar} from 'notistack';
 import {Dispatch, useContext} from 'react';
 import {ActionType, AppContext, AppContextStoreType, AppDispatch} from '../App-Context';
+import {TypeFuncaoBackend} from '../models/TypeFunctions';
 import {formataMensagemErro, formataMensagemErroLoopback} from '../services/formatacaoMensagensErro';
 import {RespostaServico} from '../services/restService';
 
-export const useGetRespostaServico = <T extends any>(funcaoBackend: Function) => {
+export const useGetRespostaServico = <T extends any>(funcaoBackend: TypeFuncaoBackend<T>) => {
     const {enqueueSnackbar} = useSnackbar(); //hook do notifystack para mostrar mensagens
     const {
+        state,
         dispatch: appDispatch,
     }: {
         state: AppContextStoreType;
@@ -24,7 +26,7 @@ export const useGetRespostaServico = <T extends any>(funcaoBackend: Function) =>
     const getRespostaServico = async function (p1?: any, p2?: any, p3?: any, p4?: any): Promise<RespostaServico<T>> {
         try {
             emEspera(true);
-            const respostaServico = await funcaoBackend(p1, p2, p3, p4);
+            const respostaServico = await funcaoBackend(state.usuario?.token, p1, p2, p3, p4);
             if (!respostaServico.sucesso) {
                 enqueueSnackbar(formataMensagemErroLoopback((respostaServico.dados as any).error), {
                     variant: 'error',

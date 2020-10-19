@@ -28,7 +28,6 @@ export const useControleEdicaoEntidadesFilhos = <T extends {}>(
     //quando mudar o valor de mostraForm, se for para TRUE, foca no campo de foco
     //passado. Se for FALSE, foca no botão adicionar
     useEffect(() => {
-        //console.log('foco', mostraForm, refInputFoco, refInputFoco.current, refBotaoFoco.current);
         if (!mostraForm && refBotaoFoco != undefined && refBotaoFoco.current != null) {
             refBotaoFoco.current.focus();
         }

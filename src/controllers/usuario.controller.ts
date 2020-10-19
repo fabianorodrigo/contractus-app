@@ -8,9 +8,11 @@ import {TokenServiceBindings, UserServiceBindings} from '@loopback/authenticatio
 import {inject} from '@loopback/core';
 import {get, post, requestBody} from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
+import {IUsuario} from '../commonLib';
 import {
     Credentials,
     CredentialsRequestBody,
+    LOGIN_OPENAPI_SPEC,
     PasswordHasherBindings,
     SchemaPerfilUsuario,
     Usuario,
@@ -28,33 +30,15 @@ export class UsuarioController {
         public userService: UserService<Usuario, Credentials>,
     ) {}
 
-    @post('/usuario/login', {
-        responses: {
-            '200': {
-                description: 'Token',
-                content: {
-                    'application/json': {
-                        schema: {
-                            type: 'object',
-                            properties: {
-                                token: {
-                                    type: 'string',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    })
-    async login(@requestBody(CredentialsRequestBody) credentials: Credentials): Promise<{token: string}> {
+    @post('/usuario/login', LOGIN_OPENAPI_SPEC)
+    async login(@requestBody(CredentialsRequestBody) credentials: Credentials): Promise<IUsuario> {
         // valida usuário e senha
         const user = await this.userService.verifyCredentials(credentials);
         // Converte model Usuario em UserProfile (menos propriedades)
         const userProfile = this.userService.convertToUserProfile(user);
         // cria um JSON Web Token baseado no profile
         const token = await this.jwtService.generateToken(userProfile);
-        return {token};
+        return {...user, token};
     }
 
     @get('/usuario/me', {

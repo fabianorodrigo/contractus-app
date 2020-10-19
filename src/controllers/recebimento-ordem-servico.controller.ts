@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
 import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
@@ -28,6 +29,7 @@ import {getHTMLTermoRecebimentoSEI} from './getHTMLTermoRecebimentoSEI';
 import {getValidaContrato} from './getValidaContrato';
 import {AcaoGetOrdemServico, getValidaOrdemServico} from './getValidaOrdemServico';
 
+@authenticate('jwt')
 export class RecebimentoOrdemServicoController {
     constructor(
         @repository(RecebimentoOrdemServicoRepository)

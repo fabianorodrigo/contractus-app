@@ -1,19 +1,10 @@
+import {authenticate} from '@loopback/authentication';
 import {Count, CountSchema, Filter, FilterExcludingWhere, repository, Where} from '@loopback/repository';
-import {
-    post,
-    param,
-    get,
-    getFilterSchemaFor,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    patch,
-    put,
-    del,
-    requestBody,
-} from '@loopback/rest';
+import {del, get, getModelSchemaRef, param, patch, post, put, requestBody} from '@loopback/rest';
 import {EntregavelTipoOrdemServico} from '../models';
 import {EntregavelTipoOrdemServicoRepository} from '../repositories';
 
+@authenticate('jwt')
 export class EntregavelTipoOrdemServicoController {
     constructor(
         @repository(EntregavelTipoOrdemServicoRepository)

@@ -2,8 +2,8 @@ import {UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
+import {Credentials} from '../commonLib/interface-models/Credentials';
 import {Usuario} from '../models/usuario.model';
-import {Credentials} from './Credentials';
 import {PasswordHasher} from './hash.password.bcryptjs';
 import {LDAPBindings, PasswordHasherBindings} from './keys';
 import {AutenticacaoLDAP} from './LDAP';
@@ -25,7 +25,12 @@ export class UsuarioService implements UserService<Usuario, Credentials> {
     }
 
     convertToUserProfile(usuario: Usuario): UserProfile {
-        return {[securityId]: usuario.login, id: usuario.id.toString(), name: usuario.login, email: usuario.email};
+        return {
+            [securityId]: usuario.login,
+            id: usuario.id.toString(),
+            name: usuario.nomeCompleto,
+            email: usuario.email,
+        };
     }
 
     async findById(login: string): Promise<Usuario | undefined> {

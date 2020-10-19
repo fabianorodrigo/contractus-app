@@ -5,19 +5,29 @@ import {
     IFornecedor,
     IOrdemServico,
     IRecebimentoOrdemServico,
+    IUsuario,
 } from '../../commonLib/interface-models';
-import {del, get, post, postAcao, RespostaServico} from './restService';
+import {Credentials} from '../../commonLib/interface-models/';
+import {del, get, login, post, postAcao, RespostaServico} from './restService';
 
-export function getFornecedores(): Promise<RespostaServico<IFornecedor[]>> {
-    return get('/fornecedor');
+export function autentica(token: string | undefined, credentials: Credentials): Promise<RespostaServico<IUsuario>> {
+    //Remove os nulos
+    const credentialsToPost = removerAtributosNulos<Credentials>(credentials);
+    return login<IUsuario>(`/usuario/login/`, credentialsToPost);
 }
 
-export function getAreasRequisitantes(): Promise<RespostaServico<IAreaRequisitante[]>> {
-    return get('/areaRequisitante');
+export function getFornecedores(token: string | undefined): Promise<RespostaServico<IFornecedor[]>> {
+    return get(token, '/fornecedor');
 }
 
-export function getContratos(): Promise<RespostaServico<IContrato[]>> {
-    return get(`/contrato?filter={ "order": ["dtInicioVigencia DESC"
+export function getAreasRequisitantes(token: string | undefined): Promise<RespostaServico<IAreaRequisitante[]>> {
+    return get(token, '/areaRequisitante');
+}
+
+export function getContratos(token: string | undefined): Promise<RespostaServico<IContrato[]>> {
+    return get(
+        token,
+        `/contrato?filter={ "order": ["dtInicioVigencia DESC"
   ],
   "include": [
     { "relation": "metricas","scope": {"order": ["sigla"]}},
@@ -25,51 +35,76 @@ export function getContratos(): Promise<RespostaServico<IContrato[]>> {
     { "relation": "papeis","scope": {"order": ["nome"]}}
 
   ]
-}`);
+}`,
+    );
 }
 
-export function getOrdensServico(idContrato: number): Promise<RespostaServico<IOrdemServico[]>> {
-    return get(`/contratoes/${idContrato}/ordem-servicos?filter={
+export function getOrdensServico(
+    token: string | undefined,
+    idContrato: number,
+): Promise<RespostaServico<IOrdemServico[]>> {
+    return get(
+        token,
+        `/contratoes/${idContrato}/ordem-servicos?filter={
         "order": ["numero DESC"]
-      }`); //ordena pelo número da ordem de serviço descrescente. OS's mais recentes vem no topo. NÃO ADIANTA POIS GUARDA NO MAP INDEXADO POR ID
+      }`,
+    ); //ordena pelo número da ordem de serviço descrescente. OS's mais recentes vem no topo. NÃO ADIANTA POIS GUARDA NO MAP INDEXADO POR ID
 }
 
-export function getOrdemServico(id: number): Promise<RespostaServico<IOrdemServico>> {
-    return get(`/ordem-servico/${id}?filter={ "include": [
-    { "relation": "itens"},{ "relation": "etapas"},{ "relation": "entregaveis"}]}`);
+export function getOrdemServico(token: string | undefined, id: number): Promise<RespostaServico<IOrdemServico>> {
+    return get(
+        token,
+        `/ordem-servico/${id}?filter={ "include": [
+    { "relation": "itens"},{ "relation": "etapas"},{ "relation": "entregaveis"}]}`,
+    );
 }
 
-export function postOrdemServico(ordemServico: IOrdemServico): Promise<RespostaServico<IOrdemServico>> {
+export function postOrdemServico(
+    token: string | undefined,
+    ordemServico: IOrdemServico,
+): Promise<RespostaServico<IOrdemServico>> {
     //Remove os nulos e as entidades relacionadas para poder enviar ao servidor (sem isso, rola exceção do backend)
     const ordemToPost = removerAtributosNulos<IOrdemServico>(ordemServico);
-    return post<IOrdemServico>(`/ordem-servico/`, ordemToPost, ordemToPost.id);
+    return post<IOrdemServico>(token, `/ordem-servico/`, ordemToPost, ordemToPost.id);
 }
 
-export function deleteOrdemServico(id: number): Promise<RespostaServico<void>> {
-    return del(`/ordem-servico/${id}`);
+export function deleteOrdemServico(token: string | undefined, id: number): Promise<RespostaServico<void>> {
+    return del(token, `/ordem-servico/${id}`);
 }
 
-export function emitirOrdemServicoSEI(ordemServico: IOrdemServico): Promise<RespostaServico<IOrdemServico>> {
-    console.log('ordemServico.id', ordemServico);
-    return postAcao<IOrdemServico>(`/ordem-servico/emitirSEI/${ordemServico.id}`, null);
+export function emitirOrdemServicoSEI(
+    token: string | undefined,
+    ordemServico: IOrdemServico,
+): Promise<RespostaServico<IOrdemServico>> {
+    return postAcao<IOrdemServico>(token, `/ordem-servico/emitirSEI/${ordemServico.id}`, null);
 }
 
-export function emitirTermoAceitacaoEtapaSEI(etapa: IEtapaOrdemServico): Promise<RespostaServico<IEtapaOrdemServico>> {
+export function emitirTermoAceitacaoEtapaSEI(
+    token: string | undefined,
+    etapa: IEtapaOrdemServico,
+): Promise<RespostaServico<IEtapaOrdemServico>> {
     if (typeof etapa.valorAdiantamentoPlanejado == 'string')
         etapa.valorAdiantamentoPlanejado = parseFloat(etapa.valorAdiantamentoPlanejado);
     if (typeof etapa.valorAdiantamentoReal == 'string')
         etapa.valorAdiantamentoReal = parseFloat(etapa.valorAdiantamentoReal);
     return postAcao<IEtapaOrdemServico>(
+        token,
         `/etapa-ordem-servico/emitirTermoAceite/${etapa.id}`,
         removerAtributosNulos(etapa),
     );
 }
 
 export function emitirTermoRecebimentoSEI(
+    token: string | undefined,
     recebimento: IRecebimentoOrdemServico,
 ): Promise<RespostaServico<IRecebimentoOrdemServico>> {
     const recebimentoToPost = removerAtributosNulos<IRecebimentoOrdemServico>(recebimento);
-    return post<IRecebimentoOrdemServico>(`/recebimento-ordem-servico/`, recebimentoToPost, recebimentoToPost.id);
+    return post<IRecebimentoOrdemServico>(
+        token,
+        `/recebimento-ordem-servico/`,
+        recebimentoToPost,
+        recebimentoToPost.id,
+    );
 }
 
 function removerAtributosNulos<T>(obj: {[atributo: string]: any}): T {

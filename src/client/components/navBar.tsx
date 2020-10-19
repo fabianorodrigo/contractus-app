@@ -8,9 +8,10 @@ import {MenuIcon, SearchIcon} from './lib/icons';
 
 export const NavBar: React.FC<{
     menuExpandido: boolean;
-    funcaoExpandeMenu: TypeBoolean_Void;
+    funcaoExpandeMenu?: TypeBoolean_Void;
+    funcaoProcura?: TypeBoolean_Void;
     textoCampoBusca?: string;
-}> = ({menuExpandido, funcaoExpandeMenu, textoCampoBusca}) => {
+}> = ({menuExpandido, funcaoExpandeMenu, funcaoProcura, textoCampoBusca}) => {
     const classes = useStyles();
     const inputSearchRef = React.useRef(null);
     //texto de busca
@@ -21,38 +22,42 @@ export const NavBar: React.FC<{
     return (
         <AppBar position="absolute" className={clsx(classes.appBar, menuExpandido && classes.appBarShift)}>
             <Toolbar className={classes.toolbar}>
-                <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="Abrir menu"
-                    onClick={funcaoExpandeMenu.bind(null, true)}
-                    className={clsx(classes.menuButton, menuExpandido && classes.menuButtonHidden)}
-                >
-                    <MenuIcon />
-                </IconButton>
+                {funcaoExpandeMenu && (
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        aria-label="Abrir menu"
+                        onClick={funcaoExpandeMenu.bind(null, true)}
+                        className={clsx(classes.menuButton, menuExpandido && classes.menuButtonHidden)}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                )}
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     Gestão de Contratos Administrativos
                 </Typography>
-                <div className={classes.search}>
-                    <div className={classes.searchIcon}>
-                        <SearchIcon />
+                {funcaoProcura && (
+                    <div className={classes.search}>
+                        <div className={classes.searchIcon}>
+                            <SearchIcon />
+                        </div>
+                        <InputBase
+                            id="inputSearch"
+                            autoFocus
+                            placeholder={textoCampoBusca || 'Procurar … '}
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{
+                                'aria-label': 'Procurar',
+                            }}
+                            value={textoFiltro}
+                            ref={inputSearchRef}
+                            onChange={onChangeTextoFiltro}
+                        />
                     </div>
-                    <InputBase
-                        id="inputSearch"
-                        autoFocus
-                        placeholder={textoCampoBusca || 'Procurar … '}
-                        classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
-                        }}
-                        inputProps={{
-                            'aria-label': 'Procurar',
-                        }}
-                        value={textoFiltro}
-                        ref={inputSearchRef}
-                        onChange={onChangeTextoFiltro}
-                    />
-                </div>
+                )}
             </Toolbar>
         </AppBar>
     );

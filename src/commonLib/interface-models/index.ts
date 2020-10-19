@@ -1,5 +1,6 @@
 export * from './area-requisitante.model';
 export * from './contrato.model';
+export * from './Credentials';
 export * from './entregavel-ordem-servico.model';
 export * from './entregavel-recebimento-ordem-servico.model';
 export * from './entregavel-tipo-ordem-servico.model';
@@ -17,3 +18,4 @@ export * from './recebimento-ordem-servico.model';
 export * from './sancao-indicador-niveis-servico-contrato.model';
 export * from './StatusOrdemServico';
 export * from './tipo-ordem-servico-contrato';
+export * from './usuario.model';
