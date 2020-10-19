@@ -13,6 +13,7 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
 import ListAltIcon from '@material-ui/icons/ListAlt';
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import MenuIcon from '@material-ui/icons/Menu';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import ReceiptIcon from '@material-ui/icons/Receipt';
@@ -42,4 +43,5 @@ export {
     PeopleAltIcon,
     FindInPageIcon,
     ReceiptIcon,
+    MeetingRoomIcon,
 };
