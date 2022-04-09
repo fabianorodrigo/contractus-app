@@ -71,7 +71,7 @@
     "ldapts": "^2.5.1",
     "loopback-connector-postgresql": "^3.9.1",
     "loopback-connector-soap": "^5.1.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "notistack": "^0.9.9",
     "numero-por-extenso": "^1.0.8",
     "react": "^16.13.1",
